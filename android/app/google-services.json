@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "905883246106",
+    "project_id": "datingapp-1e76d",
+    "storage_bucket": "datingapp-1e76d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:905883246106:android:a8f5e54cbb3458efcb3ba3",
+        "android_client_info": {
+          "package_name": "com.kaliallen.datingapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "905883246106-k6ge5otrl9r44dcjvvrcqh9tdjc0k507.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kaliallen.datingapp",
+            "certificate_hash": "c533371584d13562a58b676e4baa834a97f44b8d"
+          }
+        },
+        {
+          "client_id": "905883246106-ppgqcno26ttnp49eag7t8mvkq8s84dt0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjpSnfFqJAlpGXiiIevxJY7EcIDnBGna8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "905883246106-ppgqcno26ttnp49eag7t8mvkq8s84dt0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "905883246106-l37q330hibnka16blsh4euvjob8409kd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.kaliallen.datingapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

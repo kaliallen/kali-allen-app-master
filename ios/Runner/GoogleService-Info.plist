@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>905883246106-l37q330hibnka16blsh4euvjob8409kd.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.905883246106-l37q330hibnka16blsh4euvjob8409kd</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>905883246106-k6ge5otrl9r44dcjvvrcqh9tdjc0k507.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCv0Lb4LQ_k0tVnrmAb98GN_aUiY9ESIFw</string>
+	<key>GCM_SENDER_ID</key>
+	<string>905883246106</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.kaliallen.datingapp</string>
+	<key>PROJECT_ID</key>
+	<string>datingapp-1e76d</string>
+	<key>STORAGE_BUCKET</key>
+	<string>datingapp-1e76d.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:905883246106:ios:805fc96c2d51b5d1cb3ba3</string>
+</dict>
+</plist>
