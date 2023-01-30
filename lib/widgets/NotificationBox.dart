@@ -58,6 +58,7 @@ class NotificationBox extends StatelessWidget {
         ),
         title:  Column(
           mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
                         type.contains('looking') ? '$name, one of your matches, is looking for a date Tonight!' : type.contains('match') ? '$name is available $date.' : 'You have a new date with $name on Thursday!',
@@ -87,7 +88,7 @@ class NotificationBox extends StatelessWidget {
         trailing:  Column(
           children: [
             TextButton(
-              child: Text('Open Chat'),
+              child: Text('Start a Chat'),
               onPressed: () async {
 
                 //Create a new match for the SENDER of the notification

@@ -557,6 +557,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         top: 30.0,
                         right: 0.0,
                         left: 20.0,
+                        bottom: 100.0,
                       ),
                       child: Container(
                         width: MediaQuery.of(context).size.width,
