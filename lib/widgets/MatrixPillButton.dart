@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:kaliallendatingapp/constants.dart';
 
-class PillButton extends StatelessWidget {
+class MatrixPillButton extends StatelessWidget {
   final bool isSelected;
   final String text;
   final Function onTap;
 
 
 
-  const PillButton(
+  const MatrixPillButton(
       {Key key, this.text,  this.onTap, this.isSelected});
 
   @override
@@ -21,16 +21,16 @@ class PillButton extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(10.0),
             child: Text(
-              text,
+              isSelected ? 'Free' : 'Busy',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: isSelected ? Colors.white :  kButtonColor,
                 fontSize: 14.0,
-              )
+              ),
             ),
           ),
           decoration: BoxDecoration(
-              color: isSelected ? kPillButtonSelectedColor : kPillButtonUnselectedColor,
+              color: isSelected ? Colors.green : kPillButtonUnselectedColor,
               borderRadius: BorderRadius.circular(20.0)),
         ),
       ),

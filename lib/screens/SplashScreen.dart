@@ -10,17 +10,17 @@ import 'package:kaliallendatingapp/screens/Home.dart';
 import 'package:kaliallendatingapp/screens/HomeScreen.dart';
 import 'package:kaliallendatingapp/screens/PhoneSignUp.dart';
 import 'package:kaliallendatingapp/screens/WelcomeScreen.dart';
-import 'package:kaliallendatingapp/screens/profilesetup/Profile1Setup.dart';
-import 'package:kaliallendatingapp/screens/profilesetup/Profile1SignUp.dart';
+import 'package:kaliallendatingapp/screens/profilesetup/Profile1Location.dart';
+import 'package:kaliallendatingapp/screens/profilesetup/ProfileGeoLocator.dart';
 import 'package:provider/provider.dart';
 
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen1 extends StatefulWidget {
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  _SplashScreen1State createState() => _SplashScreen1State();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreen1State extends State<SplashScreen1> {
 
   handleSignInn(User account) async {
     print('2. If account is not null, check to see if doc exists in firebase. if it does, take them to home. if not, take them to create profile. ');
@@ -60,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen> {
               child: AnimatedTextKit(
                 animatedTexts: [
                   ColorizeAnimatedText(
-                    'dayzie',
+                    'Tonight',
                     textStyle: kColorizeTextStyle,
                     colors: kColorizeColors,
                   ),

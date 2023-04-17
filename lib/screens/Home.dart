@@ -6,15 +6,15 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kaliallendatingapp/models/userData.dart';
-import 'package:kaliallendatingapp/screens/BrowseScreen.dart';
-import 'package:kaliallendatingapp/screens/MatchesScreen.dart';
+import 'package:kaliallendatingapp/screens/BrowseTab.dart';
+import 'package:kaliallendatingapp/screens/ChatsTab.dart';
 import 'package:kaliallendatingapp/screens/PhoneSignUp.dart';
-import 'package:kaliallendatingapp/screens/SettingScreen.dart';
-import 'package:kaliallendatingapp/screens/profilesetup/Profile1Setup.dart';
+import 'package:kaliallendatingapp/screens/SettingsTab.dart';
+import 'package:kaliallendatingapp/screens/profilesetup/Profile1Location.dart';
 import 'package:kaliallendatingapp/widgets/StyledButton.dart';
 
 import '../constants.dart';
-import 'NotificationScreen.dart';
+import 'MatchesTab.dart';
 
 final datesRef = FirebaseFirestore.instance.collection('dates');
 final activeDatesRef = FirebaseFirestore.instance.collection('activeDates');
@@ -185,25 +185,27 @@ class _HomeState extends State<Home> {
         onPageChanged: onPageChanged,
         physics: NeverScrollableScrollPhysics(),
       ),
-      bottomNavigationBar: CupertinoTabBar(
+      bottomNavigationBar:
+          // BottomNavigationBar(
+      CupertinoTabBar(
         currentIndex: pageIndex,
         onTap: onTap,
         activeColor: kButtonColor,
-        iconSize: 30.0,
+        iconSize: 25.0,
         backgroundColor: Color(0xffffffff),
         items: [
           BottomNavigationBarItem(
-              label: 'Discover',
+              label: 'Plan',
               icon: Icon(Icons.bolt,
                 color: pageIndex == 0 ? kButtonColor : Color(0xff9D9EA4),
               )),
           BottomNavigationBarItem(
-            label: 'Notifications',
+            label: 'Matches',
             icon: Icon(Icons.favorite,
             color: pageIndex == 1 ? kButtonColor : Color(0xff9D9EA4),
           )),
           BottomNavigationBarItem(
-              label: 'Matches',
+              label: 'Chats',
               //TODO: Find a better icon and also make it so notifications are shown here
               icon: Icon(Icons.message,
                 color: pageIndex == 2 ? kButtonColor : Color(0xff9D9EA4),

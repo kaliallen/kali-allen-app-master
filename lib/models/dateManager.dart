@@ -102,6 +102,8 @@ class DateManager {
       }
     }
 
+    print(selectedTimeSlots);
+
     return selectedTimeSlots;
 
     //Example output: [20230129-68, 20230129-810]

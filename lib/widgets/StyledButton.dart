@@ -40,6 +40,7 @@ class StyledButton extends StatelessWidget {
             style: TextStyle(
               fontFamily: 'Quicksand',
               fontSize: 16.0,
+              fontWeight: FontWeight.w500,
               color: fontColor == null ? kWhiteSquareColor : fontColor,
             //  fontWeight: FontWeight.w500,
             //  letterSpacing: .1,

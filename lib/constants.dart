@@ -65,7 +65,7 @@ const kScaffoldBackgroundColor = Color(0xffF6F7FB);//;//Color(0xffF6F7FB);
 const kWhiteSquareColor = Colors.white;
 
 //Pill Button Colors
-const kPillButtonSelectedColor = Color(0xffC0B9BE);//Color(0xff6A4C93);
+const kPillButtonSelectedColor = kDarkest;//Color(0xffC0B9BE);//Color(0xff6A4C93);
 const kPillButtonUnselectedColor = Color(0xffF0EDF4);
 const kPillButtonTextStyle = TextStyle(
 
@@ -158,3 +158,21 @@ const List<int> times = [
   9,
   10
 ];
+
+//Profile Page
+
+//Profile Card Font
+const kCardTextStyle = TextStyle(
+color: Color(0xff6A6E76),
+fontSize: 16.0,
+);
+
+enum Tonight { early,late}
+
+//Browse Page Matrix Font
+
+const kDayOfTheWeekText = TextStyle(
+        fontSize: 18.0,
+  fontWeight: FontWeight.w500,
+
+      );

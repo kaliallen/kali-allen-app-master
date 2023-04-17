@@ -6,6 +6,9 @@ import 'package:kaliallendatingapp/screens/profilesetup/Profile4Gender.dart';
 import 'package:kaliallendatingapp/widgets/StyledButton.dart';
 import 'package:page_transition/page_transition.dart';
 
+//TODO: Make a validation so the user cant pass until they enter in a name that is more than 2 characters long
+
+
 class ProfileName extends StatefulWidget {
   final UserData _userData;
 
@@ -18,6 +21,7 @@ class ProfileName extends StatefulWidget {
 }
 
 class _ProfileNameState extends State<ProfileName> {
+  TextEditingController controller = TextEditingController();
   bool areNamesEntered = true;
 
 
@@ -58,34 +62,21 @@ class _ProfileNameState extends State<ProfileName> {
               padding: const EdgeInsets.only(left: 25.0, right: 25.0),
               child: Column(
                 children: [
-                  TextField(
-                    decoration: InputDecoration(
-                      labelText: 'First Name',
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: TextField(
+                      textAlign: TextAlign.center,
+                      textCapitalization: TextCapitalization.words,
+                      controller: controller,
+                      decoration: InputDecoration(
+                        labelText: 'First Name',
+                      ),
+
                     ),
-                    onChanged: (value) {
-                      firstName = value;
-                    },
-                  ),
-                  TextField(
-                    decoration: InputDecoration(
-                      labelText: 'Last Name',
-                    ),
-                    onChanged: (value) {
-                      lastName = value;
-                    },
                   ),
                 ],
               )),
           //TextField/Content
-          areNamesEntered ? Text('') :
-            Center(
-              child: Text(
-                'Type in first and last name to continue.',
-                style: TextStyle(
-                  color: Colors.red,
-                ),
-              ),
-            ),
           Padding(
             padding:
                 const EdgeInsets.only(bottom: 30.0, right: 25.0, left: 25.0),
@@ -93,29 +84,17 @@ class _ProfileNameState extends State<ProfileName> {
               text: 'Continue',
               color: kButtonColor,
               onTap: () {
-                if (lastName == null || firstName == null) {
-                  setState(() {
-                    areNamesEntered = false;
-                  });
-                  widget._userData.firstName = firstName;
-                  widget._userData.lastName = lastName;
-                  Navigator.push(
-                      context,
-                      PageTransition(
-                          type: PageTransitionType.rightToLeft,
-                          child: ProfileGender(userData: widget._userData)));
-                } else {
-                  setState(() {
-                    areNamesEntered = true;
-                  });
-                  widget._userData.firstName = firstName;
-                  widget._userData.lastName = lastName;
-                  Navigator.push(
-                      context,
-                      PageTransition(
-                          type: PageTransitionType.rightToLeft,
-                          child: ProfileGender(userData: widget._userData)));
-                }
+               if (controller.text.trim().isNotEmpty){
+                   widget._userData.firstName = firstName;
+                     Navigator.push(
+                       context,
+                       PageTransition(
+                           type: PageTransitionType.rightToLeft,
+                           child: ProfileGender(userData: widget._userData)));
+               } else {
+                 print('No first name entered');
+               }
+
               },
             ),
           )

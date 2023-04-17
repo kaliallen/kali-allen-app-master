@@ -28,7 +28,7 @@ class DateButton extends StatelessWidget {
           child: Container(
             margin: EdgeInsets.symmetric(horizontal: 5.0),
             height: 55.0,
-            width: MediaQuery.of(context).size.width * .27,
+            width: MediaQuery.of(context).size.width * .26,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,

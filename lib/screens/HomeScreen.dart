@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:kaliallendatingapp/screens/BrowseScreen.dart';
-import 'package:kaliallendatingapp/screens/MatchesScreen.dart';
-import 'package:kaliallendatingapp/screens/SettingScreen.dart';
+import 'package:kaliallendatingapp/screens/BrowseTab.dart';
+import 'package:kaliallendatingapp/screens/ChatsTab.dart';
+import 'package:kaliallendatingapp/screens/SettingsTab.dart';
 
 
 class HomeScreen extends StatefulWidget {

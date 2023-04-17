@@ -5,7 +5,7 @@ import 'package:kaliallendatingapp/screens/Home.dart';
 import 'package:kaliallendatingapp/widgets/StyledButton.dart';
 import 'package:kaliallendatingapp/widgets/progress.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'package:kaliallendatingapp/screens/profilesetup/Profile1Setup.dart';
+import 'package:kaliallendatingapp/screens/profilesetup/Profile1Location.dart';
 
 
 import '../constants.dart';

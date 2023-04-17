@@ -41,12 +41,13 @@ class _MatchesScreenState extends State<MatchesScreen> {
             children: [
               Container(
                 padding: EdgeInsets.only(left: 25.0, top: 50.0),
-                child: Text('Matches',
+                child: Text('Chats',
                     style: TextStyle(
                         fontSize: 26.0,
                         color: kDarkest,
                         fontWeight: FontWeight.w500)),
               ),
+
               DateList(profileId: widget.currentUserId),
             ],
           ),
@@ -116,7 +117,10 @@ class DateList extends StatelessWidget {
 
               );
 
-              widgets.add(chatMatchBox);
+                widgets.add(chatMatchBox);
+
+
+
             }
             //TODO: Need to figure out how to make this a scrollable listView
             return Column(

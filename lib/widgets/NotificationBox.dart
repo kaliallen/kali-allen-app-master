@@ -7,6 +7,7 @@ import 'package:kaliallendatingapp/constants.dart';
 import 'package:kaliallendatingapp/screens/ChatScreen.dart';
 import 'package:kaliallendatingapp/screens/ProfilePage.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:uuid/uuid.dart';
 
 import '../screens/Home.dart';
 
@@ -91,19 +92,61 @@ class NotificationBox extends StatelessWidget {
               child: Text('Start a Chat'),
               onPressed: () async {
 
-                //Create a new match for the SENDER of the notification
-                final doc = await usersRef.doc('sdlfksdjf').get();
-                if (doc.exists) {
-                  doc.reference.update({'firstname': 'Annemarie', 'lastName': 'Allen'});
-                }
+                var uuid = Uuid();
 
-                    matchesRef
-                        .doc(userId).collection('matches').doc(senderId)
-                        .set({
-                      'time': Timestamp.fromDate(DateTime.now()),
-                      'date': date,
+                // //Create a new match for the SENDER of the notification
+                // final doc = await usersRef.doc('sdlfksdjf').get();
+                // if (doc.exists) {
+                //   doc.reference.update({'firstname': 'Annemarie', 'lastName': 'Allen'});
+                // }
+                //
+                //     matchesRef
+                //         .doc(userId).collection('matches').doc(senderId)
+                //         .set({
+                //       'time': Timestamp.fromDate(DateTime.now()),
+                //       'date': date,
+                //
+                //     });
 
-                    });
+                // //TODO: Make a match under the userId
+                // print('userId: $userId');
+                //
+                //   //TODO: Make sure a chat doesn't already exist
+                // final doc = await matchesRef.doc(userId).collection('matches').doc(senderId).get();
+                // if (doc.exists){
+                //   print('The chat already exists!');
+                //
+                //   //If the chat already exists, update the chat
+                //   doc.reference.update({
+                //     'activeMatch': true,
+                //     'lastMessage':
+                //
+                //   });
+                // } else {
+                // This is where to create a new match
+                matchesRef
+                    .doc(userId).collection('matches').doc(senderId)
+                    .set({
+                  'activeMatch': true,
+                  'dateId': 'test',
+                  'lastMessage': 'INSERT NAME has matched with you! Make a lasting impression so you guys can go on the date at INSERT TIME...!',
+                  'lastMessageSender': userId,
+                  'lastMessageTime': Timestamp.now(),
+                  'matchImageUrl': matchImageUrl,
+                  'matchName': name,
+                  'messageUnread': false,
+                  'messagesId': uuid.v4(),
+                });
+                //
+                // }
+
+
+                //TODO: Make a match under the senderId
+                print('senderId: $senderId');
+
+
+
+                //TODO: Once all that is complete, go to the chat screen....?? Somehow?
 
               },
             ),

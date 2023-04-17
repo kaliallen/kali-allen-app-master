@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:kaliallendatingapp/constants.dart';
 import 'package:kaliallendatingapp/models/userData.dart';
@@ -47,6 +48,8 @@ class ProfileJob extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: TextField(
+                // textAlign: TextAlign.center,
+                textCapitalization: TextCapitalization.words,
                 decoration: InputDecoration(
                   labelText: 'Job',
                 ),
@@ -55,22 +58,17 @@ class ProfileJob extends StatelessWidget {
                 },
               ),
             ),
-            SizedBox(height: 20.0),
             Padding(
               padding: const EdgeInsets.only(bottom: 30.0, right: 25.0, left: 25.0),
               child: StyledButton(
                 text: 'Continue',
                 color: kButtonColor,
                 onTap: (){
-                  // if (lastName != null && firstName !=null) {
-                  //_userRepository.firstName = firstName;
-                  // _userRepository.lastName = lastName;
 
-                  //_userRepository.firstName = firstName;
-                  //_userRepository.lastName = lastName;
                   if (work != null){
                     _userData.occupation = work;
                   }
+
                   Navigator.push(context, PageTransition(
                       type: PageTransitionType.rightToLeft,
                       child: ProfileSchool(

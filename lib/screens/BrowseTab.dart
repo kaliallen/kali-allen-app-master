@@ -1,3 +1,6 @@
+///TEST
+//TODO: Test to see if you leave a screen on for a long time and the time passes after 5 pm, when you click on the screen does it refresh the time? Right now it does not.
+
 import 'dart:ffi';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -24,6 +27,8 @@ import 'package:kaliallendatingapp/widgets/progress.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import '../widgets/ActivityPillButton.dart';
+import '../widgets/MatrixPillButton.dart';
 import "Home.dart";
 
 //TODO: Delete unused package below from pubspec yaml
@@ -52,7 +57,6 @@ class _BrowseScreenState extends State<BrowseScreen> {
   UserData currentUser; //in use
   bool dateExists; //in use
   String dateId;
-
 
   Date currentDate;
   DateManager dateManager = DateManager();
@@ -94,12 +98,18 @@ class _BrowseScreenState extends State<BrowseScreen> {
   RangeValues currentRangeValues = RangeValues(5, 10);
   bool pageOpen = false;
   bool addActivity = false;
+  TextEditingController activityController = TextEditingController();
+
   bool addDrinks = false;
   bool addDinner = false;
+  bool addDinnerActivity = false;
+  bool isDinnerSaved = false;
+  TextEditingController dinnerActivityController = TextEditingController();
+
   bool addAdventure = false;
   bool friendsSelected = false;
   bool splitBillSelected = false;
-  TextEditingController activityController = TextEditingController();
+
   bool activitySelected = false;
   DateTime now = DateTime.now();
   int startTime;
@@ -110,14 +120,13 @@ class _BrowseScreenState extends State<BrowseScreen> {
   );
   PanelController panelController = PanelController();
   int profilePagesIndex = 0;
-  FixedExtentScrollController endTimeController;
-  FixedExtentScrollController startTimeController;
   final startTimeIndex = 0;
   final endTimeIndex = 5;
 
   bool hide46 = false;
   bool hide68 = false;
   bool hide810 = false;
+
 
 
   //Functions in initState
@@ -144,82 +153,76 @@ class _BrowseScreenState extends State<BrowseScreen> {
   }
 
   ///Takes what time it is now, and if the time now is later than the available times for tonight, it hides them.
-  hideUnavailableTimes(){
+  hideUnavailableTimes() {
     int hourNow = int.parse('${DateFormat.H().format(now)}');
 
     //If time is earlier than 3pm
-    if (availableTimeSlots[0] == null){
+    if (availableTimeSlots[0] == null) {
       hide46 = true;
     }
 
     //If time is between 3pm and 5pm
-    if (availableTimeSlots[1] == null){
+    if (availableTimeSlots[1] == null) {
       hide68 = true;
     }
 
     //if time is earlier than 7pm,
     if (availableTimeSlots[2] == null) {
       hide810 = true;
-
     }
 
-  print('hide46 = $hide46');
+    print('hide46 = $hide46');
     print('hide68 = $hide68');
     print('hide810 = $hide810');
-
   }
 
   ///Take availableTimeSlots and currentDate.availability to create the bool usersAvailability list and use the usersAvailable list to populate the input screen when they press the back button
-  populateInputScreen(Date currentDate){
-
+  populateInputScreen(Date currentDate) {
     //Take availableTimeSlots and currentDate.availability to create the bool usersAvailability list
 
-
-    usersAvailability = dateManager.createUsersAvailabilityFromDateDoc(availableTimeSlots, currentDate.availability);
+    usersAvailability = dateManager.createUsersAvailabilityFromDateDoc(
+        availableTimeSlots, currentDate.availability);
 
     print(usersAvailability);
 
-
-    if (usersAvailability[0] == true){
+    if (usersAvailability[0] == true) {
       isAvailableTonight = true;
-    } else if (usersAvailability[1] == true){
+    } else if (usersAvailability[1] == true) {
       isAvailableTonight = true;
-    } else if (usersAvailability[2] == true){
+    } else if (usersAvailability[2] == true) {
       isAvailableTonight = true;
     }
     print('isAvailableTonight: $isAvailableTonight');
 
-    if (usersAvailability[3] == true){
+    if (usersAvailability[3] == true) {
       isAvailableTomorrow = true;
-    } else if (usersAvailability[4] == true){
+    } else if (usersAvailability[4] == true) {
       isAvailableTomorrow = true;
-    } else if (usersAvailability[5] == true){
+    } else if (usersAvailability[5] == true) {
       isAvailableTomorrow = true;
     }
 
     print('isAvailableTomorrow: $isAvailableTomorrow');
 
-    if (usersAvailability[6] == true){
+    if (usersAvailability[6] == true) {
       isAvailableThirdDay = true;
-    } else if (usersAvailability[7] == true){
+    } else if (usersAvailability[7] == true) {
       isAvailableThirdDay = true;
-    } else if (usersAvailability[8] == true){
+    } else if (usersAvailability[8] == true) {
       isAvailableThirdDay = true;
     }
 
     print('isAvailableThirdDay: $isAvailableThirdDay');
 
-    if (usersAvailability[9] == true){
+    if (usersAvailability[9] == true) {
       isAvailableFourthDay = true;
-    } else if (usersAvailability[10] == true){
+    } else if (usersAvailability[10] == true) {
       isAvailableFourthDay = true;
-    } else if (usersAvailability[11] == true){
+    } else if (usersAvailability[11] == true) {
       isAvailableFourthDay = true;
     }
 
     print('isAvailableFourthDay: $isAvailableFourthDay');
-
-
 
     toggle46 = usersAvailability[0];
     toggle68 = usersAvailability[1];
@@ -230,18 +233,14 @@ class _BrowseScreenState extends State<BrowseScreen> {
     addDinner = currentDate.interests['dinner'];
 
     activityController.text = currentDate.customMessage;
-
-
   }
 
   ///Find if the user has already entered availability.
   ///Grab the list of current dates from Firebase.
   ///If it exists, check to see which dates are current.
   Future<bool> findIfDateAdded() async {
-
     //Grab list of current dates user has submitted
-    DocumentSnapshot dateDoc =
-    await datesRef.doc(widget.currentuid).get();
+    DocumentSnapshot dateDoc = await datesRef.doc(widget.currentuid).get();
     print('dateDoc exists? ${dateDoc.exists}');
 
     //If a dateDoc exists, check to see that the time slots are not expired.
@@ -251,40 +250,34 @@ class _BrowseScreenState extends State<BrowseScreen> {
       print('currentDate.availability: ${currentDate.availability}');
 
       //Check to see that time slots are not expired
-      bool areTimeSlotsExpired = dateManager.areAvailableTimeSlotsExpired(availableTimeSlots, currentDate.availability);
-
+      bool areTimeSlotsExpired = dateManager.areAvailableTimeSlotsExpired(
+          availableTimeSlots, currentDate.availability);
 
       print('areTimeSlotsExpired: $areTimeSlotsExpired');
 
-      if (areTimeSlotsExpired == true){
-
+      if (areTimeSlotsExpired == true) {
         //Delete expired dateDoc
         datesRef.doc(widget.currentuid).delete();
 
         return false;
       } else {
-
         return true;
       }
-
     } else {
       return false;
     }
-
-    
   }
 
   ///If there are current dates, dateExists = true and buildMatchesProile2 populates. If false buildWelcomePage2 populates.
   toggleWelcome2BrowseScreen() async {
-
     //Find if they have submitted their availability
     bool isDateAdded = await findIfDateAdded();
 
-    if (isDateAdded == true){
+    if (isDateAdded == true) {
       setState(() {
         dateExists = true;
       });
-    } else if (isDateAdded == false){
+    } else if (isDateAdded == false) {
       setState(() {
         dateExists = false;
       });
@@ -293,7 +286,6 @@ class _BrowseScreenState extends State<BrowseScreen> {
     }
   }
 
-
   @override
   void initState() {
     saveUserInfo();
@@ -301,25 +293,20 @@ class _BrowseScreenState extends State<BrowseScreen> {
     hideUnavailableTimes();
     toggleWelcome2BrowseScreen();
     super.initState();
-
-    //TODO: Tis where you left off.
-    endTimeController = FixedExtentScrollController(initialItem: endTimeIndex);
-
-    startTimeController =
-        FixedExtentScrollController(initialItem: startTimeIndex);
   }
-
 
   ///Instigates a popup screen to confirm dates, times, and activities selected by user.
   ///Once confirmed, it sends to Firebase under 'dates' collection.
   ///If datedoc is successfully created, it sends user to browse screen
   sendFindADate() {
-
     bool _saving = false;
     print('availableTimeSlots: $availableTimeSlots');
     print('usersAvailability: $usersAvailability');
 
-    List selectedTimeSlots = dateManager.createSelectedTimeSlots(availableTimeSlots, usersAvailability);
+    List selectedTimeSlots = dateManager.createSelectedTimeSlots(
+        availableTimeSlots, usersAvailability);
+
+    print(selectedTimeSlots);
 
     String dateIdNames = dateManager.dateIdToName(selectedTimeSlots);
     print(dateIdNames);
@@ -327,29 +314,31 @@ class _BrowseScreenState extends State<BrowseScreen> {
     if (selectedTimeSlots.isNotEmpty) {
       //Finds if dinner, drinks, activities selected and creates text
       String activitiesText = '';
-      addDinner ? activitiesText = activitiesText + 'Dinner, ' : print(
-          'Dinner not selected');
-      addDrinks ? activitiesText = activitiesText + 'Drinks, ' : print(
-          'Drinks not selected');
-      addActivity ? activitiesText = activitiesText + 'Custom Activity: ${activityController.text}' : print('Activity not selected');
-
+      addDinner
+          ? activitiesText = activitiesText + 'Dinner, '
+          : print('Dinner not selected');
+      addDrinks
+          ? activitiesText = activitiesText + 'Drinks, '
+          : print('Drinks not selected');
+      addActivity
+          ? activitiesText =
+              activitiesText + 'Custom Activity: ${activityController.text}'
+          : print('Activity not selected');
 
       showDialog(
           context: context,
-          builder: (ctx) =>
-              ModalProgressHUD(
+          builder: (ctx) => ModalProgressHUD(
                 inAsyncCall: _saving,
                 child: AlertDialog(
                     title: const Text('You are available...'),
-                    content:
-                    Column(
+                    content: Column(
                       children: [
-                        Text('These are all the times you are available: ' + dateIdNames
+                        Text('These are all the times you are available: ' +
+                                dateIdNames
 
-                          //TODO: Add dinner, drinks, what do you want to do here
+                            //TODO: Add dinner, drinks, what do you want to do here
 
-
-                        ),
+                            ),
                         Text('Activities: ' + activitiesText),
                       ],
                     ),
@@ -363,12 +352,12 @@ class _BrowseScreenState extends State<BrowseScreen> {
                       TextButton(
                         child: Text('Continue'),
                         onPressed: () async {
-
                           _saving = true;
 
                           //Create a new date in firestore
                           if (selectedTimeSlots.length >= 1) {
-                            await FirebaseFirestore.instance.collection('dates')
+                            await FirebaseFirestore.instance
+                                .collection('dates')
                                 .doc(widget.currentuid)
                                 .set({
                               'availability': selectedTimeSlots,
@@ -390,35 +379,30 @@ class _BrowseScreenState extends State<BrowseScreen> {
                             bool uploadSuccessful = await findIfDateAdded();
                             print('upload successful? $uploadSuccessful');
 
-                            if (uploadSuccessful == true){
+                            if (uploadSuccessful == true) {
                               _saving = false;
 
                               setState(() {
                                 dateExists = true;
                               });
                               Navigator.pop(context);
-
                             } else {
                               print('Upload not successful');
                             }
-
                           }
                         },
                       ),
-                    ]
-                ),
-              )
-      );
+                    ]),
+              ));
     } else {
       print('You have not selected an available date');
 
       showDialog(
           context: context,
-          builder: (ctx) =>
-              AlertDialog(
-                  title: const Text('Select a date to continue!'),
-                  content:
-                  Text('Please select an available time and date to continue.'),
+          builder: (ctx) => AlertDialog(
+                  title: const Text('Select a time to continue!'),
+                  content: Text(
+                      'Please select an available time and date to continue.'),
                   actions: <Widget>[
                     TextButton(
                       child: Text('Back'),
@@ -426,15 +410,11 @@ class _BrowseScreenState extends State<BrowseScreen> {
                         Navigator.pop(context);
                       },
                     ),
-                  ]
-              )
-      );
-
+                  ]));
     }
   }
 
-
-///These
+  ///These
   deleteDateDoc() async {
     //Check if doc exists
     //Delete the doc
@@ -444,7 +424,6 @@ class _BrowseScreenState extends State<BrowseScreen> {
       usersRef.doc(widget.currentuid).delete();
     }
   }
-
 
   createUser() {
     usersRef
@@ -486,77 +465,99 @@ class _BrowseScreenState extends State<BrowseScreen> {
   //TODO: There is a wierd alignment issue when Tonight is Unavailable
   buildWelcomePage2() {
     return Scaffold(
-      backgroundColor: kBrowsePageBackgroundColor,
+      backgroundColor: Colors.white, //kBrowsePageBackgroundColor,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.only(bottom: 0, left: 25, right: 25),
           child: ListView(
             reverse: true,
             // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              //TODO: vvv   Resize using Media Query    vvv
+              SizedBox(height: 25),
               StyledButton(
                 text: 'Find a Date',
                 color: kButtonColor,
                 onTap: sendFindADate,
               ),
-              SizedBox(height: 40),
+              //TODO: vvv     Resize using Media Query      vvv
+              SizedBox(height: 30),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      GestureDetector(
+                          child: Icon(Icons.info_outline),
+                          onTap: () {
+                            print('hello');
+                          }),
+                    ],
+                  ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding:
-                            EdgeInsets.only(left: 0, top: 30.0, bottom: 10),
-                        child: Text("Are you free tonight?",
+                        padding: EdgeInsets.only(
+                          left: 5,
+                        ),
+                        child: Text(
+                            "Are you free tonight?"
+                            // "👀 "
+                            ,
                             style: TextStyle(
                                 fontSize: 30.0,
                                 color: kDarkest,
-                                fontWeight: FontWeight.w500)),
+                                fontWeight: FontWeight.w600)),
                       ),
+
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 5, top: 5, bottom: 15, right: 5),
+                        child: Text(
+                          'Select the dates and times you are available.',
+                          //'Include an activity if you have something in mind. Fill this out as many times as you\'d like!',
+                          style: TextStyle(
+                              fontSize: 15.0, fontWeight: FontWeight.w300),
+                        ),
+                      ),
+
+                      //TODO: Hide Dates for MVP
                       Padding(
                         padding:
                             const EdgeInsets.only(bottom: 5, left: 5, top: 5),
                         child: Text(
-                          'Select your availability.',
+                          'Date',
                           style: TextStyle(
-                              fontSize: 20.0,
-                              color: kDarkest,
-                              fontWeight: FontWeight.w400),
+                              fontSize: 16, fontWeight: FontWeight.w600),
                         ),
                       ),
-                      Padding(
-                        padding:
-                        const EdgeInsets.only(bottom: 5, left: 5, top: 15),
-                        child: Text('Date'),
-                      ),
-                      // Padding(
-                      //   padding:
-                      //   const EdgeInsets.only(bottom: 5, top: 5),
-                      //   child: buildIconAndText(text:'Date', icon: Icons.calendar_month),
-                      // ),
-                      SizedBox(height: 5),
                       buildDateButtonsRow(),
                       Padding(
                         padding:
-                        const EdgeInsets.only(bottom: 5, left: 5, top: 15),
-                        child: Text('Time'),
+                            const EdgeInsets.only(bottom: 5, left: 5, top: 5),
+                        child: Text(
+                          'Time',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600),
+                        ),
                       ),
                       hide810
-                          ? Center(child: Padding(
-                            padding: const EdgeInsets.all(25.0),
-                            child: Text('Tonight unavailable'),
-                          ))
+                          ? Center(
+                              child: Padding(
+                              padding: const EdgeInsets.all(25.0),
+                              child: Text('Tonight unavailable'),
+                            ))
                           : Wrap(
                               children: [
                                 hide46
                                     ? SizedBox(width: 0)
                                     : DateButton(
-                                        text: '4 - 6 PM',
+                                        text: '5 - 7 PM',
                                         text2: selectedText,
                                         color: toggle46
-                                            ? kButtonColor
+                                            ? kPillButtonSelectedColor
                                             : Colors.white,
                                         fontColor: toggle46
                                             ? kWhiteSquareColor
@@ -570,47 +571,43 @@ class _BrowseScreenState extends State<BrowseScreen> {
                                             //find out what day is selected, then add true to that day/time
                                             print(selectedDay);
                                             if (selectedDay == DateDay.Today) {
-                                              if (usersAvailability[0] == true) {
+                                              if (usersAvailability[0] ==
+                                                  true) {
                                                 usersAvailability[0] = false;
                                                 toggle46 = false;
-
                                               } else {
                                                 usersAvailability[0] = true;
                                                 toggle46 = true;
-
                                               }
                                             } else if (selectedDay ==
                                                 DateDay.Tomorrow) {
-                                              if (usersAvailability[3] == true) {
+                                              if (usersAvailability[3] ==
+                                                  true) {
                                                 usersAvailability[3] = false;
                                                 toggle46 = false;
-
                                               } else {
                                                 usersAvailability[3] = true;
                                                 toggle46 = true;
-
                                               }
                                             } else if (selectedDay ==
                                                 DateDay.ThirdDay) {
-                                              if (usersAvailability[6] == true) {
+                                              if (usersAvailability[6] ==
+                                                  true) {
                                                 usersAvailability[6] = false;
                                                 toggle46 = false;
-
                                               } else {
                                                 usersAvailability[6] = true;
                                                 toggle46 = true;
-
                                               }
                                             } else if (selectedDay ==
                                                 DateDay.FourthDay) {
-                                              if (usersAvailability[9] == true) {
+                                              if (usersAvailability[9] ==
+                                                  true) {
                                                 usersAvailability[9] = false;
                                                 toggle46 = false;
-
                                               } else {
                                                 usersAvailability[9] = true;
                                                 toggle46 = true;
-
                                               }
                                             }
                                           });
@@ -621,7 +618,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
                                         text: '6 - 8 PM',
                                         text2: selectedText,
                                         color: toggle68
-                                            ? kButtonColor
+                                            ? kPillButtonSelectedColor
                                             : Colors.white,
                                         fontColor: toggle68
                                             ? Colors.white
@@ -635,47 +632,43 @@ class _BrowseScreenState extends State<BrowseScreen> {
                                             //find out what day is selected, then add true to that day/time
                                             print(selectedDay);
                                             if (selectedDay == DateDay.Today) {
-                                              if (usersAvailability[1] == true) {
+                                              if (usersAvailability[1] ==
+                                                  true) {
                                                 usersAvailability[1] = false;
                                                 toggle68 = false;
-
                                               } else {
                                                 usersAvailability[1] = true;
                                                 toggle68 = true;
-
                                               }
                                             } else if (selectedDay ==
                                                 DateDay.Tomorrow) {
-                                              if (usersAvailability[4] == true) {
+                                              if (usersAvailability[4] ==
+                                                  true) {
                                                 usersAvailability[4] = false;
                                                 toggle68 = false;
-
                                               } else {
                                                 usersAvailability[4] = true;
                                                 toggle68 = true;
-
                                               }
                                             } else if (selectedDay ==
                                                 DateDay.ThirdDay) {
-                                              if (usersAvailability[7] == true) {
+                                              if (usersAvailability[7] ==
+                                                  true) {
                                                 usersAvailability[7] = false;
                                                 toggle68 = false;
-
                                               } else {
                                                 usersAvailability[7] = true;
                                                 toggle68 = true;
-
                                               }
                                             } else if (selectedDay ==
                                                 DateDay.FourthDay) {
-                                              if (usersAvailability[10] == true) {
+                                              if (usersAvailability[10] ==
+                                                  true) {
                                                 usersAvailability[10] = false;
                                                 toggle68 = false;
-
                                               } else {
                                                 usersAvailability[10] = true;
                                                 toggle68 = true;
-
                                               }
                                             }
                                           });
@@ -684,8 +677,9 @@ class _BrowseScreenState extends State<BrowseScreen> {
                                 DateButton(
                                   text: '8 - 10',
                                   text2: selectedText,
-                                  color:
-                                      toggle810 ? kButtonColor : Colors.white,
+                                  color: toggle810
+                                      ? kPillButtonSelectedColor
+                                      : Colors.white,
                                   fontColor:
                                       toggle810 ? Colors.white : kLightDark,
                                   border: toggle810
@@ -700,44 +694,36 @@ class _BrowseScreenState extends State<BrowseScreen> {
                                         if (usersAvailability[2] == true) {
                                           usersAvailability[2] = false;
                                           toggle810 = false;
-
                                         } else {
                                           usersAvailability[2] = true;
                                           toggle810 = true;
-
                                         }
                                       } else if (selectedDay ==
                                           DateDay.Tomorrow) {
                                         if (usersAvailability[5] == true) {
                                           usersAvailability[5] = false;
                                           toggle810 = false;
-
                                         } else {
                                           usersAvailability[5] = true;
                                           toggle810 = true;
-
                                         }
                                       } else if (selectedDay ==
                                           DateDay.ThirdDay) {
                                         if (usersAvailability[8] == true) {
                                           usersAvailability[8] = false;
                                           toggle810 = false;
-
                                         } else {
                                           usersAvailability[8] = true;
                                           toggle810 = true;
-
                                         }
                                       } else if (selectedDay ==
                                           DateDay.FourthDay) {
                                         if (usersAvailability[11] == true) {
                                           usersAvailability[11] = false;
                                           toggle810 = false;
-
                                         } else {
                                           usersAvailability[11] = true;
                                           toggle810 = true;
-
                                         }
                                       }
                                     });
@@ -745,7 +731,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
                                 ),
                               ],
                             ),
-                      SizedBox(height: 10),
+                      SizedBox(height: 15),
                       // Padding(
                       //   padding: const EdgeInsets.only(
                       //       bottom: 15, left: 5, top: 15),
@@ -770,27 +756,146 @@ class _BrowseScreenState extends State<BrowseScreen> {
                       //   ),
                       // ),
 
-                      Text(
-                        'Include an activity',
-                        style: TextStyle(
-                            fontSize: 15.0, fontWeight: FontWeight.w400),
+                      Padding(
+                        padding:
+                            const EdgeInsets.only(left: 5, top: 10, bottom: 0),
+                        child: Text(
+                          'What do you want to do?',
+                          style: TextStyle(
+                              fontSize: 18.0, fontWeight: FontWeight.w600),
+                        ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.only(left: 5, top: 5),
+                        child: Text(
+                          'Add any details like place or vibe. ',
+                          //'Be specific. Being specific is attractive!',
+                          style: TextStyle(
+                              fontSize: 15.0, fontWeight: FontWeight.w300),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 0, top: 15),
                         child: Wrap(
                           children: [
                             PillButton(
-                                text: 'Dinner',
+                                text: '🎶 Music',
+                                isSelected: addAdventure,
+                                onTap: () {
+                                  setState(() {
+                                    addAdventure == true
+                                        ? addAdventure = false
+                                        : addAdventure = true;
+                                  });
+                                }),
+                            PillButton(
+                                text: '🏈 Sports',
+                                isSelected: addAdventure,
+                                onTap: () {
+                                  setState(() {
+                                    addAdventure == true
+                                        ? addAdventure = false
+                                        : addAdventure = true;
+                                  });
+                                }),
+                            PillButton(
+                                text: '🤼 Activity',
+                                isSelected: addAdventure,
+                                onTap: () {
+                                  setState(() {
+                                    addAdventure == true
+                                        ? addAdventure = false
+                                        : addAdventure = true;
+                                  });
+                                }),
+                            PillButton(
+                                text: '☕️ Coffee',
+                                isSelected: addAdventure,
+                                onTap: () {
+                                  setState(() {
+                                    addAdventure == true
+                                        ? addAdventure = false
+                                        : addAdventure = true;
+                                  });
+                                }),
+
+                            ///////////////////////////////////////////////////////
+                            ActivityPillButton(
+                                infoSaved: isDinnerSaved,
+                                text: '🍱 Dinner',
                                 isSelected: addDinner,
                                 onTap: () {
                                   setState(() {
                                     addDinner == true
                                         ? addDinner = false
                                         : addDinner = true;
+
+                                    //TODO: Add--If an activity pill button is selected, close all the other pills that are open by making 'addDinner' false
+
+                                    addDinnerActivity == true
+                                        ? addDinnerActivity = false
+                                        : addDinnerActivity = true;
                                   });
                                 }),
+
+                            addDinnerActivity
+                                ? Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 5.0, right: 5.0, bottom: 5),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .68,
+                                          child: TextField(
+                                            controller:
+                                                dinnerActivityController,
+                                            decoration: InputDecoration(
+                                              hintText:
+                                                  '\"There\'s a new sushi happy hour spot...👀\"',
+                                              hintStyle: TextStyle(
+                                                fontStyle: FontStyle.italic,
+                                                color: kLightDark,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        PillButton(
+                                          isSelected: true,
+                                          text: 'Done',
+                                          onTap: () {
+                                            setState(() {
+                                              //Close the textfield
+                                              print(addDinnerActivity);
+                                              addDinnerActivity == true
+                                                  ? addDinnerActivity = false
+                                                  : addDinnerActivity = true;
+
+                                              //If the textfield is populated, save that info somewhere, if not, isDinnerSaved = false
+
+                                              if (dinnerActivityController.text
+                                                  .trim()
+                                                  .isNotEmpty) {
+                                                isDinnerSaved = true;
+                                              } else {
+                                                isDinnerSaved = false;
+                                                addDinner = false;
+                                              }
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                : SizedBox(height: 0),
+
+                            //////////////////////////////////////
                             PillButton(
-                                text: 'Drinks',
+                                text: '🍸 Drinks',
                                 isSelected: addDrinks,
                                 onTap: () {
                                   setState(() {
@@ -799,18 +904,8 @@ class _BrowseScreenState extends State<BrowseScreen> {
                                         : addDrinks = true;
                                   });
                                 }),
-                            // PillButton(
-                            //     text: 'Adventure',
-                            //     isSelected: addAdventure,
-                            //     onTap: () {
-                            //       setState(() {
-                            //         addAdventure == true
-                            //             ? addAdventure = false
-                            //             : addAdventure = true;
-                            //       });
-                            //     }),
                             PillButton(
-                                text: 'What do you want to do?',
+                                text: 'Something else',
                                 isSelected: addActivity,
                                 onTap: () {
                                   setState(() {
@@ -831,7 +926,8 @@ class _BrowseScreenState extends State<BrowseScreen> {
                               child: TextField(
                                 controller: activityController,
                                 decoration: InputDecoration(
-                                  hintText: '\"Comedy show\"',
+                                  hintText:
+                                      '\"There\'s a new sushi happy hour spot...👀\"',
                                   hintStyle: TextStyle(
                                     fontStyle: FontStyle.italic,
                                     color: kLightDark,
@@ -851,6 +947,689 @@ class _BrowseScreenState extends State<BrowseScreen> {
     );
   }
 
+  ///This screen is where users input their availability and interested activities to find a date
+  //TODO: There is a wierd alignment issue when Tonight is Unavailable
+  buildWelcomePage() {
+    return Scaffold(
+      backgroundColor: Colors.white, //kBrowsePageBackgroundColor,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 0, left: 25, right: 25),
+          child: ListView(
+            reverse: true,
+            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              //TODO: vvv   Resize using Media Query    vvv
+              SizedBox(height: 25),
+              StyledButton(
+                text: 'Find a Date',
+                color: kButtonColor,
+                onTap: sendFindADate,
+              ),
+              //TODO: vvv     Resize using Media Query      vvv
+              SizedBox(height: 30),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      GestureDetector(
+                          child: Icon(Icons.info_outline),
+                          onTap: () {
+                            print('hello');
+                          }),
+                    ],
+                  ),
+                  Column(
+
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(
+                          left: 15,
+                        ),
+                        child: Column(
+
+                          children: [
+                            Text(
+                             // 'Match with people who are available when you are '
+                              'When are you free? '
+                                  "👀 "
+                                // "Are you free tonight?"
+                                ,
+
+                                style: TextStyle(
+                                    fontSize: 25.0,
+                                    color: kDarkest,
+                                    fontWeight: FontWeight.w600),
+                            ),
+                            // Text(
+                            //     // "Are you free tonight?"
+                            //         "👀 "
+                            //     ,
+                            //     style: TextStyle(
+                            //         fontSize: 25.0,
+                            //         color: kDarkest,
+                            //
+                            //         fontWeight: FontWeight.w600)),
+
+                          ],
+                        ),
+                      ),
+
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 15, top: 5, bottom: 15, right: 5),
+                        child: Text(
+                          'Check the times you are free and want to go out on a date.',
+                          //'Include an activity if you have something in mind. Fill this out as many times as you\'d like!',
+                          style: TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.w400,
+
+                          ),
+
+                        ),
+                      ),
+                     buildTimeMatrix(),
+                      Padding(
+                        padding:
+                            const EdgeInsets.only(left: 25, top: 10, bottom: 0),
+                        child: Text(
+                          'What do you want to do?',
+                          style: TextStyle(
+                              fontSize: 18.0, fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 25, top: 5),
+                        child: Text(
+                          'Add any details like place or vibe. ',
+                          //'Be specific. Being specific is attractive!',
+                          style: TextStyle(
+                              fontSize: 15.0, fontWeight: FontWeight.w400),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20, top: 5),
+                        child: Wrap(
+                          children: [
+                            PillButton(
+                                text: '🎶 Music',
+                                isSelected: addAdventure,
+                                onTap: () {
+                                  setState(() {
+                                    addAdventure == true
+                                        ? addAdventure = false
+                                        : addAdventure = true;
+                                  });
+                                }),
+                            PillButton(
+                                text: '🏈 Sports',
+                                isSelected: addAdventure,
+                                onTap: () {
+                                  setState(() {
+                                    addAdventure == true
+                                        ? addAdventure = false
+                                        : addAdventure = true;
+                                  });
+                                }),
+                            PillButton(
+                                text: '🤼 Activity',
+                                isSelected: addAdventure,
+                                onTap: () {
+                                  setState(() {
+                                    addAdventure == true
+                                        ? addAdventure = false
+                                        : addAdventure = true;
+                                  });
+                                }),
+                            PillButton(
+                                text: '☕️ Coffee',
+                                isSelected: addAdventure,
+                                onTap: () {
+                                  setState(() {
+                                    addAdventure == true
+                                        ? addAdventure = false
+                                        : addAdventure = true;
+                                  });
+                                }),
+
+                            /////////////////////////////////////////////////////
+                            ActivityPillButton(
+                                infoSaved: isDinnerSaved,
+                                text: '🍱 Dinner',
+                                isSelected: addDinner,
+                                onTap: () {
+                                  setState(() {
+                                    addDinner == true
+                                        ? addDinner = false
+                                        : addDinner = true;
+
+                                    //TODO: Add--If an activity pill button is selected, close all the other pills that are open by making 'addDinner' false
+
+                                    addDinnerActivity == true
+                                        ? addDinnerActivity = false
+                                        : addDinnerActivity = true;
+                                  });
+                                }),
+
+                            addDinnerActivity
+                                ? Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 5.0, right: 5.0, bottom: 5),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .68,
+                                          child: TextField(
+                                            controller:
+                                                dinnerActivityController,
+                                            decoration: InputDecoration(
+                                              hintText:
+                                                  '\"There\'s a new sushi happy hour spot...👀\"',
+                                              hintStyle: TextStyle(
+                                                fontStyle: FontStyle.italic,
+                                                color: kLightDark,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        PillButton(
+                                          isSelected: true,
+                                          text: 'Done',
+                                          onTap: () {
+                                            setState(() {
+                                              //Close the textfield
+                                              print(addDinnerActivity);
+                                              addDinnerActivity == true
+                                                  ? addDinnerActivity = false
+                                                  : addDinnerActivity = true;
+
+                                              //If the textfield is populated, save that info somewhere, if not, isDinnerSaved = false
+
+                                              if (dinnerActivityController.text
+                                                  .trim()
+                                                  .isNotEmpty) {
+                                                isDinnerSaved = true;
+                                              } else {
+                                                isDinnerSaved = false;
+                                                addDinner = false;
+                                              }
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                : SizedBox(height: 0),
+
+                            ////////////////////////////////////
+                            PillButton(
+                                text: '🍸 Drinks',
+                                isSelected: addDrinks,
+                                onTap: () {
+                                  setState(() {
+                                    addDrinks == true
+                                        ? addDrinks = false
+                                        : addDrinks = true;
+                                  });
+                                }),
+                            PillButton(
+                                text: 'Add details',
+                                isSelected: addActivity,
+                                onTap: () {
+                                  setState(() {
+                                    addActivity == true
+                                        ? addActivity = false
+                                        : addActivity = true;
+                                  });
+                                }),
+                            PillButton(
+                                text: '+',
+                                isSelected: addActivity,
+                                onTap: () {
+                                  setState(() {
+                                    addActivity == true
+                                        ? addActivity = false
+                                        : addActivity = true;
+                                  });
+                                }),
+                          ],
+                        ),
+                      ),
+
+                      //TODO: Find out why column shifts to the right when addMessage is clicked
+                      addActivity
+                          ? Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 10.0, right: 10.0, bottom: 0),
+                              child: TextField(
+                                controller: activityController,
+                                decoration: InputDecoration(
+                                  hintText:
+                                      '\"There\'s a new sushi happy hour spot...👀\"',
+                                  hintStyle: TextStyle(
+                                    fontStyle: FontStyle.italic,
+                                    color: kLightDark,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : SizedBox(height: 0),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+
+  buildTimeMatrix() {
+    Tonight _tonight = Tonight.early;
+
+    double h = 50;
+    double w = 90;
+
+    Tonight tonight = Tonight.early;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20.0),
+      child: Center(
+        child: Container(
+          width: MediaQuery.of(context).size.width * .8,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    height: h,
+                    width: w
+                  ),
+                  Container(
+                    height: h,
+                    width: w,
+                    child: Text(
+                        'Earlier (Around 5-7 PM)',
+                      textAlign: TextAlign.end,
+                    )
+                  ),
+                  Container(
+                    height: h,
+                    width: w,
+                    child: Text(
+                        'Later  (Around 7-9 PM)',
+                      textAlign: TextAlign.end,
+                    )
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Container(
+                      height: h,
+                      width: w,
+                    child: Center(
+                      child: Text(
+                        'Monday',
+                        style: kDayOfTheWeekText,
+                      ),
+                    )
+                  ),
+                  Container(
+                    height: h,
+                    width: w,
+                    child:
+                      MatrixPillButton(
+                        isSelected: usersAvailability[0],
+                        onTap: (){
+                          print(usersAvailability[0]);
+                          setState(() {
+                            if (usersAvailability[0] == true) {
+                              usersAvailability[0] = false;
+                            } else {
+                              usersAvailability[0] = true;
+                            }
+                          });
+                        },
+                      ),
+                    // Checkbox(
+                    //   value: usersAvailability[0],
+                    //   onChanged: (value){
+                    //     print(value);
+                    //     setState(() {
+                    //       usersAvailability[0] = value;
+                    //     });
+                    //   },
+                    // )
+                  ),
+                  Container(
+                      height: h,
+                      width: w,
+                    child: MatrixPillButton(
+                      isSelected: usersAvailability[1],
+                      onTap: (){
+                        print(usersAvailability[1]);
+                        setState(() {
+                          if (usersAvailability[1] == true) {
+                            usersAvailability[1] = false;
+                          } else {
+                            usersAvailability[1] = true;
+                          }
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              Divider(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Container(
+                      height: h,
+                      width: w,
+                      child: Center(
+                        child: Text(
+                          'Monday',
+                          style: kDayOfTheWeekText,
+                        ),
+                      )
+                  ),
+                  Container(
+                      height: h,
+                      width: w,
+                      child:
+                      MatrixPillButton(
+                        isSelected: usersAvailability[2],
+                        onTap: (){
+                          print(usersAvailability[2]);
+                          setState(() {
+                            if (usersAvailability[2] == true) {
+                              usersAvailability[2] = false;
+                            } else {
+                              usersAvailability[2] = true;
+                            }
+                          });
+                        },
+                      ),
+                  ),
+                  Container(
+                      height: h,
+                      width: w,
+                      child: MatrixPillButton(
+                        isSelected: usersAvailability[3],
+                        onTap: (){
+                          print(usersAvailability[3]);
+                          setState(() {
+                            if (usersAvailability[3] == true) {
+                              usersAvailability[3] = false;
+                            } else {
+                              usersAvailability[3] = true;
+                            }
+                          });
+                        },
+                      ),
+                  ),
+                ],
+              ),
+              Divider(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Container(
+                      height: h,
+                      width: w,
+                      child: Center(
+                        child: Text(
+                          'Monday',
+                          style: kDayOfTheWeekText,
+                        ),
+                      )
+                  ),
+                  Container(
+                    height: h,
+                    width: w,
+                    child:
+                    MatrixPillButton(
+                      isSelected: usersAvailability[2],
+                      onTap: (){
+                        print(usersAvailability[2]);
+                        setState(() {
+                          if (usersAvailability[2] == true) {
+                            usersAvailability[2] = false;
+                          } else {
+                            usersAvailability[2] = true;
+                          }
+                        });
+                      },
+                    ),
+                  ),
+                  Container(
+                    height: h,
+                    width: w,
+                    child: MatrixPillButton(
+                      isSelected: usersAvailability[3],
+                      onTap: (){
+                        print(usersAvailability[3]);
+                        setState(() {
+                          if (usersAvailability[3] == true) {
+                            usersAvailability[3] = false;
+                          } else {
+                            usersAvailability[3] = true;
+                          }
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              Divider(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Container(
+                      height: h,
+                      width: w,
+                      child: Center(
+                        child: Text(
+                          'Monday',
+                          style: kDayOfTheWeekText,
+                        ),
+                      )
+                  ),
+                  Container(
+                    height: h,
+                    width: w,
+                    child:
+                    MatrixPillButton(
+                      isSelected: usersAvailability[2],
+                      onTap: (){
+                        print(usersAvailability[2]);
+                        setState(() {
+                          if (usersAvailability[2] == true) {
+                            usersAvailability[2] = false;
+                          } else {
+                            usersAvailability[2] = true;
+                          }
+                        });
+                      },
+                    ),
+                  ),
+                  Container(
+                    height: h,
+                    width: w,
+                    child: MatrixPillButton(
+                      isSelected: usersAvailability[3],
+                      onTap: (){
+                        print(usersAvailability[3]);
+                        setState(() {
+                          if (usersAvailability[3] == true) {
+                            usersAvailability[3] = false;
+                          } else {
+                            usersAvailability[3] = true;
+                          }
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              Divider(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Container(
+                      height: h,
+                      width: w,
+                      child: Center(
+                        child: Text(
+                          'Monday',
+                          style: kDayOfTheWeekText,
+                        ),
+                      )
+                  ),
+                  Container(
+                    height: h,
+                    width: w,
+                    child:
+                    MatrixPillButton(
+                      isSelected: usersAvailability[2],
+                      onTap: (){
+                        print(usersAvailability[2]);
+                        setState(() {
+                          if (usersAvailability[2] == true) {
+                            usersAvailability[2] = false;
+                          } else {
+                            usersAvailability[2] = true;
+                          }
+                        });
+                      },
+                    ),
+                  ),
+                  Container(
+                    height: h,
+                    width: w,
+                    child: MatrixPillButton(
+                      isSelected: usersAvailability[3],
+                      onTap: (){
+                        print(usersAvailability[3]);
+                        setState(() {
+                          if (usersAvailability[3] == true) {
+                            usersAvailability[3] = false;
+                          } else {
+                            usersAvailability[3] = true;
+                          }
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+
+
+
+
+
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+
+  // buildTimeMatrix() {
+  //   Tonight tonight = Tonight.early;
+  //   return Column(
+  //     children: [
+  //       //Row #1
+  //       Row(
+  //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  //         children: [
+  //           //Time Column
+  //           // Column(
+  //           //   children: [
+  //           //     Text(''), //Ghost
+  //           //     Text('5-7 PM'),
+  //           //     Text('7-9 PM')
+  //           //   ],
+  //           // ),
+  //           //Mon Column
+  //           Column(
+  //             crossAxisAlignment: CrossAxisAlignment.end,
+  //             children: [
+  //               Text('Tomorrow'),
+  //               Row(
+  //                 children: [
+  //                   Text('5-7 PM'),
+  //                   SizedBox(width: 30),
+  //                   Radio(),
+  //                 ],
+  //               ),
+  //               Row(
+  //                 children: [
+  //                   Text('7-9 PM'),
+  //                   SizedBox(width: 30),
+  //                   Radio(),
+  //                 ],
+  //               ),
+  //             ],
+  //           ),
+  //           //Tues Column
+  //           Column(
+  //             children: [
+  //               Text(
+  //                 DateFormat.EEEE().format(now.add(Duration(days: 2))),
+  //               ),
+  //               Radio(),
+  //               Radio(),
+  //             ],
+  //           ),
+  //           //Wed Column
+  //           Column(
+  //             children: [
+  //               Text(
+  //                 DateFormat.EEEE().format(now.add(Duration(days: 3))),
+  //               ),
+  //               Radio(),
+  //               Radio(),
+  //             ],
+  //           ),
+  //           //Thurs Column
+  //           Column(
+  //             children: [
+  //               Text(
+  //                 DateFormat.EEEE().format(now.add(Duration(days: 4))),
+  //               ),
+  //               Radio(),
+  //               Radio(),
+  //             ],
+  //           ),
+  //         ],
+  //       ),
+  //
+  //     ],
+  //   );
+  // }
+
   buildDateButtonsRow() {
     return Wrap(
       children: [
@@ -858,35 +1637,32 @@ class _BrowseScreenState extends State<BrowseScreen> {
             text: 'Tonight',
             text2: tonightText,
             color: selectedDay == DateDay.Today
-                ? Colors.black
+                ? kPillButtonSelectedColor
                 : isAvailableTonight
-                    ? Colors.white
-                    : Colors.white,
+                    ? kPillButtonUnselectedColor
+                    : kPillButtonUnselectedColor,
             fontColor: selectedDay == DateDay.Today
                 ? Colors.white
                 : isAvailableTonight
                     ? Colors.green
-                    : kLightDark,
+                    : kButtonColor,
             border: selectedDay == DateDay.Today
                 ? Border.all(width: 1, color: Colors.black)
                 : isAvailableTonight
                     ? Border.all(width: 1, color: Colors.green)
-                    : Border.all(width: 1, color: kLightDark),
+                    : Border.all(width: 0, color: kPillButtonUnselectedColor),
             onTap: () {
-
               setState(() {
-
                 //Hide past times
                 print(hide46);
-                if (availableTimeSlots[0] == null){
+                if (availableTimeSlots[0] == null) {
                   hide46 = true;
                   print(hide46);
-
                 }
-                if (availableTimeSlots[1] == null){
+                if (availableTimeSlots[1] == null) {
                   hide68 = true;
                 }
-                if (availableTimeSlots[2] == null){
+                if (availableTimeSlots[2] == null) {
                   hide810 = true;
                 }
 
@@ -940,39 +1716,40 @@ class _BrowseScreenState extends State<BrowseScreen> {
                 } else {
                   isAvailableFourthDay = true;
                 }
-
               });
-
-
             }),
         DateButton(
           text: 'Tomorrow',
           text2: tomorrowText,
           color: selectedDay == DateDay.Tomorrow
-              ? Colors.black
+              ? kPillButtonSelectedColor
               : isAvailableTomorrow
-                  ? Colors.white
-                  : Colors.white,
+                  ? kPillButtonUnselectedColor
+                  : kPillButtonUnselectedColor,
+          // ? Colors.white
+          // : Colors.white,
           fontColor: selectedDay == DateDay.Tomorrow
               ? Colors.white
               : isAvailableTomorrow
                   ? Colors.green
-                  : kLightDark,
+                  : kButtonColor,
+          //: kLightDark,
           border: selectedDay == DateDay.Tomorrow
               ? Border.all(width: 1, color: Colors.black)
               : isAvailableTomorrow
                   ? Border.all(width: 1, color: Colors.green)
-                  : Border.all(width: 1, color: kLightDark),
+                  : Border.all(width: 0, color: kPillButtonUnselectedColor),
+          // : Border.all(width: 1, color: kLightDark),
           onTap: () {
             setState(() {
               //Hide past times
-              if (hide46 == true){
+              if (hide46 == true) {
                 hide46 = false;
               }
-              if (hide68 == true){
+              if (hide68 == true) {
                 hide68 = false;
               }
-              if (hide810 == true){
+              if (hide810 == true) {
                 hide810 = false;
               }
 
@@ -1026,7 +1803,6 @@ class _BrowseScreenState extends State<BrowseScreen> {
               } else {
                 isAvailableFourthDay = true;
               }
-
             });
           },
         ),
@@ -1034,30 +1810,31 @@ class _BrowseScreenState extends State<BrowseScreen> {
           text: DateFormat.EEEE().format(now.add(Duration(days: 2))),
           text2: '${DateFormat.Md().format(now.add(Duration(days: 2)))}',
           color: selectedDay == DateDay.ThirdDay
-              ? Colors.black
+              ? kPillButtonSelectedColor
               : isAvailableThirdDay
-                  ? Colors.white
-                  : Colors.white,
+                  ? kPillButtonUnselectedColor
+                  : kPillButtonUnselectedColor,
           fontColor: selectedDay == DateDay.ThirdDay
               ? Colors.white
               : isAvailableThirdDay
                   ? Colors.green
-                  : kLightDark,
+                  : kButtonColor,
           border: selectedDay == DateDay.ThirdDay
               ? Border.all(width: 1, color: Colors.black)
               : isAvailableThirdDay
                   ? Border.all(width: 1, color: Colors.green)
-                  : Border.all(width: 1, color: kLightDark),
+                  : Border.all(width: 0, color: kPillButtonUnselectedColor),
+          // : Border.all(width: 1, color: kLightDark),
           onTap: () {
             setState(() {
               //Hide past times
-              if (hide46 == true){
+              if (hide46 == true) {
                 hide46 = false;
               }
-              if (hide68 == true){
+              if (hide68 == true) {
                 hide68 = false;
               }
-              if (hide810 == true){
+              if (hide810 == true) {
                 hide810 = false;
               }
 
@@ -1111,94 +1888,93 @@ class _BrowseScreenState extends State<BrowseScreen> {
               } else {
                 isAvailableFourthDay = true;
               }
-
             });
           },
         ),
-        DateButton(
-            text: DateFormat.EEEE().format(now.add(Duration(days: 3))),
-            text2: '${DateFormat.Md().format(now.add(Duration(days: 3)))}',
-            color: selectedDay == DateDay.FourthDay
-                ? Colors.black
-                : isAvailableFourthDay
-                    ? Colors.white
-                    : Colors.white,
-            fontColor: selectedDay == DateDay.FourthDay
-                ? Colors.white
-                : isAvailableFourthDay
-                    ? Colors.green
-                    : kLightDark,
-            border: selectedDay == DateDay.FourthDay
-                ? Border.all(width: 1, color: Colors.black)
-                : isAvailableFourthDay
-                    ? Border.all(width: 1, color: Colors.green)
-                    : Border.all(width: 1, color: kLightDark),
-            onTap: () {
-              setState(() {
-                //Hide past times
-                if (hide46 == true){
-                  hide46 = false;
-                }
-                if (hide68 == true){
-                  hide68 = false;
-                }
-                if (hide810 == true){
-                  hide810 = false;
-                }
-
-                //Toggle selectedDay
-                if (selectedDay == DateDay.FourthDay) {
-                  selectedDay = DateDay.None;
-                  selectedText = '';
-                  toggle46 = false;
-                  toggle68 = false;
-                  toggle810 = false;
-                } else {
-                  selectedDay = DateDay.FourthDay;
-                  selectedText = fourthDayText;
-                  toggle46 = usersAvailability[9];
-                  toggle68 = usersAvailability[10];
-                  toggle810 = usersAvailability[11];
-                }
-
-                //Toggle isAvailableTonight
-                if (usersAvailability[0] == false &&
-                    usersAvailability[1] == false &&
-                    usersAvailability[2] == false) {
-                  isAvailableTonight = false;
-                } else {
-                  isAvailableTonight = true;
-                }
-
-                //Toggle isAvailableTomorrow
-                if (usersAvailability[3] == false &&
-                    usersAvailability[4] == false &&
-                    usersAvailability[5] == false) {
-                  isAvailableTomorrow = false;
-                } else {
-                  isAvailableTomorrow = true;
-                }
-
-                //Toggle isAvailableThirdDay
-                if (usersAvailability[6] == false &&
-                    usersAvailability[7] == false &&
-                    usersAvailability[8] == false) {
-                  isAvailableThirdDay = false;
-                } else {
-                  isAvailableThirdDay = true;
-                }
-
-                //Toggle isAvailableFourthDay
-                if (usersAvailability[9] == false &&
-                    usersAvailability[10] == false &&
-                    usersAvailability[11] == false) {
-                  isAvailableFourthDay = false;
-                } else {
-                  isAvailableFourthDay = true;
-                }
-
-              });
-            }),
+        // DateButton(
+        //     text: DateFormat.EEEE().format(now.add(Duration(days: 3))),
+        //     text2: '${DateFormat.Md().format(now.add(Duration(days: 3)))}',
+        //     color: selectedDay == DateDay.FourthDay
+        //         ? kPillButtonSelectedColor
+        //         : isAvailableFourthDay
+        //             ? Colors.white
+        //             : Colors.white,
+        //     fontColor: selectedDay == DateDay.FourthDay
+        //         ? Colors.white
+        //         : isAvailableFourthDay
+        //             ? Colors.green
+        //             : kLightDark,
+        //     border: selectedDay == DateDay.FourthDay
+        //         ? Border.all(width: 1, color: Colors.black)
+        //         : isAvailableFourthDay
+        //             ? Border.all(width: 1, color: Colors.green)
+        //             : Border.all(width: 1, color: kLightDark),
+        //     onTap: () {
+        //       setState(() {
+        //         //Hide past times
+        //         if (hide46 == true){
+        //           hide46 = false;
+        //         }
+        //         if (hide68 == true){
+        //           hide68 = false;
+        //         }
+        //         if (hide810 == true){
+        //           hide810 = false;
+        //         }
+        //
+        //         //Toggle selectedDay
+        //         if (selectedDay == DateDay.FourthDay) {
+        //           selectedDay = DateDay.None;
+        //           selectedText = '';
+        //           toggle46 = false;
+        //           toggle68 = false;
+        //           toggle810 = false;
+        //         } else {
+        //           selectedDay = DateDay.FourthDay;
+        //           selectedText = fourthDayText;
+        //           toggle46 = usersAvailability[9];
+        //           toggle68 = usersAvailability[10];
+        //           toggle810 = usersAvailability[11];
+        //         }
+        //
+        //         //Toggle isAvailableTonight
+        //         if (usersAvailability[0] == false &&
+        //             usersAvailability[1] == false &&
+        //             usersAvailability[2] == false) {
+        //           isAvailableTonight = false;
+        //         } else {
+        //           isAvailableTonight = true;
+        //         }
+        //
+        //         //Toggle isAvailableTomorrow
+        //         if (usersAvailability[3] == false &&
+        //             usersAvailability[4] == false &&
+        //             usersAvailability[5] == false) {
+        //           isAvailableTomorrow = false;
+        //         } else {
+        //           isAvailableTomorrow = true;
+        //         }
+        //
+        //         //Toggle isAvailableThirdDay
+        //         if (usersAvailability[6] == false &&
+        //             usersAvailability[7] == false &&
+        //             usersAvailability[8] == false) {
+        //           isAvailableThirdDay = false;
+        //         } else {
+        //           isAvailableThirdDay = true;
+        //         }
+        //
+        //         //Toggle isAvailableFourthDay
+        //         if (usersAvailability[9] == false &&
+        //             usersAvailability[10] == false &&
+        //             usersAvailability[11] == false) {
+        //           isAvailableFourthDay = false;
+        //         } else {
+        //           isAvailableFourthDay = true;
+        //         }
+        //
+        //       });
+        //     }),
       ],
     );
   }
@@ -1217,13 +1993,12 @@ class _BrowseScreenState extends State<BrowseScreen> {
             TextButton(
               child: Text('Edit Availability'),
               onPressed: () {
-
                 populateInputScreen(currentDate);
 
-                setState(() {
-                  dateExists = false;
-                },
-
+                setState(
+                  () {
+                    dateExists = false;
+                  },
                 );
               },
             ),
@@ -1245,7 +2020,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
           // .where('gender', isEqualTo: currentUser.isInterestedIn)
           // .where('uid', isNotEqualTo: currentUser.uid)
           // .where('availability', arrayContainsAny: userAvailableDates)
-      // .orderBy('time', descending: false)
+          // .orderBy('time', descending: false)
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
@@ -1272,7 +2047,6 @@ class _BrowseScreenState extends State<BrowseScreen> {
           print('will this print true...?');
           // print(userDateDoc.rejects.entri);
 
-
           print('the userDateDoc.uid is ${userDateDoc.uid}');
           print(userDateDoc.availability);
           print('userDateDoc.availability!');
@@ -1282,8 +2056,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
             viewPreferenceInfo: false,
             viewingAsBrowseMode: true,
             dateDoc: userDateDoc,
-            backFunction: (){
-
+            backFunction: () {
               populateInputScreen(currentDate);
 
               setState(() {
@@ -1342,6 +2115,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
                     bottom: 20,
                     right: 20,
                     child: FloatingActionButton(
+                      backgroundColor: kPillButtonUnselectedColor,
                       heroTag: 'like',
                       onPressed: () async {
                         // print('presssed!!');
@@ -1448,7 +2222,9 @@ class _BrowseScreenState extends State<BrowseScreen> {
                         // }
                       },
                       child: Icon(
-                        Icons.favorite,
+                        Icons.arrow_forward_ios_rounded,
+                        color: kPillButtonSelectedColor,
+                        // Icons.favorite,
                         size: 25,
                       ),
                     ),
@@ -1457,7 +2233,8 @@ class _BrowseScreenState extends State<BrowseScreen> {
                     bottom: 20,
                     left: 20,
                     child: FloatingActionButton(
-                      backgroundColor: Colors.red,
+                      backgroundColor: kPillButtonUnselectedColor,
+                      //Colors.red,
                       heroTag: 'close',
                       onPressed: () {
                         print('presssed!!');
@@ -1472,7 +2249,9 @@ class _BrowseScreenState extends State<BrowseScreen> {
                         }
                       },
                       child: Icon(
-                        Icons.close,
+                        Icons.arrow_back_ios_new_sharp,
+                        color: kPillButtonSelectedColor,
+                        //Icons.close,
                         size: 25,
                       ),
                     ),
@@ -1500,15 +2279,19 @@ class _BrowseScreenState extends State<BrowseScreen> {
         ? buildSpinnerPage()
         : dateExists
             ? buildMatchesProfiles()
-            : buildWelcomePage2();
+            : buildWelcomePage();
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
-    startTimeController.dispose();
-    endTimeController.dispose();
+
+    activityController.dispose();
+    dinnerActivityController.dispose();
     super.dispose();
   }
-
 }
+
+
+
+

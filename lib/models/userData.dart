@@ -25,7 +25,7 @@ class UserData {
   String prompt3;
   String answer1;
   String answer2;
-  String answer3;
+  Map activities;
   String occupation;
   String education;
   Timestamp timestamp;
@@ -52,7 +52,7 @@ class UserData {
     this.prompt3,
     this.answer1,
     this.answer2,
-    this.answer3,
+    this.activities,
     this.occupation,
     this.education,
     this.timestamp,
@@ -81,7 +81,7 @@ class UserData {
       prompt3: doc['prompt3'],
       answer1: doc['answer1'],
       answer2: doc['answer2'],
-      answer3: doc['answer3'],
+      activities: doc['activities'],
       occupation: doc['occupation'],
       education: doc['education'],
       timestamp: doc['timestamp'],
@@ -104,6 +104,7 @@ class UserData {
   }
 
   setUserDataInFirestore({
+    //Change or add variable: Needs to be added here
     String firstName,
     String lastName,
     Timestamp birthDate,
@@ -121,7 +122,7 @@ class UserData {
     String prompt3,
     String answer1,
     String answer2,
-    String answer3,
+    Map activities,
     String occupation,
     String education,
     String location,
@@ -148,7 +149,7 @@ class UserData {
       'prompt3':prompt3,
       'answer1': answer1,
       'answer2': answer2,
-      'answer3': answer3,
+      'activities': activities,
       'occupation': occupation,
       'education': education,
       'timestamp': Timestamp.fromDate(DateTime.now()),

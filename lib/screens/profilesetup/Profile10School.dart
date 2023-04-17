@@ -6,12 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:kaliallendatingapp/constants.dart';
 import 'package:kaliallendatingapp/models/userData.dart';
 import 'package:kaliallendatingapp/screens/Home.dart';
+import 'package:kaliallendatingapp/screens/profilesetup/Profile11Activities.dart';
 import 'package:kaliallendatingapp/widgets/StyledButton.dart';
+import 'package:page_transition/page_transition.dart';
 
 final DateTime timestamp = DateTime.now();
 
 class ProfileSchool extends StatelessWidget {
- UserData _userData;
+ final UserData _userData;
 
   ProfileSchool({@required UserData userData})
       : assert(userData !=null),
@@ -52,54 +54,34 @@ class ProfileSchool extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: TextField(
+                textCapitalization: TextCapitalization.words,
                 decoration: InputDecoration(
                   labelText: 'School and/or Field of Study',
                 ),
                 onChanged: (value){
                   school = value;
+
                 },
               ),
             ),
-            SizedBox(height: 20.0),
             Padding(
               padding: const EdgeInsets.only(bottom: 30.0, right: 25.0, left: 25.0),
               child: StyledButton(
                 text: 'Continue',
                 color: kButtonColor,
-                onTap: () async {
+                onTap: (){
                   if (school != null){
                     _userData.education = school;
                   }
-
-                  //Save UserData data to Firestore under the logged in username
-                  _userData.setUserDataInFirestore(
-                    firstName: _userData.firstName,
-                    lastName: _userData.lastName,
-                    birthDate: _userData.birthDate,
-                    gender: _userData.gender,
-                     isInterestedIn: _userData.isInterestedIn,
-                    height: _userData.height,
-                    picture1: _userData.picture1,
-                    picture2: _userData.picture2,
-                    picture3: _userData.picture3,
-                    picture4: _userData.picture4,
-                    picture5: _userData.picture5,
-                    prompt1: _userData.prompt1,
-                    answer1: _userData.answer1,
-                    occupation: _userData.occupation,
-                    education: _userData.education,
-                  );
-                  final User user = FirebaseAuth.instance.currentUser;
-                  DocumentSnapshot doc = await usersRef.doc(user.uid).get();
-                  _userData = UserData.fromDocument(doc);
-                  print('if uid is not null _userData is successfully saved from firestore..._userData uid is: ${_userData.uid}');
-                  if ( doc.exists){
-                    //Go to home.dart
-                    Navigator.push(context, MaterialPageRoute(
-                    builder: (context) => Home()));
-                  } else {
-                    print('Doc wasnt added to firestore');
-                  }
+                  print(school);
+                  print(_userData.education);
+                  Navigator.push(
+                      context,
+                      PageTransition(
+                          type: PageTransitionType.rightToLeft,
+                          child: ProfileActivities(
+                            userData: _userData,
+                          )));
                   }
     ),
             ),

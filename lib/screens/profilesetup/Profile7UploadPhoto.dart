@@ -165,21 +165,24 @@ class _ProfileUploadPhotoState extends State<ProfileUploadPhoto> {
                   child: Container(
                     decoration: BoxDecoration(
                       color: Color(0xffe6e7ea),
-                      borderRadius: BorderRadius.circular(20.0),
+                      borderRadius: BorderRadius.circular(10.0),
                      // border: Border.all(
                      //   width: 1.0,
                      //   color: Colors.black,
                      // )
                     ),
-                    height: MediaQuery.of(context).size.width * .7,
-                    width: MediaQuery.of(context).size.width * .7,
+                    height: MediaQuery.of(context).size.width * .8,
+                    width: MediaQuery.of(context).size.width * .8,
                     child: _image == null ? Icon(
                         Icons.add_a_photo_outlined,
                   //  color: Colors.grey,
                     )
-                    : Image.file(_image,
-                    fit: BoxFit.cover,
-                      ),
+                    : ClipRRect(
+                      borderRadius: BorderRadius.circular(10.0),
+                      child: Image.file(_image,
+                      fit: BoxFit.cover,
+                        ),
+                    ),
                   ),
                 ),
               ),
@@ -194,7 +197,7 @@ class _ProfileUploadPhotoState extends State<ProfileUploadPhoto> {
                      await handleSubmit();
                       Navigator.push(context, PageTransition(
                           type: PageTransitionType.rightToLeft,
-                          child: ProfileSchool(
+                          child: ProfileAddMorePhotos(
                             userData: widget._userData,
                           )));
                     } else {

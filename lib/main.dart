@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:kaliallendatingapp/screens/Home.dart';
+import 'package:kaliallendatingapp/screens/SplashScreen.dart';
 import 'constants.dart';
 
 

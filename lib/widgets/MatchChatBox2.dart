@@ -106,8 +106,6 @@ class ActiveMatchChatBox extends StatelessWidget {
                                             )
                                         ),
                                        // activeMatch?
-                                        Text('Availability: Friday Jan 13'),
-                                            //: SizedBox(width: 0),
                                         Text(
                                             lastMessage,
                                             style: TextStyle(

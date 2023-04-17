@@ -8,8 +8,15 @@ import 'package:kaliallendatingapp/screens/profilesetup/Profile3Name.dart';
 import 'package:kaliallendatingapp/widgets/StyledButton.dart';
 import 'package:page_transition/page_transition.dart';
 
+
+//TODO:
+
 class ProfileBirthday extends StatefulWidget {
-  final UserData _userData = UserData();
+  final UserData _userData;
+
+  ProfileBirthday({@required UserData userData})
+  : assert(userData != null),
+  _userData = userData;
 
   @override
   _ProfileBirthdayState createState() => _ProfileBirthdayState();
@@ -21,6 +28,7 @@ class _ProfileBirthdayState extends State<ProfileBirthday> {
   TextEditingController yearController = TextEditingController();
   final _formKey = new GlobalKey<FormState>();
 
+  int _day;
   bool isAdult = true;
   DateTime _age;
   DateTime ofAge = DateTime.now();
@@ -112,16 +120,21 @@ class _ProfileBirthdayState extends State<ProfileBirthday> {
                 )),
           ),
           Padding(
-            padding: const EdgeInsets.all(25.0),
+            padding: const EdgeInsets.symmetric(horizontal: 60.0),
             child: Form(
               key: _formKey,
               child: Row(
-                //crossAxisAlignment: CrossAxisAlignment.stretch,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width * .25,
-                    child: TextFormField(
+                  SizedBox(
+                    width: 40.0,
+                    child:
+                    TextFormField(
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 17.0,
+                      ),
                       controller: monthController,
                       validator: (val) {
                         if (val.trim().length < 2 ||
@@ -144,10 +157,17 @@ class _ProfileBirthdayState extends State<ProfileBirthday> {
                   ),
                   Text(
                     '/',
+                    style: TextStyle(
+                      fontSize: 25.0,
+                    ),
                   ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * .25,
+                  SizedBox(
+                    width: 40.0,
                     child: TextFormField(
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 17.0,
+                      ),
                       controller: dayController,
                       validator: (val) {
                         if (val.trim().length < 2 ||
@@ -173,10 +193,17 @@ class _ProfileBirthdayState extends State<ProfileBirthday> {
                   ),
                   Text(
                     '/',
+                    style: TextStyle(
+                      fontSize: 25.0,
+                    ),
                   ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * .25,
+                  SizedBox(
+                    width: 60.0,
                     child: TextFormField(
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 17.0,
+                      ),
                       controller: yearController,
                       validator: (val) {
                         if (val.trim().length < 4 ||
@@ -211,6 +238,7 @@ class _ProfileBirthdayState extends State<ProfileBirthday> {
                   child: Text(
                     'Must be 18 years or older to continue.',
                     style: TextStyle(
+                      fontSize: 17.0,
                       color: Colors.red,
                     ),
                   ),

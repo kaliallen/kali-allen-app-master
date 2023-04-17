@@ -6,11 +6,13 @@ import 'package:intl/intl.dart';
 import 'package:kaliallendatingapp/constants.dart';
 import 'package:kaliallendatingapp/models/date.dart';
 import 'package:kaliallendatingapp/models/userData.dart';
-import 'package:kaliallendatingapp/screens/BrowseScreen.dart';
+import 'package:kaliallendatingapp/screens/BrowseTab.dart';
+import 'package:kaliallendatingapp/screens/ChatScreen.dart';
 import 'package:kaliallendatingapp/screens/PickDateTime.dart';
 import 'package:kaliallendatingapp/widgets/MatchChatBox.dart';
 import 'package:kaliallendatingapp/widgets/progress.dart';
 import 'package:uuid/uuid.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 import '../models/dateManager.dart';
 import 'Home.dart';
@@ -26,7 +28,8 @@ class ProfilePage extends StatefulWidget {
       {this.profileId,
       this.viewPreferenceInfo,
       this.viewingAsBrowseMode,
-      this.dateDoc, this.backFunction});
+      this.dateDoc,
+      this.backFunction});
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -249,9 +252,8 @@ class _ProfilePageState extends State<ProfilePage> {
           return
               //Top Picture & Text
               ListView(
-                padding: EdgeInsets.zero,
+            padding: EdgeInsets.zero,
             children: [
-              //Profile image/Name/Quick Info
               Stack(children: [
                 //TODO: This gradient doesn't work...?
 
@@ -271,13 +273,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment(0, .8),
-                        colors: [
-                          Color(0xff22242A).withOpacity(.05),
-                          Color(0xff000000).withOpacity(.4)
-                        ],
-                      )),
+                    begin: Alignment.topCenter,
+                    end: Alignment(0, .8),
+                    colors: [
+                      Color(0xff22242A).withOpacity(.05),
+                      Color(0xff000000).withOpacity(.4)
+                    ],
+                  )),
                 ),
 
                 //This Container contains top buttons and bottom text
@@ -293,7 +295,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.only(left:15.0, top: 40),
+                            padding: const EdgeInsets.only(left: 15.0, top: 40),
                             child: IconButton(
                               icon: Icon(Icons.arrow_back_ios_sharp),
                               color: Colors.white,
@@ -308,7 +310,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           widget.viewPreferenceInfo
                               ? SizedBox()
                               : Padding(
-                            padding: const EdgeInsets.only(right:15.0, top: 40),
+                                  padding: const EdgeInsets.only(
+                                      right: 15.0, top: 40),
                                   child: widget.viewingAsBrowseMode
                                       ? IconButton(
                                           icon: Icon(
@@ -333,7 +336,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             Text(
                               //TODO: If the firstName is null, the screen will crash! Fix by adding condition -- UPDATE: I dont actually know if this is necessary. Or if we should curb this from happening upstream
                               profileUserData.firstName != null
-                                  ? profileUserData.firstName
+                                  ? '${profileUserData.firstName}, 26'
                                   : profileUserData.toString(),
                               style: TextStyle(
                                 color: Colors.white,
@@ -344,13 +347,25 @@ class _ProfilePageState extends State<ProfilePage> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: widget.viewPreferenceInfo
-                                  ? []
+                                  ? [
+                              ]
                                   : [
+                                Pill(
+                                  text: '⚭ Mutual Availability',
+                                  color: Colors.green
+                                      .withOpacity(.95),
+                                ),
                                       widget.viewingAsBrowseMode
-                                          ? Wrap(
+                                          ?
+                                      Wrap(
                                               //TODO: Fix
                                               //TODO: Decide if this goes here. Should there be compatible "interests" here? Lots of questions...
                                               children: [
+                                                Pill(
+                                                  text: 'Mutual Availability',
+                                                  color: Colors.green
+                                                      .withOpacity(.1),
+                                                ),
                                                 //Custom message as a pill?
                                                 // widget.dateDoc
                                                 //         .interests['activity']
@@ -380,19 +395,22 @@ class _ProfilePageState extends State<ProfilePage> {
                                               ],
                                             )
                                           : SizedBox(),
-                                //TODO: This is where the bug is
-                                widget.dateDoc == null ? SizedBox(height: 0): Padding(
-                    padding: const EdgeInsets.only(top: 5),
-                    child:  Text(
-                      //TODO: Change the font here
-                      widget.dateDoc.customMessage,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 15.0,
-                      ),
-                    ),
-                  ),
-                              ],
+                                      //TODO: This is where the bug is
+                                      widget.dateDoc == null
+                                          ? SizedBox(height: 0)
+                                          : Padding(
+                                              padding:
+                                                  const EdgeInsets.only(top: 5),
+                                              child: Text(
+                                                //TODO: Change the font here
+                                                widget.dateDoc.customMessage,
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 15.0,
+                                                ),
+                                              ),
+                                            ),
+                                    ],
                             )
                           ],
                         ),
@@ -402,7 +420,57 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ]),
 
-              //Info Square Box
+              //Bio Box
+              profileUserData.bio != null
+                  ? Padding(
+                      padding: const EdgeInsets.only(
+                        top: 20.0,
+                        right: 20.0,
+                        left: 20.0,
+                      ),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20.0, vertical: 20.0),
+                          child: Text('${profileUserData.bio}',
+                              style: TextStyle(
+                                color: Color(0xff070D1B),
+                              )),
+                        ),
+                      ),
+                    )
+                  : SizedBox(height: 0),
+
+              //Activity Options
+
+              Card(
+                  margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
+                child: ListTile(
+                  title: Text('"There is a commanders game on Sunday"'),
+                  subtitle: Text('Dinner'),
+                )
+              ),
+              Card(
+                  margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
+                  child: ListTile(
+                      title: Text('Dinner'),
+                      subtitle: Text('"I have been meaning to try sushi..."'),
+                      trailing: CircleAvatar(
+                        radius: 20,
+                        backgroundColor: Colors.pinkAccent,
+                        child: Text(
+                            '👍',
+                          textAlign: TextAlign.center,
+                        )
+                      )
+                  )
+              ),
+
               Padding(
                 padding: const EdgeInsets.only(
                   top: 20.0,
@@ -410,57 +478,136 @@ class _ProfilePageState extends State<ProfilePage> {
                   left: 20.0,
                 ),
                 child: Container(
+                  width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  child: Column(
-                    children: [
-                      //TODO: Make this row scrollable within the container
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconCard(
-                              icon: Icons.location_on_outlined,
-                              text: 'Dupont Circle' //profileUserData.occupation,
-                              //${profileUserData.gender}
-                              ),
-                          IconCard(
-                            icon: Icons.cake_outlined,
-                            text: '26',
-                          ),
-                          IconCard(
-                            icon: Icons.straighten,
-                            text: '5\'5',
-                          ),
-                        ],
-                      ),
-                      profileUserData.education != null ? Divider() : SizedBox(height: 0),
-                      profileUserData.education != null ? Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconCard(
-                              icon: Icons.account_balance_sharp,
-                              text: profileUserData.education,
-                              //${profileUserData.gender}
-                              ),
-                        ],
-                      ) : SizedBox(height: 0),
-                      profileUserData.occupation != null ? Divider() : SizedBox(height: 0),
-                      profileUserData.occupation != null ? Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconCard(
-                            icon: Icons.business_center,
-                            text: profileUserData.occupation,
-                          ),
-                          // IconCard(
-                          //   icon: Icons.cake_outlined,
-                          //   text: '26',
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0, vertical: 20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Dinner',
+                            style: TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xff6A6E76),
+                            )),
+                            SizedBox(height: 5),
+                            Text('I\'ve been wanting to try sushi...',
+                                style: TextStyle(
+                                  color: Color(0xff070D1B),
+                                  fontSize: 18.0,
+                                  fontFamily: 'RobotoBlack',
+                                  fontWeight: FontWeight.w300,
+                                )),
+                          ],
+                        ),
+                        RawMaterialButton(
+                          onPressed: () {},
+                          // elevation: 2.0,
+                          fillColor: Colors.white,
+                          child: Text('👍'),
+                          // Icon(
+                          //   Icons.favorite,
+                          //   size: 10.0,
                           // ),
-                        ],
-                      ) : SizedBox(height: 0),
-                    ],
+                          padding: EdgeInsets.all(15.0),
+                          shape: CircleBorder(),
+
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 20.0,
+                  right: 20.0,
+                  left: 20.0,
+                ),
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0, vertical: 20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Dinner',
+                                style: TextStyle(
+                                  fontSize: 15.0,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xff6A6E76),
+                                )),
+                            SizedBox(height: 5),
+                            Text('I\'ve been wanting to try sushi...',
+                                style: TextStyle(
+                                  color: Color(0xff070D1B),
+                                  fontSize: 18.0,
+                                  fontFamily: 'RobotoBlack',
+                                  fontWeight: FontWeight.w300,
+                                )),
+                          ],
+                        ),
+                        RawMaterialButton(
+                          onPressed: () {},
+                          // elevation: 2.0,
+                          fillColor: Colors.white,
+                          child: Text('👍'),
+                          // Icon(
+                          //   Icons.favorite,
+                          //   size: 10.0,
+                          // ),
+                          padding: EdgeInsets.all(15.0),
+                          shape: CircleBorder(),
+
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 20.0,
+                  right: 20.0,
+                  left: 20.0,
+                ),
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0, vertical: 20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Dinner',
+                            style: TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xff6A6E76),
+                            )),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -505,33 +652,6 @@ class _ProfilePageState extends State<ProfilePage> {
               //   ),
               // ),
 
-              //Photo 2 Box
-
-
-              //Bio Box
-              profileUserData.bio != null ? Padding(
-                padding: const EdgeInsets.only(
-                  top: 20.0,
-                  right: 20.0,
-                  left: 20.0,
-                ),
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0, vertical: 20.0),
-                    child: Text('${profileUserData.bio}',
-                        style: TextStyle(
-                          color: Color(0xff070D1B),
-                        )),
-                  ),
-                ),
-              ) : SizedBox(height: 0),
-
 //Photo 2 Box
               Padding(
                 padding: const EdgeInsets.only(
@@ -546,6 +666,78 @@ class _ProfilePageState extends State<ProfilePage> {
                     height: 300.0,
                     fit: BoxFit.cover,
                     image: CachedNetworkImageProvider(profileUserData.picture1),
+                  ),
+                ),
+              ),
+
+              //Info Square Box
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 20.0,
+                  right: 20.0,
+                  left: 20.0,
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Column(
+                    children: [
+                      //TODO: Make this row scrollable within the container
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconCard(
+                              icon: Icons.location_on_outlined,
+                              text:
+                                  'Dupont Circle' //profileUserData.occupation,
+                              //${profileUserData.gender}
+                              ),
+                          IconCard(
+                            icon: Icons.cake_outlined,
+                            text: '26',
+                          ),
+                          IconCard(
+                            icon: Icons.straighten,
+                            text: '5\'5',
+                          ),
+                        ],
+                      ),
+                      profileUserData.education != null
+                          ? Divider()
+                          : SizedBox(height: 0),
+                      profileUserData.education != null
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                IconCard(
+                                  icon: Icons.account_balance_sharp,
+                                  text: profileUserData.education,
+                                  //${profileUserData.gender}
+                                ),
+                              ],
+                            )
+                          : SizedBox(height: 0),
+                      profileUserData.occupation != null
+                          ? Divider()
+                          : SizedBox(height: 0),
+                      profileUserData.occupation != null
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                IconCard(
+                                  icon: Icons.business_center,
+                                  text: profileUserData.occupation,
+                                ),
+                                // IconCard(
+                                //   icon: Icons.cake_outlined,
+                                //   text: '26',
+                                // ),
+                              ],
+                            )
+                          : SizedBox(height: 0),
+                    ],
                   ),
                 ),
               ),
@@ -614,7 +806,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       //       ),
                     )
                   : SizedBox(),
-
             ],
           );
         });
@@ -636,7 +827,7 @@ class IconCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
       child: Row(
         children: [
           Icon(
@@ -649,10 +840,7 @@ class IconCard extends StatelessWidget {
           ),
           Text(
             text,
-            style: TextStyle(
-              color: Color(0xff6A6E76),
-              fontSize: 16.0,
-            ),
+            style: kCardTextStyle,
           ),
         ],
       ),
@@ -698,7 +886,7 @@ class Pill extends StatelessWidget {
       padding: const EdgeInsets.only(right: 10, top: 10),
       child: Container(
         child: Padding(
-          padding: const EdgeInsets.all(10.0),
+          padding: const EdgeInsets.only(right: 10, left: 10, top: 5.0, bottom: 5.0),
           child: Text(
             text,
             textAlign: TextAlign.center,

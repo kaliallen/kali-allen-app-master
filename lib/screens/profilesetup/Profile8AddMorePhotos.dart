@@ -33,16 +33,19 @@ class ProfileAddMorePhotos extends StatefulWidget {
 
 class _ProfileAddMorePhotosState extends State<ProfileAddMorePhotos> {
   bool isUploading = false;
-  File _image;
+  File _image1;
   File _image2;
   File _image3;
+
+  int selectedImage;
+
   final picker = ImagePicker();
+
   String postId = Uuid().v4();
-  String postId2 = Uuid().v4();
-  String postId3 = Uuid().v4();
+
 
   //1) When upload photo button is pressed, a popup dialog will appear to select image
-  Future<Function> selectImage(parentContext) async {
+  selectImage(parentContext){
     return showDialog(
         context: parentContext,
         builder: (context){
@@ -51,15 +54,11 @@ class _ProfileAddMorePhotosState extends State<ProfileAddMorePhotos> {
             children: [
               SimpleDialogOption(
                 child: Text('Photo with Camera'),
-                onPressed: (){
-                  return getImageCamera;
-                }
+                onPressed: getImageCamera,
               ),
               SimpleDialogOption(
                 child: Text('Photo from Gallery'),
-                onPressed: (){
-                  return getImageGallery;
-                },
+                onPressed: getImageGallery,
               ),
               SimpleDialogOption(
                 child: Text('Cancel'),
@@ -73,72 +72,80 @@ class _ProfileAddMorePhotosState extends State<ProfileAddMorePhotos> {
 
   //2) gets a photo from the camera OR...
   Future getImageCamera() async {
-    print('pressed');
-    // Navigator.pop(context);
-    // var pickedFile = await picker.getImage(
-    //   source: ImageSource.camera,
-    //   maxHeight: 675,
-    //   maxWidth: 960,
-    // );
-    // setState(() {
-    //   if (pickedFile != null){
-    //     _image = File(pickedFile.path);
-    //   } else {
-    //     print('No image selected');
-    //   }
-    // });
-  }
-
-  // OR image gallery
-  Future getImageGallery() async {
+    print(selectedImage);
     Navigator.pop(context);
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    var pickedFile = await picker.getImage(
+      source: ImageSource.camera,
+      maxHeight: 675,
+      maxWidth: 960,
+    );
     setState(() {
       if (pickedFile != null){
-        _image = File(pickedFile.path);
+        selectedImage == 1 ? _image1 = File(pickedFile.path)
+            : selectedImage == 2 ? _image2 = File(pickedFile.path)
+            :  _image3 = File(pickedFile.path);
       } else {
         print('No image selected');
       }
     });
   }
 
-  //3) What happens when continue is pressed
-  handleSubmit() async {
+  // OR image gallery
+  Future getImageGallery() async {
+    print(selectedImage);
+    Navigator.pop(context);
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
     setState(() {
-      isUploading = true;
+      if (pickedFile != null){
+        selectedImage == 1 ? _image1 = File(pickedFile.path)
+            : selectedImage == 2 ? _image2 = File(pickedFile.path)
+            :  _image3 = File(pickedFile.path);
+      } else {
+        print('No image selected');
+      }
     });
-    print('1. handle submit triggered');
-    await compressImage();
-    await uploadImage(_image);
+  }
+
+
+  //3) What happens when continue is pressed
+  handleSubmit(File image, int i) async {
+    print('1. handle submit triggered for image no. ${i + 1}');
+    await compressImage(image, i);
+    await uploadImage(image, i);
     print('2. image successfully compressed');
-    String medialUrl = await uploadImage(_image);
+    String medialUrl = await uploadImage(image, i);
     print('3. image uploaded to storage');
     //6) Add image to UserData
-    widget._userData.picture1 = medialUrl;
+    i == 0 ?
+    widget._userData.picture2 = medialUrl
+    : i == 1 ? widget._userData.picture3 = medialUrl
+    : widget._userData.picture4 = medialUrl;
     print('4. photo added to userData');
     //7) Set is Uploading back to False
-    setState(() {
-      isUploading = false;
-    });
+    // setState(() {
+    //   isUploading = false;
+    // });
 
   }
 
   //4) takes file stored in state and compresses it
-  compressImage() async {
-    print('compress Image triggered');
+  compressImage(File image, int i) async {
+    print('compress Image triggered for image no. ${i + 1}');
     final tempDir = await getTemporaryDirectory();
     final path = tempDir.path;
     //Reading the image file and putting it into imageFile variable
-    Im.Image imageFile = Im.decodeImage(_image.readAsBytesSync());
-    final compressedImageFile = File('$path/img_$postId.jpg')..writeAsBytesSync(Im.encodeJpg(imageFile, quality: 85));
+    Im.Image imageFile = Im.decodeImage(image.readAsBytesSync());
+    final compressedImageFile = File('$path/img_$postId$i.jpg')..writeAsBytesSync(Im.encodeJpg(imageFile, quality: 85));
     setState(() {
-      _image = compressedImageFile;
+      i == 0 ? _image1 = compressedImageFile
+          : i == 1 ? _image2 = compressedImageFile
+          : _image3 = compressedImageFile;
     });
   }
 
   //5) Uploads image to firebase storage and returns the image's URL
-  Future<String> uploadImage(imageFile) async {
-    UploadTask uploadTask = storageRef.child('post_$postId.jpg').putFile(imageFile);
+  Future<String> uploadImage(imageFile, int i) async {
+    UploadTask uploadTask = storageRef.child('post_$postId$i.jpg').putFile(imageFile);
     String imageUrl = await (await uploadTask).ref.getDownloadURL();
     return imageUrl;
   }
@@ -197,16 +204,19 @@ class _ProfileAddMorePhotosState extends State<ProfileAddMorePhotos> {
                           ),
                           GestureDetector(
                             onTap: () async {
+                              setState(() {
+                                selectedImage = 1;
+                              });
                               Function selectedFunction = await selectImage(context);
                               print(selectedFunction);
                             },
                             child: Container(
                               height: 125.0,
                               width: 125.0,
-                              child: _image == null ? Icon(
+                              child: _image1 == null ? Icon(
                                 Icons.add_a_photo_outlined,
                               ) : Image.file(
-                                  _image,
+                                  _image1,
                                   fit: BoxFit.cover,
                               ),
                               decoration: BoxDecoration(
@@ -221,7 +231,13 @@ class _ProfileAddMorePhotosState extends State<ProfileAddMorePhotos> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           GestureDetector(
-                          onTap: () => selectImage(context),
+                            onTap: () async {
+                              setState(() {
+                                selectedImage = 2;
+                              });
+                              Function selectedFunction = await selectImage(context);
+                              print(selectedFunction);
+                            },
                           child: Container(
                             height: 125.0,
                             width: 125.0,
@@ -238,7 +254,13 @@ class _ProfileAddMorePhotosState extends State<ProfileAddMorePhotos> {
                           ),
                         ),
                           GestureDetector(
-                            onTap: () => selectImage(context),
+                            onTap: () async {
+                              setState(() {
+                                selectedImage = 3;
+                              });
+                              Function selectedFunction = await selectImage(context);
+                              print(selectedFunction);
+                            },
                             child: Container(
                               height: 125.0,
                               width: 125.0,
@@ -270,11 +292,18 @@ class _ProfileAddMorePhotosState extends State<ProfileAddMorePhotos> {
                     setState(() {
                       isUploading = true;
                     });
-                   //  final images = [_image1, _image2, _image3];
-                   // for (File image in images){
-                   //   await handleSubmit(image);
-                   // }
+                    final images = [_image1, _image2, _image3];
+                    for (int i=0; i< images.length; i++){
+                     if (images[i] != null) {
+                       await handleSubmit(images[i], i);
+                     } else {
+                       print('Does image[${i + 1}] does not exist');
+                     }
+                   }
                     // await handleSubmit();
+                    setState(() {
+                      isUploading = false;
+                    });
                     Navigator.push(
                         context,
                         PageTransition(

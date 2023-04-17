@@ -105,8 +105,6 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               PopupMenuItem(
                 value: 2,
-                onTap: (){
-                  print('tapped');},
                    child: Text('View Profile')),
               const PopupMenuDivider(),
               PopupMenuItem(child: Text('Cancel'))
@@ -147,7 +145,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           fontSize: 18.0,
                         )),
 
-                    Text('Chat expires in ${widget.activeMatch}',
+                    Text('You have mutual availabilities!',
                         //TODO: Figure out how to make a countdown timer
                         // '${DateFormat().format(widget.endTime.toDate())}',
                         style: TextStyle(
