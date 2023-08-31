@@ -11,21 +11,23 @@ import 'package:kaliallendatingapp/screens/ProfilePage.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-User loggedInUser;
+User? loggedInUser;
 
 class ChatScreen extends StatefulWidget {
-  final String matchId;
-  final String messageId;
-  final String matchName;
-  final String matchImageUrl;
-  final bool activeMatch;
+  final String? matchId;
+  final String? messageId;
+  final String? matchName;
+  final String? matchImageUrl;
+  final bool? activeMatch;
+
 
   ChatScreen({
     this.matchId,
     this.messageId,
     this.matchName,
     this.matchImageUrl,
-    this.activeMatch
+    this.activeMatch,
+
   });
 
   @override
@@ -34,7 +36,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final messageTextController = TextEditingController();
-  String messageText;
+  String? messageText;
 
   viewProfile() {
     //TODO: When pressed, a drop down menu appears with two options: view profile, report profile, unmatch, cancel.
@@ -131,14 +133,14 @@ class _ChatScreenState extends State<ChatScreen> {
                     radius: 20,
                     backgroundColor: Colors.grey,
                     backgroundImage:
-                        CachedNetworkImageProvider(widget.matchImageUrl),
+                        CachedNetworkImageProvider(widget.matchImageUrl!),
                   ),
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     //TODO: Make it so text resizes when name is too long and then test it
-                    Text(widget.matchName,
+                    Text(widget.matchName!,
                         style: TextStyle(
                           color: kDarkest,
                           fontWeight: FontWeight.w700,
@@ -193,21 +195,21 @@ class _ChatScreenState extends State<ChatScreen> {
                           .collection('messages')
                           .add({
                         'message': messageText,
-                        'sender': loggedInUser.uid,
+                        'sender': loggedInUser!.uid,
                         'time': Timestamp.now(),
                       });
 
                       //TODO: This is inefficient--change later
                       //Adds last message and message time to Matches Collection
                       final doc = await matchesRef
-                          .doc(loggedInUser.uid)
+                          .doc(loggedInUser!.uid)
                           .collection('matches')
                           .doc(widget.matchId)
                           .get();
                       if (doc.exists) {
                         doc.reference.update({
                           'lastMessage': messageText,
-                          'lastMessageSender': loggedInUser.uid,
+                          'lastMessageSender': loggedInUser!.uid,
                           'lastMessageTime': DateTime.now(),
                           'messageUnread': false,
                         });
@@ -229,7 +231,7 @@ class _ChatScreenState extends State<ChatScreen> {
 }
 
 class MessagesStream extends StatelessWidget {
-  String messageId;
+  String? messageId;
 
   MessagesStream({this.messageId});
 
@@ -245,14 +247,14 @@ class MessagesStream extends StatelessWidget {
           if (!snapshot.hasData) {
             return CircularProgressIndicator();
           }
-          final messages = snapshot.data.docs;
+          final messages = snapshot.data!.docs;
           List<MessageBubble> messageBubbles = [];
           for (var message in messages) {
             final messageText = message['message'];
             final messageSender = message['sender'];
             final messageTime = message['time'];
 
-            final String currentUser = loggedInUser.uid;
+            final String currentUser = loggedInUser!.uid;
 
             if (currentUser == messageSender) {
               //The message is from the logged in user
@@ -277,10 +279,10 @@ class MessagesStream extends StatelessWidget {
 }
 
 class MessageBubble extends StatelessWidget {
-  final String sender;
-  final String text;
-  final Timestamp time;
-  final bool isMe;
+  final String? sender;
+  final String? text;
+  final Timestamp? time;
+  final bool? isMe;
 
   MessageBubble({this.sender, this.text, this.time, this.isMe});
 
@@ -290,7 +292,7 @@ class MessageBubble extends StatelessWidget {
       padding: const EdgeInsets.all(10.0),
       child: Column(
         crossAxisAlignment:
-            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            isMe != null ? isMe == true ? CrossAxisAlignment.end : CrossAxisAlignment.start : CrossAxisAlignment.start,
         children: [
           Material(
               borderRadius: BorderRadius.only(
@@ -300,20 +302,20 @@ class MessageBubble extends StatelessWidget {
                 bottomRight: Radius.circular(20.0),
               ),
               elevation: 5.0,
-              color: isMe ? Color(0xff393D49) : Colors.white,
+              color: isMe! ? Color(0xff393D49) : Colors.white,
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
                 child: Text(
-                  text,
+                  text!,
                   style: TextStyle(
-                    color: isMe ? Colors.white : Color(0xff3B4351),
+                    color: isMe! ? Colors.white : Color(0xff3B4351),
                     fontSize: 15.0,
                   ),
                 ),
               )),
           //TODO: Make it so timeago only shows after a whole day
           Text(
-            timeago.format(time.toDate()),
+            timeago.format(time!.toDate()),
             style: TextStyle(
               fontSize: 13.0,
             ),

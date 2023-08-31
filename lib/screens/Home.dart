@@ -24,9 +24,6 @@ final messagesRef = FirebaseFirestore.instance.collection('messages');
 final notificationsRef = FirebaseFirestore.instance.collection('notifications');
 final storageRef = FirebaseStorage.instance.ref();
 
-User currentUser;
-UserData currentUserData = UserData();
-
 
 class Home extends StatefulWidget {
   static String id = 'Home.id';
@@ -37,10 +34,13 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  bool isAuth = false;
-  PageController pageController;
-  int pageIndex = 0;
 
+  PageController? pageController;
+  int pageIndex = 0;
+  bool isAuth = false;
+  User? currentUser;
+
+  UserData currentUserData = UserData();
 
   //Functions in initState
 
@@ -73,10 +73,13 @@ class _HomeState extends State<Home> {
 
   ///Uses currentUser.uid (Was saved in function called handleSignIn) to check if user exists in the 'users' collection in Firebase.
   createUserInFirestore() async {
+    print("Current User ID: ${currentUser!.uid}");
 
-    print("Current User ID: ${currentUser.uid}");
+    if (currentUser!.uid != null){
+      print('not ');
+    }
 
-    DocumentSnapshot doc = await usersRef.doc(currentUser.uid).get();
+    final DocumentSnapshot doc = await usersRef.doc(currentUser?.uid).get();
     if (!doc.exists) {
       await Navigator.push(
           context, MaterialPageRoute(builder: (context) => ProfileSetup()));
@@ -84,12 +87,17 @@ class _HomeState extends State<Home> {
       print("doc doesn't exist?");
     }
 
-      //TODO: Test if this part actually goes?
-      UserData _user = UserData();
-      await _user.getUserData(currentUser.uid);
+
+    UserData _user = UserData();
+
+    if (currentUser != null) {
+      print('This is the currentUser = $currentUser');
+      await _user.getUserData(currentUser!.uid);
       setState(() {
         currentUserData = _user;
       });
+      print(currentUserData.uid);
+    }
   }
 
 
@@ -100,7 +108,7 @@ class _HomeState extends State<Home> {
 
     //If a user is logged in, send User to handleSignIn
     FirebaseAuth.instance.authStateChanges().listen((account){
-      handleSignIn(account);
+      handleSignIn(account!);
     }, onError: (err){
       print('Error signing in: $err');
     });
@@ -195,19 +203,19 @@ class _HomeState extends State<Home> {
         backgroundColor: Color(0xffffffff),
         items: [
           BottomNavigationBarItem(
-              label: 'Plan',
+              label: 'Find',
               icon: Icon(Icons.bolt,
                 color: pageIndex == 0 ? kButtonColor : Color(0xff9D9EA4),
               )),
           BottomNavigationBarItem(
-            label: 'Matches',
-            icon: Icon(Icons.favorite,
+            label: 'Notifications',
+            icon: Icon(Icons.notifications,
             color: pageIndex == 1 ? kButtonColor : Color(0xff9D9EA4),
           )),
           BottomNavigationBarItem(
-              label: 'Chats',
+              label: 'My Pool',
               //TODO: Find a better icon and also make it so notifications are shown here
-              icon: Icon(Icons.message,
+              icon: Icon(Icons.groups,
                 color: pageIndex == 2 ? kButtonColor : Color(0xff9D9EA4),
               )),
           BottomNavigationBarItem(
@@ -228,7 +236,7 @@ class _HomeState extends State<Home> {
   }
 
   onTap(int pageIndex){
-    pageController.animateToPage(
+    pageController?.animateToPage(
         pageIndex,
         duration: Duration(milliseconds: 300),
         curve: Curves.easeInOut
@@ -244,7 +252,7 @@ class _HomeState extends State<Home> {
 
   @override
   void dispose() {
-    pageController.dispose();
+    pageController?.dispose();
     super.dispose();
   }
 

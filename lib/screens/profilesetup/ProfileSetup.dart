@@ -25,7 +25,7 @@ class _ProfileSetupState extends State<ProfileSetup> {
     return adultDate;
   }
 
-  DateTime _age;
+  DateTime? _age;
   DateTime ofAge = DateTime.now();
 
 
@@ -55,7 +55,7 @@ class _ProfileSetupState extends State<ProfileSetup> {
                         }
                     ),
                     Text(
-                        _age != null && isAdult(_age) == false ? 'Must be 18 years or older to continue': ' ',
+                        _age != null && isAdult(_age!) == false ? 'Must be 18 years or older to continue': ' ',
                         style: TextStyle(
                           color: Colors.red,
                         )

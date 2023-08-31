@@ -7,15 +7,15 @@ import 'package:kaliallendatingapp/widgets/StyledButton.dart';
 import 'package:page_transition/page_transition.dart';
 
 class ProfileJob extends StatelessWidget {
-  final UserData _userData;
+  final UserData? _userData;
 
-  ProfileJob({@required UserData userData})
+  ProfileJob({@required UserData? userData})
       : assert(userData !=null),
         _userData = userData;
 
   @override
   Widget build(BuildContext context) {
-    String work;
+    String? work;
 
     return Scaffold(
       body: SafeArea(
@@ -66,7 +66,7 @@ class ProfileJob extends StatelessWidget {
                 onTap: (){
 
                   if (work != null){
-                    _userData.occupation = work;
+                    _userData!.occupation = work;
                   }
 
                   Navigator.push(context, PageTransition(

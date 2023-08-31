@@ -112,12 +112,14 @@ const kColorizeTextStyle = TextStyle(
 
 
 const kHeadingText = TextStyle(
-  fontSize: 25.0,
+  fontSize: 23.0,
+  fontWeight: FontWeight.w500,
   fontFamily: 'RobotoLight',
 );
 
 const kBodyText = TextStyle(
   fontFamily: 'Roboto',
+  fontWeight: FontWeight.w200,
   fontSize: 20.0,
 );
 
@@ -162,9 +164,18 @@ const List<int> times = [
 //Profile Page
 
 //Profile Card Font
-const kCardTextStyle = TextStyle(
+const kCardTitle = TextStyle(
 color: Color(0xff6A6E76),
 fontSize: 16.0,
+);
+
+//Profile Card Font
+const kCardAnswer = TextStyle(
+  fontSize: 18.0,
+  color: kDark,
+  fontWeight: FontWeight.w500,
+  fontFamily: 'RobotoLight',
+
 );
 
 enum Tonight { early,late}
@@ -174,5 +185,6 @@ enum Tonight { early,late}
 const kDayOfTheWeekText = TextStyle(
         fontSize: 18.0,
   fontWeight: FontWeight.w500,
+
 
       );

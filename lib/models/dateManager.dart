@@ -61,10 +61,10 @@ class DateManager {
   }
 
   ///DONE
-  List<String> identifyAvailableTimeSlots(DateTime now) {
-    List<String> availableDates = identifyCurrentTimeSlots(now);
+  List<String?> identifyAvailableTimeSlots(DateTime now) {
+    List<String?> availableDates = identifyCurrentTimeSlots(now);
     int hourNow = int.parse('${DateFormat.H().format(now)}');
-    print('The hour is $hourNow');
+    print('The hour is skidubop $hourNow');
 
 
     if (hourNow >= 16 && hourNow < 18) {
@@ -88,7 +88,7 @@ class DateManager {
   }
 
   ///When "Find A Date" is pressed, this takes the bool usersAvailability list to create a list of the selectedTimeSlot codes ready to be shipped to Firebase
-  List<String> createSelectedTimeSlots(List<String> availableTimeSlots, List<bool> usersAvailability){
+  List<String> createSelectedTimeSlots(List<String?>? availableTimeSlots, List<bool> usersAvailability){
 
     //availableTimeSlots: [20230129-46, 20230129-68, 20230129-810, 20230130-46, 20230130-68, 20230130-810, 20230131-46, 20230131-68, 20230131-810, 20230201-46, 20230201-68, 20230201-810]
     //usersAvailability: [false, true, true, false, false, false, false, false, false, false, false, false]
@@ -98,7 +98,7 @@ class DateManager {
     for (int i = 0; i < 12; i++) {
 
       if (usersAvailability[i] == true) {
-        selectedTimeSlots.add(availableTimeSlots[i]);
+        selectedTimeSlots.add(availableTimeSlots![i]!);
       }
     }
 
@@ -110,7 +110,7 @@ class DateManager {
   }
 
   ///Take availableTimeSlots and currentDate.availability to create the bool usersAvailability list
-List<bool> createUsersAvailabilityFromDateDoc(List<String> availableTimeSlots, List dateDocAvailability){
+List<bool> createUsersAvailabilityFromDateDoc(List<String?> availableTimeSlots, List dateDocAvailability){
 
     //Example dateDocAvailability: [20230129-68, 20230129-810]
   List<bool> usersAvailability = [];
@@ -138,18 +138,17 @@ List<bool> createUsersAvailabilityFromDateDoc(List<String> availableTimeSlots, L
 
 
   ///Takes in availableTimeSlots and user's selectedTimeSlots and returns a true/false if the selected time slots are expired
-  bool areAvailableTimeSlotsExpired(List<String> availableTimeSlots, List<dynamic> selectedTimeSlots) {
+  bool areAvailableTimeSlotsExpired(List<String?>? availableTimeSlots, List<dynamic>? selectedTimeSlots) {
     print('availableTimeSlots: $availableTimeSlots');
     //Output: [20230129-46, 20230129-68, 20230129-810, 20230130-46, 20230130-68, 20230130-810, 20230131-46, 20230131-68, 20230131-810, 20230201-46, 20230201-68, 20230201-810]
     print('selectedTimeSlots: $selectedTimeSlots');
     List availableSelectedTimeSlots = [];
 
-
-
-    for (String timeSlot in selectedTimeSlots){
-
-      if (availableTimeSlots.contains(timeSlot) && timeSlot != null){
-        return false;
+    if (selectedTimeSlots != null) {
+      for (String? timeSlot in selectedTimeSlots) {
+        if (availableTimeSlots!.contains(timeSlot) && timeSlot != null) {
+          return false;
+        }
       }
     }
 

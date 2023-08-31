@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class PromptTile extends StatelessWidget {
-  final String promptTitle;
+  final String? promptTitle;
 
   PromptTile({this.promptTitle});
 
@@ -20,7 +20,7 @@ class PromptTile extends StatelessWidget {
             child: Container(
               alignment: Alignment.centerLeft,
               child: Text(
-                promptTitle,
+                promptTitle!,
               ),
             ),
           ),

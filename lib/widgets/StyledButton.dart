@@ -8,10 +8,10 @@ class StyledButton extends StatelessWidget {
 
   StyledButton({this.text, this.onTap, this.color, this.fontColor});
 
-  final String text;
-  final Function onTap;
-  final Color color;
-  final Color fontColor;
+  final String? text;
+  final VoidCallback? onTap;
+  final Color? color;
+  final Color? fontColor;
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +30,13 @@ class StyledButton extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment(-20.51, 133.59),
-          colors: [color, color],
+          colors: [color!, color!],
         ),
         borderRadius: BorderRadius.circular(15.0),
       ),
       child: Center(
           child: Text(
-              text,
+              text!,
             style: TextStyle(
               fontFamily: 'Quicksand',
               fontSize: 16.0,

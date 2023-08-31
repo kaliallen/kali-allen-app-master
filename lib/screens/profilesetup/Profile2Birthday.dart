@@ -12,9 +12,9 @@ import 'package:page_transition/page_transition.dart';
 //TODO:
 
 class ProfileBirthday extends StatefulWidget {
-  final UserData _userData;
+  final UserData? _userData;
 
-  ProfileBirthday({@required UserData userData})
+  ProfileBirthday({@required UserData? userData})
   : assert(userData != null),
   _userData = userData;
 
@@ -28,9 +28,9 @@ class _ProfileBirthdayState extends State<ProfileBirthday> {
   TextEditingController yearController = TextEditingController();
   final _formKey = new GlobalKey<FormState>();
 
-  int _day;
+  int? _day;
   bool isAdult = true;
-  DateTime _age;
+  DateTime? _age;
   DateTime ofAge = DateTime.now();
 
 // You need to save the user's BIRTHDATE so you can automatically update the age of the person on their profile each day they log in!
@@ -65,11 +65,11 @@ class _ProfileBirthdayState extends State<ProfileBirthday> {
 
       //If birthDate is 18 or older, set data & go to next screen
       if (isAdult == true) {
-        widget._userData.birthDate = Timestamp.fromDate(birthDate);
+        widget._userData!.birthDate = Timestamp.fromDate(birthDate);
 
 
-        if (widget._userData.birthDate != null) {
-          print(widget._userData.birthDate);
+        if (widget._userData!.birthDate != null) {
+          print(widget._userData!.birthDate);
           Navigator.push(
               context,
               PageTransition(
@@ -136,8 +136,8 @@ class _ProfileBirthdayState extends State<ProfileBirthday> {
                         fontSize: 17.0,
                       ),
                       controller: monthController,
-                      validator: (val) {
-                        if (val.trim().length < 2 ||
+                      validator: (String? val) {
+                        if (val!.trim().length < 2 ||
                             val.isEmpty ||
                             int.parse(val) > 31 ||
                             int.parse(val) < 1) {
@@ -170,7 +170,7 @@ class _ProfileBirthdayState extends State<ProfileBirthday> {
                       ),
                       controller: dayController,
                       validator: (val) {
-                        if (val.trim().length < 2 ||
+                        if (val!.trim().length < 2 ||
                             val.isEmpty ||
                             int.parse(val) > 12 ||
                             int.parse(val) < 1) {
@@ -206,7 +206,7 @@ class _ProfileBirthdayState extends State<ProfileBirthday> {
                       ),
                       controller: yearController,
                       validator: (val) {
-                        if (val.trim().length < 4 ||
+                        if (val!.trim().length < 4 ||
                             val.isEmpty ||
                             int.parse(val) > DateTime.now().year ||
                             int.parse(val) < 1911) {
@@ -251,7 +251,7 @@ class _ProfileBirthdayState extends State<ProfileBirthday> {
               color: kButtonColor,
               onTap: () {
                 print(isAdult);
-                if (_formKey.currentState.validate()) {
+                if (_formKey.currentState!.validate()) {
                   print('werked!!');
                   addBirthday();
 

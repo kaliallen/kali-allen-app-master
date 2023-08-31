@@ -11,13 +11,13 @@ class DateButton extends StatelessWidget {
         this.border,
         this.fontColor});
 
-  final DateDay dateDay;
-  final String text;
-  final String text2;
-  final Function onTap;
-  final Color color;
-  final Color fontColor;
-  final Border border;
+  final DateDay? dateDay;
+  final String? text;
+  final String? text2;
+  final VoidCallback? onTap;
+  final Color? color;
+  final Color? fontColor;
+  final Border? border;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +33,7 @@ class DateButton extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment(-20.51, 133.59),
-                colors: [color, color],
+                colors: [color!, color!],
               ),
               borderRadius: BorderRadius.circular(10.0),
               border: border,
@@ -45,7 +45,7 @@ class DateButton extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        text,
+                        text!,
                         style: TextStyle(
                           fontFamily: 'Quicksand',
                           fontSize: 16.0,
@@ -54,7 +54,7 @@ class DateButton extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        text2,
+                        text2!,
                         style: TextStyle(
                           fontFamily: 'Quicksand',
                           fontSize: 12.0,

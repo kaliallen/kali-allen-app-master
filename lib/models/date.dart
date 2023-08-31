@@ -5,14 +5,14 @@ import 'package:kaliallendatingapp/screens/Home.dart';
 
 class Date {
 
-  String uid;
-  String gender;
-  String interestedIn;
-  List availability;
-  Map<String, bool> interests;
-  Map<String, bool> rejects;
-  Timestamp time;
-  String customMessage;
+  String? uid;
+  String? gender;
+  String? interestedIn;
+  List? availability;
+  Map<String, bool>? interests;
+  Map<String, bool>? rejects;
+  Timestamp? time;
+  String? customMessage;
 
   Date({
         this.uid,
@@ -40,13 +40,13 @@ class Date {
   }
 
  setDateInFirestore({
-   String uid,
-   String gender,
-   String interestedIn,
-   List availability,
-   Map<String, bool> interests,
-   Map<String, bool> rejects,
-   String customMessage,
+   String? uid,
+   String? gender,
+   String? interestedIn,
+   List? availability,
+   Map<String, bool>? interests,
+   Map<String, bool>? rejects,
+   String? customMessage,
 }) async {
     await FirebaseFirestore.instance.collection('dates').doc(uid).set({
       'availability':availability,
@@ -112,9 +112,9 @@ class Date {
     return datesSlots;
   }
 
-  List<String> identifyActiveDateTimes(DateTime now){
+  List<String?> identifyActiveDateTimes(DateTime now){
 
-    List<String> availableDates = identifyDateTimes(now);
+    List<String?> availableDates = identifyDateTimes(now);
     int hourNow = int.parse('${DateFormat.H().format(now)}');
     print('The hour is $hourNow');
 

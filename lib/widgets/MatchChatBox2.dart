@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,22 +8,25 @@ import 'package:kaliallendatingapp/constants.dart';
 import 'package:kaliallendatingapp/screens/ChatScreen.dart';
 import 'package:page_transition/page_transition.dart';
 
-String userId = FirebaseAuth.instance.currentUser.uid;
+String userId = FirebaseAuth.instance.currentUser!.uid;
 
 class ActiveMatchChatBox extends StatelessWidget {
-  final String matchId;
-  final bool activeMatch;
-  final String lastMessage;
-  final String lastMessageSender;
-  final DateTime lastMessageTime;
-  final String matchImageUrl;
-  final String matchName;
-  final bool messageUnread;
-  final String messagesId;
-  final String dateId;
+  final String? matchId;
+  final bool? activeMatch;
+  final String? lastMessage;
+  final String? lastMessageSender;
+  final DateTime? lastMessageTime;
+  final String? matchImageUrl;
+  final String? matchName;
+  final bool? messageUnread;
+  final String? messagesId;
+  final String? dateId;
+  final Timestamp? availability;
+  final bool? available;
 
 
-  ActiveMatchChatBox({this.dateId, this.matchId, this.activeMatch, this.lastMessage, this.lastMessageSender, this.matchName, this.matchImageUrl, this.messagesId, this.messageUnread, this.lastMessageTime});
+
+  ActiveMatchChatBox({this.available, this.availability, this.dateId, this.matchId, this.activeMatch, this.lastMessage, this.lastMessageSender, this.matchName, this.matchImageUrl, this.messagesId, this.messageUnread, this.lastMessageTime});
 
 
   @override
@@ -41,6 +45,7 @@ class ActiveMatchChatBox extends StatelessWidget {
                     messageId: messagesId.toString(),
                     matchName:   matchName.toString(),
                     matchImageUrl: matchImageUrl.toString(),
+
                   )));
         },
         child: Container(
@@ -51,6 +56,12 @@ class ActiveMatchChatBox extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: kWhiteSquareColor,
                     borderRadius: BorderRadius.circular(15.0),
+                   border:  available == true ? Border.all(
+                      color: Colors.green,
+                     width: 1.0
+                    ) : Border.all(
+                     color: kScaffoldBackgroundColor,
+                   ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,7 +102,7 @@ class ActiveMatchChatBox extends StatelessWidget {
                                   CircleAvatar(
                                     radius: 25,
                                     backgroundColor: Colors.grey,
-                                    backgroundImage: CachedNetworkImageProvider(matchImageUrl),
+                                    backgroundImage: CachedNetworkImageProvider(matchImageUrl!),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(left: 15.0),
@@ -99,7 +110,7 @@ class ActiveMatchChatBox extends StatelessWidget {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                           matchName,
+                                           matchName!,
                                             style: TextStyle(
                                               fontWeight: FontWeight.w500,
                                               color: kDarkest,
@@ -107,9 +118,9 @@ class ActiveMatchChatBox extends StatelessWidget {
                                         ),
                                        // activeMatch?
                                         Text(
-                                            lastMessage,
+                                            lastMessage!,
                                             style: TextStyle(
-                                              fontWeight: messageUnread ? FontWeight.w700 : FontWeight.w300,
+                                              fontWeight: messageUnread! ? FontWeight.w700 : FontWeight.w300,
                                             )
                                         ),
                                       ],
@@ -118,7 +129,7 @@ class ActiveMatchChatBox extends StatelessWidget {
                                 ],
                               ),
                               Text(
-                                  "${DateFormat.jm().format(lastMessageTime)}"
+                                  "${DateFormat.jm().format(lastMessageTime!)}"
                               )
                             ],
                           )

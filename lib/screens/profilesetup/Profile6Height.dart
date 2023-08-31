@@ -10,9 +10,9 @@ import 'package:page_transition/page_transition.dart';
 
 class ProfileHeight extends StatefulWidget {
 
-  final UserData _userData;
+  final UserData? _userData;
 
-  ProfileHeight({@required UserData userData})
+  ProfileHeight({@required UserData? userData})
       : assert(userData !=null),
         _userData = userData;
 
@@ -198,7 +198,7 @@ class _ProfileHeightState extends State<ProfileHeight> {
                 text: 'Continue',
                 color: kButtonColor,
                 onTap: (){
-                  widget._userData.height = heights[selectitem];
+                  widget._userData!.height = heights[selectitem];
                   Navigator.push(context, PageTransition(
                       type: PageTransitionType.rightToLeft,
                       child: ProfileUploadPhoto(

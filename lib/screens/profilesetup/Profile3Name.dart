@@ -10,9 +10,9 @@ import 'package:page_transition/page_transition.dart';
 
 
 class ProfileName extends StatefulWidget {
-  final UserData _userData;
+  final UserData? _userData;
 
-  ProfileName({@required UserData userData})
+  ProfileName({@required UserData? userData})
       : assert(userData != null),
         _userData = userData;
 
@@ -27,8 +27,8 @@ class _ProfileNameState extends State<ProfileName> {
 
   @override
   Widget build(BuildContext context) {
-    String lastName;
-    String firstName;
+    String? lastName;
+    String? firstName;
     return Scaffold(
         body: SafeArea(
       child: Column(
@@ -85,7 +85,7 @@ class _ProfileNameState extends State<ProfileName> {
               color: kButtonColor,
               onTap: () {
                if (controller.text.trim().isNotEmpty){
-                   widget._userData.firstName = firstName;
+                   widget._userData!.firstName = firstName;
                      Navigator.push(
                        context,
                        PageTransition(

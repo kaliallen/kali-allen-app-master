@@ -2,34 +2,23 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:kaliallendatingapp/constants.dart';
-import 'package:kaliallendatingapp/models/date.dart';
 import 'package:kaliallendatingapp/models/userData.dart';
-import 'package:kaliallendatingapp/screens/BrowseTab.dart';
-import 'package:kaliallendatingapp/screens/ChatScreen.dart';
-import 'package:kaliallendatingapp/screens/PickDateTime.dart';
 import 'package:kaliallendatingapp/widgets/MatchChatBox.dart';
 import 'package:kaliallendatingapp/widgets/progress.dart';
 import 'package:uuid/uuid.dart';
-import 'package:timeago/timeago.dart' as timeago;
-
-import '../models/dateManager.dart';
 import 'Home.dart';
 
 class ProfilePage extends StatefulWidget {
-  final String profileId;
-  final bool viewPreferenceInfo;
-  final bool viewingAsBrowseMode;
-  final Date dateDoc;
-  Function backFunction;
+  final String? profileId;
+  final bool? viewPreferenceInfo;
+  final bool? viewingAsBrowseMode;
 
   ProfilePage(
       {this.profileId,
       this.viewPreferenceInfo,
       this.viewingAsBrowseMode,
-      this.dateDoc,
-      this.backFunction});
+      });
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -145,90 +134,10 @@ class _ProfilePageState extends State<ProfilePage> {
         });
   }
 
-  Wrap availabilities(UserData profileData) {
-    //TODO add a method here that takes out all the expired dates...
-    List<Widget> timebuttonchildren = [];
 
-    print(widget.dateDoc.availability);
-    //
-    // widget.dateDoc.findActiveDatesFromList()     ;
-    //
-
-    //TODO: only relevent dates
-    for (String dateid in widget.dateDoc.availability) {
-      var newid = dateid.split('-');
-      String date = newid[0];
-      String time = newid[1];
-
-      //Date
-      DateTime dateDay = DateTime.parse(date);
-      date = '${DateFormat.MEd().format(dateDay)}';
-
-      //Time
-      if (time == '46') {
-        time = '4-6 PM';
-      }
-      if (time == '68') {
-        time = '6-8 PM';
-      }
-      if (time == '810') {
-        time = '8-10 PM';
-      }
-
-      print('$date' + ' $time');
-
-      GestureDetector child = GestureDetector(
-        onTap: () {
-          print(date);
-          //TODO: when pressed, send a notification to user
-          //TODO: create a new chat with the user
-
-          //Create a new Uuid for matches ID
-          // var uuid = Uuid().v4();
-          // print(uuid);
-
-          print('widget profile id ${widget.profileId}');
-          print('profile data uid ${profileData.uid}');
-          print(profileData.firstName);
-
-          //Create Popup to confirm matching and send an optional message
-          matchPopup('$date' + ' from $time', '${profileData.firstName}',
-              profileData.picture1);
-
-          // Create the match ref for the user
-          // matchesRef.doc(widget.profileId).collection('matches').doc(profileData.uid).set({
-          //   'activeMatch': true,
-          //   'lastMessage': 'New Date Request!',
-          //   'lastMessageSender': '${widget.profileId}',
-          //   'lastMessageTime': DateTime.now(),
-          //   'matchImageUrl': '${profileData.picture1}',
-          //   'matchName': '${profileData.firstName}',
-          //   'messageUnread': true,
-          //   'messagesId': uuid,
-          // });
-
-          //Create match ref for the profile user
-        },
-        child: Pill(
-          text: '$date' + ' $time',
-          color: Colors.black,
-        ),
-      );
-
-      timebuttonchildren.add(child);
-    }
-
-    return Wrap(
-      children: timebuttonchildren,
-    );
-  }
-
-  ///If profile's available times (dateDoc.availability) are out of date, DELETE? or make inactive
-  eraseOldDates() {}
 
   @override
   void initState() {
-    eraseOldDates();
     super.initState();
   }
 
@@ -240,7 +149,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  ///This is everything that lays on top of the profile picture, ie name, age, location
+
   FutureBuilder buildProfilePage() {
     return FutureBuilder(
         future: usersRef.doc(widget.profileId).get(),
@@ -248,14 +157,18 @@ class _ProfilePageState extends State<ProfilePage> {
           if (!snapshot.hasData) {
             return circularProgress();
           }
+
           UserData profileUserData = UserData.fromDocument(snapshot.data);
+
+          //Find out if the dateTime is today's date
+          bool available = profileUserData.availability?.toDate().year == DateTime.now().year && profileUserData.availability?.toDate().day == DateTime.now().day;
+
           return
               //Top Picture & Text
               ListView(
             padding: EdgeInsets.zero,
             children: [
               Stack(children: [
-                //TODO: This gradient doesn't work...?
 
                 //Profile Picture image
                 Container(
@@ -263,11 +176,12 @@ class _ProfilePageState extends State<ProfilePage> {
                   width: MediaQuery.of(context).size.width,
                   child: Image(
                       image:
-                          CachedNetworkImageProvider(profileUserData.picture1),
+                          CachedNetworkImageProvider(profileUserData.picture1!),
                       fit: BoxFit.cover),
                 ),
 
                 //Gradient over Profile Picture image
+                //TODO: This gradient doesn't work...?
                 Container(
                   height: MediaQuery.of(context).size.height * .5,
                   width: MediaQuery.of(context).size.width,
@@ -301,18 +215,18 @@ class _ProfilePageState extends State<ProfilePage> {
                               color: Colors.white,
                               iconSize: 25.0,
                               onPressed: () {
-                                widget.viewingAsBrowseMode
-                                    ? widget.backFunction()
-                                    : Navigator.pop(context);
+                                Navigator.pop(context);
                               },
                             ),
                           ),
-                          widget.viewPreferenceInfo
-                              ? SizedBox()
+
+                              widget.viewPreferenceInfo == true ?
+                              SizedBox()
                               : Padding(
                                   padding: const EdgeInsets.only(
                                       right: 15.0, top: 40),
-                                  child: widget.viewingAsBrowseMode
+                                  child:
+                                  widget.viewingAsBrowseMode == true
                                       ? IconButton(
                                           icon: Icon(
                                             Icons.more_horiz_sharp,
@@ -320,10 +234,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                             size: 25.0,
                                           ),
                                           //TODO: Integrate this everywhere....
-                                          onPressed: widget.backFunction,
+                                          onPressed: (){},
                                         )
                                       : SizedBox(),
-                                ),
+                              ),
                         ],
                       ),
                       //Header info
@@ -333,85 +247,51 @@ class _ProfilePageState extends State<ProfilePage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Text(
-                              //TODO: If the firstName is null, the screen will crash! Fix by adding condition -- UPDATE: I dont actually know if this is necessary. Or if we should curb this from happening upstream
-                              profileUserData.firstName != null
-                                  ? '${profileUserData.firstName}, 26'
-                                  : profileUserData.toString(),
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 26.0,
-                                fontFamily: 'Roboto',
-                              ),
-                            ),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: widget.viewPreferenceInfo
-                                  ? [
-                              ]
+                              children: widget.viewPreferenceInfo == true
+                                  ? []
                                   : [
-                                Pill(
-                                  text: '⚭ Mutual Availability',
-                                  color: Colors.green
-                                      .withOpacity(.95),
-                                ),
-                                      widget.viewingAsBrowseMode
+
+                                      widget.viewingAsBrowseMode == true
                                           ?
                                       Wrap(
                                               //TODO: Fix
                                               //TODO: Decide if this goes here. Should there be compatible "interests" here? Lots of questions...
                                               children: [
-                                                Pill(
-                                                  text: 'Mutual Availability',
+
+                                                available == true ? Pill(
+                                                  text: 'Anyone want to go to a meditation happy hour? 🧘🏻‍',
                                                   color: Colors.green
                                                       .withOpacity(.1),
-                                                ),
-                                                //Custom message as a pill?
-                                                // widget.dateDoc
-                                                //         .interests['activity']
-                                                //     ? Pill(
-                                                //         text: widget.dateDoc
-                                                //             .customMessage,
-                                                //         color: Colors.green
-                                                //             .withOpacity(.3),
-                                                //       )
-                                                //     : SizedBox(width: 0),
-                                                widget.dateDoc
-                                                        .interests['drinks']
-                                                    ? Pill(
-                                                        text: 'Drinks',
-                                                        color: Colors.white
-                                                            .withOpacity(.1),
-                                                      )
-                                                    : SizedBox(width: 0),
-                                                widget.dateDoc
-                                                        .interests['dinner']
-                                                    ? Pill(
-                                                        text: 'Dinner',
-                                                        color: Colors.white
-                                                            .withOpacity(.1),
-                                                      )
-                                                    : SizedBox(width: 0),
+                                                ): SizedBox(),
                                               ],
                                             )
                                           : SizedBox(),
-                                      //TODO: This is where the bug is
-                                      widget.dateDoc == null
-                                          ? SizedBox(height: 0)
-                                          : Padding(
-                                              padding:
-                                                  const EdgeInsets.only(top: 5),
-                                              child: Text(
-                                                //TODO: Change the font here
-                                                widget.dateDoc.customMessage,
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 15.0,
-                                                ),
-                                              ),
-                                            ),
+
                                     ],
-                            )
+                            ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  profileUserData.firstName != null
+                                      ? '${profileUserData.firstName}'
+                                      : 'Null',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 26.0,
+                                    fontFamily: 'Roboto',
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                available == true ? Pill(
+                                  text: 'Free Tonight',
+                                  color: Colors.green
+                                      .withOpacity(.95),
+                                ) : SizedBox(),
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -446,172 +326,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     )
                   : SizedBox(height: 0),
 
-              //Activity Options
-
-              Card(
-                  margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
-                child: ListTile(
-                  title: Text('"There is a commanders game on Sunday"'),
-                  subtitle: Text('Dinner'),
-                )
-              ),
-              Card(
-                  margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
-                  child: ListTile(
-                      title: Text('Dinner'),
-                      subtitle: Text('"I have been meaning to try sushi..."'),
-                      trailing: CircleAvatar(
-                        radius: 20,
-                        backgroundColor: Colors.pinkAccent,
-                        child: Text(
-                            '👍',
-                          textAlign: TextAlign.center,
-                        )
-                      )
-                  )
-              ),
-
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: 20.0,
-                  right: 20.0,
-                  left: 20.0,
-                ),
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0, vertical: 20.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Dinner',
-                            style: TextStyle(
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xff6A6E76),
-                            )),
-                            SizedBox(height: 5),
-                            Text('I\'ve been wanting to try sushi...',
-                                style: TextStyle(
-                                  color: Color(0xff070D1B),
-                                  fontSize: 18.0,
-                                  fontFamily: 'RobotoBlack',
-                                  fontWeight: FontWeight.w300,
-                                )),
-                          ],
-                        ),
-                        RawMaterialButton(
-                          onPressed: () {},
-                          // elevation: 2.0,
-                          fillColor: Colors.white,
-                          child: Text('👍'),
-                          // Icon(
-                          //   Icons.favorite,
-                          //   size: 10.0,
-                          // ),
-                          padding: EdgeInsets.all(15.0),
-                          shape: CircleBorder(),
-
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: 20.0,
-                  right: 20.0,
-                  left: 20.0,
-                ),
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0, vertical: 20.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Dinner',
-                                style: TextStyle(
-                                  fontSize: 15.0,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xff6A6E76),
-                                )),
-                            SizedBox(height: 5),
-                            Text('I\'ve been wanting to try sushi...',
-                                style: TextStyle(
-                                  color: Color(0xff070D1B),
-                                  fontSize: 18.0,
-                                  fontFamily: 'RobotoBlack',
-                                  fontWeight: FontWeight.w300,
-                                )),
-                          ],
-                        ),
-                        RawMaterialButton(
-                          onPressed: () {},
-                          // elevation: 2.0,
-                          fillColor: Colors.white,
-                          child: Text('👍'),
-                          // Icon(
-                          //   Icons.favorite,
-                          //   size: 10.0,
-                          // ),
-                          padding: EdgeInsets.all(15.0),
-                          shape: CircleBorder(),
-
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: 20.0,
-                  right: 20.0,
-                  left: 20.0,
-                ),
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0, vertical: 20.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Dinner',
-                            style: TextStyle(
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xff6A6E76),
-                            )),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-
               //Photo 2 Box
               Padding(
                 padding: const EdgeInsets.only(
@@ -625,58 +339,14 @@ class _ProfilePageState extends State<ProfilePage> {
                     width: MediaQuery.of(context).size.width,
                     height: 300.0,
                     fit: BoxFit.cover,
-                    image: CachedNetworkImageProvider(profileUserData.picture1),
-                  ),
-                ),
-              ),
-
-              //Prompt Square
-              // Padding(
-              //   padding: const EdgeInsets.all(20),
-              //   child: Container(
-              //     decoration: BoxDecoration(
-              //       color: Colors.white,
-              //       borderRadius: BorderRadius.circular(10.0),
-              //     ),
-              //     child: Column(
-              //       children: [
-              //         //TODO: Make this row scrollable within the container
-              //         Text(
-              //           'What do you like to do for fun?'
-              //         ),
-              //         Text(
-              //           'Hang out with friends'
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-              // ),
-
-//Photo 2 Box
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: 20.0,
-                  right: 20.0,
-                  left: 20.0,
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0),
-                  child: Image(
-                    width: MediaQuery.of(context).size.width,
-                    height: 300.0,
-                    fit: BoxFit.cover,
-                    image: CachedNetworkImageProvider(profileUserData.picture1),
+                    image: CachedNetworkImageProvider(profileUserData.picture1!),
                   ),
                 ),
               ),
 
               //Info Square Box
               Padding(
-                padding: const EdgeInsets.only(
-                  top: 20.0,
-                  right: 20.0,
-                  left: 20.0,
-                ),
+                padding: const EdgeInsets.all(20.0),
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -689,19 +359,43 @@ class _ProfilePageState extends State<ProfilePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           IconCard(
+                              icon: Icons.mood,
+                              text:
+                              'She/Her' //profileUserData.occupation,
+                            //${profileUserData.gender}
+                          ),
+                          IconCard(
+                              icon: Icons.emoji_people,
+                              text:
+                              'Straight' //profileUserData.occupation,
+                            //${profileUserData.gender}
+                          ),
+                          IconCard(
+                            icon: Icons.favorite_border,
+                            text: 'Dating',
+                          ),
+                          // IconCard(
+                          //   icon: Icons.straighten,
+                          //   text: '5\'5',
+                          // ),
+                        ],
+                      ),
+                      profileUserData.location != null ?
+                      Divider(): SizedBox(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconCard(
                               icon: Icons.location_on_outlined,
                               text:
-                                  'Dupont Circle' //profileUserData.occupation,
-                              //${profileUserData.gender}
-                              ),
-                          IconCard(
-                            icon: Icons.cake_outlined,
-                            text: '26',
+                              'Dupont Circle' //profileUserData.occupation,
+                            //${profileUserData.gender}
                           ),
-                          IconCard(
-                            icon: Icons.straighten,
-                            text: '5\'5',
-                          ),
+                          // IconCard(
+                          //   icon: Icons.cake_outlined,
+                          //   text: '26',
+                          // ),
+
                         ],
                       ),
                       profileUserData.education != null
@@ -709,103 +403,91 @@ class _ProfilePageState extends State<ProfilePage> {
                           : SizedBox(height: 0),
                       profileUserData.education != null
                           ? Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                IconCard(
-                                  icon: Icons.account_balance_sharp,
-                                  text: profileUserData.education,
-                                  //${profileUserData.gender}
-                                ),
-                              ],
-                            )
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconCard(
+                            icon: Icons.account_balance_sharp,
+                            text: profileUserData.education,
+                            //${profileUserData.gender}
+                          ),
+                        ],
+                      )
                           : SizedBox(height: 0),
                       profileUserData.occupation != null
                           ? Divider()
                           : SizedBox(height: 0),
                       profileUserData.occupation != null
                           ? Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                IconCard(
-                                  icon: Icons.business_center,
-                                  text: profileUserData.occupation,
-                                ),
-                                // IconCard(
-                                //   icon: Icons.cake_outlined,
-                                //   text: '26',
-                                // ),
-                              ],
-                            )
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconCard(
+                            icon: Icons.business_center,
+                            text: profileUserData.occupation,
+                          ),
+                          // IconCard(
+                          //   icon: Icons.cake_outlined,
+                          //   text: '26',
+                          // ),
+                        ],
+                      )
                           : SizedBox(height: 0),
                     ],
                   ),
                 ),
               ),
 
-              //Time Slots
-              widget.viewingAsBrowseMode
-                  ? Padding(
-                      padding: const EdgeInsets.only(
-                        top: 30.0,
-                        right: 0.0,
-                        left: 20.0,
-                        bottom: 100.0,
-                      ),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                                'Click a time slot below to match with ${profileUserData.firstName}: '),
-                            Center(child: availabilities(profileUserData)),
-                          ],
+// Photo 2 Box
+              Padding(
+                padding: const EdgeInsets.only(
+                  right: 20.0,
+                  left: 20.0,
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10.0),
+                  child: Image(
+                    width: MediaQuery.of(context).size.width,
+                    height: 300.0,
+                    fit: BoxFit.cover,
+                    image: CachedNetworkImageProvider(profileUserData.picture1!),
+                  ),
+                ),
+              ),
+
+
+
+              //Prompt Box
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 25),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        //TODO: Make this row scrollable within the container
+                        Text(
+                          'My favorite things to do in DC are...',
+                          style: kCardTitle,
                         ),
-                      ),
-                      // Wrap(
-                      //         children: [
-                      //           //TODO: Somehow figure out how to add availabilities here.
-                      //           GestureDetector(
-                      //             onTap: () {
-                      //               // print(widget.dateDoc.availability);
-                      //               // for (String date in widget.dateDoc.availability) {
-                      //               //   String datetime = date.substring(8, 10);
-                      //               //
-                      //               //   String dateday = date.substring(0, 8);
-                      //               //   DateTime datey = DateTime.parse(dateday);
-                      //               //
-                      //               //   String dater = '${DateFormat.MEd().format(datey)}';
-                      //               //   print(dater);
-                      //               //
-                      //               //   if (datetime == '46') {
-                      //               //     datetime = '4-6 PM';
-                      //               //     // print('4-6 PM');
-                      //               //   }
-                      //               //   if (datetime == '68') {
-                      //               //     // print('6-8 PM');
-                      //               //     datetime = '6-8 PM';
-                      //               //   }
-                      //               //   if (datetime == '810') {
-                      //               //     // print('8-10 PM');
-                      //               //     datetime = '8-10 PM';
-                      //               //   }
-                      //               //
-                      //               //   print('$dater' + ' $datetime');
-                      //               // }
-                      //             },
-                      //             child: Pill(
-                      //               text: 'Tonight 4-6 PM',
-                      //               color: Color(0xff6A4C93),
-                      //             ),
-                      //           ),
-                      //           Pill(
-                      //             text: 'Tuesday 4-6 PM',
-                      //             color: Color(0xff6A4C93),
-                      //           ),
-                      //         ],
-                      //       ),
-                    )
-                  : SizedBox(),
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(
+                              'Thai food, going to the park, & going to Flash ;)',
+                              style: kCardAnswer
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 50),
             ],
           );
         });
@@ -819,8 +501,8 @@ class _ProfilePageState extends State<ProfilePage> {
 }
 
 class IconCard extends StatelessWidget {
-  final String text;
-  final IconData icon;
+  final String? text;
+  final IconData? icon;
 
   IconCard({this.text, this.icon});
 
@@ -839,8 +521,8 @@ class IconCard extends StatelessWidget {
             width: 10.0,
           ),
           Text(
-            text,
-            style: kCardTextStyle,
+            text!,
+            style: kCardTitle,
           ),
         ],
       ),
@@ -849,10 +531,10 @@ class IconCard extends StatelessWidget {
 }
 
 class InfoRow extends StatelessWidget {
-  final String text;
-  final IconData icon;
-  final String text2;
-  final IconData icon2;
+  final String? text;
+  final IconData? icon;
+  final String? text2;
+  final IconData? icon2;
 
   InfoRow({this.text, this.icon, this.text2, this.icon2});
 
@@ -875,10 +557,10 @@ class InfoRow extends StatelessWidget {
 }
 
 class Pill extends StatelessWidget {
-  final String text;
-  final Color color;
+  final String? text;
+  final Color? color;
 
-  const Pill({Key key, this.text, this.color});
+  const Pill({Key? key, this.text, this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -888,10 +570,11 @@ class Pill extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.only(right: 10, left: 10, top: 5.0, bottom: 5.0),
           child: Text(
-            text,
+            text!,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white,
+              fontSize: 15,
             ),
           ),
         ),

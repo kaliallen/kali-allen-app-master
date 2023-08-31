@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:kaliallendatingapp/screens/Home.dart';
 import 'package:kaliallendatingapp/widgets/StyledButton.dart';
 import 'package:kaliallendatingapp/widgets/progress.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:kaliallendatingapp/screens/profilesetup/Profile1Location.dart';
 
 
@@ -27,8 +27,8 @@ class _PhoneSignUpState extends State<PhoneSignUp> {
   final _codeController = TextEditingController();
   bool _loading = false;
 
-  Future<bool> isFirstTime(String userId) async {
-    bool exist;
+  Future<bool?> isFirstTime(String userId) async {
+    bool? exist;
     await FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
@@ -44,7 +44,7 @@ class _PhoneSignUpState extends State<PhoneSignUp> {
     //check if user exists in users collection in database (according to their id)
     bool exist;
     final currentUser = _auth.currentUser;
-    final doc = await usersRef.doc(currentUser.uid).get();
+    final doc = await usersRef.doc(currentUser!.uid).get();
     //if the user doesn't exist, then we want to take them to the create account page
     if (!doc.exists) {
       Navigator.push(
@@ -65,21 +65,23 @@ class _PhoneSignUpState extends State<PhoneSignUp> {
           setState(() {
             _loading = false;
           });
-          UserCredential result = await _auth.signInWithCredential(credential);
-          User user = result.user;
+          UserCredential? result = await _auth.signInWithCredential(credential);
+          User? user = result.user;
           //make auth credential object
-          String uid = user.uid;
-          bool isFirst = await isFirstTime(uid);
-          print(isFirst);
-          if (user != null && isFirst == true) {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ProfileSetup()));
-          } else {
-            if (user != null && isFirst == false) {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => Home()));
+          if (user != null) {
+            String uid = user.uid;
+            bool? isFirst = await isFirstTime(uid);
+            print(isFirst);
+            if (isFirst == true) {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ProfileSetup()));
             } else {
-              print('User is null or error occured');
+              if (isFirst == false) {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => Home()));
+              } else {
+                print('User is null or error occured');
+              }
             }
           }
         },
@@ -93,7 +95,7 @@ class _PhoneSignUpState extends State<PhoneSignUp> {
             _errorExists = true;
           });
         },
-        codeSent: (String verificationId, [int forceResendingToken]) {
+        codeSent: (String verificationId, int? forceResendingToken) {
           setState(() {
             _loading = false;
           });
@@ -140,17 +142,18 @@ class _PhoneSignUpState extends State<PhoneSignUp> {
                                   smsCode: code);
                           UserCredential result =
                               await _auth.signInWithCredential(credential);
-                          User user = result.user;
+                          User? user = result.user;
+                          if (user != null){
                           String uid = user.uid;
-                          bool isFirst = await isFirstTime(uid);
+                          bool? isFirst = await isFirstTime(uid);
                           print(isFirst);
-                          if (user != null && isFirst == true) {
+                          if (isFirst == true) {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => Home()));
                           } else {
-                            if (user != null && isFirst == false) {
+                            if (isFirst == false) {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -158,6 +161,7 @@ class _PhoneSignUpState extends State<PhoneSignUp> {
                             } else {
                               print('User is null or error occured');
                             }
+                          }
                           }
                         } catch (e) {
                           print("Exception caught => $e");
@@ -176,7 +180,9 @@ class _PhoneSignUpState extends State<PhoneSignUp> {
                 );
               });
         },
-        codeAutoRetrievalTimeout: null);
+        codeAutoRetrievalTimeout: (String verification){
+          print(verification);
+        });
   }
 
 

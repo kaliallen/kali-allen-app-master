@@ -17,10 +17,10 @@ import 'package:kaliallendatingapp/widgets/StyledButton.dart';
 final DateTime timestamp = DateTime.now();
 
 class ProfileActivities extends StatefulWidget {
-  UserData _userData;
+  UserData? _userData;
 
 
-  ProfileActivities({@required UserData userData})
+  ProfileActivities({@required UserData? userData})
       : assert(userData != null),
         _userData = userData;
 
@@ -75,28 +75,28 @@ class _ProfileActivitiesState extends State<ProfileActivities> {
 
   Future uploadUserToFirebase() async {
     //Save UserData data to Firestore under the logged in username
-    widget._userData.setUserDataInFirestore(
-      firstName: widget._userData.firstName,
-      lastName: widget._userData.lastName,
-      birthDate: widget._userData.birthDate,
-      gender: widget._userData.gender,
-      isInterestedIn: widget._userData.isInterestedIn,
-      height: widget._userData.height,
-      picture1: widget._userData.picture1,
-      picture2: widget._userData.picture2,
-      picture3: widget._userData.picture3,
-      picture4: widget._userData.picture4,
-      picture5: widget._userData.picture5,
-      prompt1: widget._userData.prompt1,
-      answer1: widget._userData.answer1,
-      occupation: widget._userData.occupation,
-      education: widget._userData.education,
+    widget._userData!.setUserDataInFirestore(
+      firstName: widget._userData!.firstName,
+      lastName: widget._userData!.lastName,
+      birthDate: widget._userData!.birthDate,
+      gender: widget._userData!.gender,
+      isInterestedIn: widget._userData!.isInterestedIn,
+      height: widget._userData!.height,
+      picture1: widget._userData!.picture1,
+      picture2: widget._userData!.picture2,
+      picture3: widget._userData!.picture3,
+      picture4: widget._userData!.picture4,
+      picture5: widget._userData!.picture5,
+      prompt1: widget._userData!.prompt1,
+      answer1: widget._userData!.answer1,
+      occupation: widget._userData!.occupation,
+      education: widget._userData!.education,
     );
-    final User user = FirebaseAuth.instance.currentUser;
-    DocumentSnapshot doc = await usersRef.doc(user.uid).get();
+    final User? user = FirebaseAuth.instance.currentUser;
+    DocumentSnapshot doc = await usersRef.doc(user!.uid).get();
     widget._userData = UserData.fromDocument(doc);
     print(
-        'if uid is not null _userData is successfully saved from firestore..._userData uid is: ${widget._userData.uid}');
+        'if uid is not null _userData is successfully saved from firestore..._userData uid is: ${widget._userData!.uid}');
     if (doc.exists) {
       //Go to home.dart
       Navigator.push(context,
@@ -167,24 +167,6 @@ class _ProfileActivitiesState extends State<ProfileActivities> {
                         } else {
                           activitiesSelected[0] = true;
                           //Add to list
-                          activityBoxes.add(
-                              ActivityBox(
-                                text: '🍝 Dinner',
-                                onSubmitted: (String value){
-                                  print('Submitted text: $value');
-                                  activitiesMap['🍝 Dinner'] = value;
-                                  print(activitiesMap);
-                                },
-                                onTap: (){
-                                  setState(() {
-                                    activityBoxes.removeWhere((element) => element.text == '🍝 Dinner');
-                                    activitiesSelected[0] = false;
-                                    dateIdeasCount--;
-                                  });
-                                },
-                                controller: dinnerController,
-                              )
-                          );
                           //Increase Count
                           dateIdeasCount++;
                         }
@@ -204,23 +186,7 @@ class _ProfileActivitiesState extends State<ProfileActivities> {
                           dateIdeasCount--;
                         } else {
                           activitiesSelected[1] = true;
-                          activityBoxes.add(
-                              ActivityBox(
-                                text: '🍸 Drinks' ,
-                                onSubmitted: (String value){
-                                  print('Submitted text: $value');
-                                  activitiesMap['🍸 Drinks'] = value;
-                                  print(activitiesMap);
-                                },
-                                onTap: (){
-                                  setState(() {
-                                    activityBoxes.removeWhere((element) => element.text == '🍸 Drinks');
-                                    activitiesSelected[1] = false;
-                                    dateIdeasCount--;
-                                  });
-                                },
-                              )
-                          );
+
                           //Increase Count
                           dateIdeasCount++;
                         }
@@ -229,116 +195,7 @@ class _ProfileActivitiesState extends State<ProfileActivities> {
 
                     },
                   ),
-                  ActivityButton(
-                    text: '🥾 Hike',
-                    isSelected: activitiesSelected[2],
-                    onTap: (){
-                      setState(() {
-                        if (activitiesSelected[2] == true){
-                          activitiesSelected[2] = false;
-                          //Remove from list
-                          activityBoxes.removeWhere((element) => element.text == '🥾 Hike');
-                          //Decrease Count
-                          dateIdeasCount--;
-                        } else {
-                          activitiesSelected[2] = true;
-                          activityBoxes.add(
-                              ActivityBox(
-                                text: '🥾 Hike' ,
-                                onSubmitted: (String value){
-                                  print('Submitted text: $value');
-                                  activitiesMap['🥾 Hike'] = value;
-                                  print(activitiesMap);
-                                },
-                                onTap: (){
-                                  setState(() {
-                                    activityBoxes.removeWhere((element) => element.text == '🥾 Hike');
-                                    activitiesSelected[2] = false;
-                                    dateIdeasCount--;
-                                  });
-                                },
-                              )
-                          );
-                          //Increase Count
-                          dateIdeasCount++;
-                        }
-                      });
 
-
-                    },
-                  ),
-                  ActivityButton(
-                    text: '🌮 Tacos',
-                    isSelected: activitiesSelected[3],
-                    onTap: (){
-                      setState(() {
-                        if (activitiesSelected[3] == true){
-                          activitiesSelected[3] = false;
-                          //Remove from list
-                          activityBoxes.removeWhere((element) => element.text == '🌮 Tacos');
-                          //Decrease Count
-                          dateIdeasCount--;
-                        } else {
-                          activitiesSelected[3] = true;
-                          activityBoxes.add(
-                              ActivityBox(
-                                text: '🌮 Tacos' ,
-                                onSubmitted: (String value){
-                                  print('Submitted text: $value');
-                                  activitiesMap['🌮 Tacos'] = value;
-                                  print(activitiesMap);
-                                },
-                                onTap: (){
-                                  setState(() {
-                                    activityBoxes.removeWhere((element) => element.text == '🌮 Tacos');
-                                    activitiesSelected[3] = false;
-                                    dateIdeasCount--;
-                                  });
-                                },
-                              )
-                          );
-                          //Increase Count
-                          dateIdeasCount++;
-                        }
-                      });
-                    },
-                  ),
-                  ActivityButton(
-                    text: '🎾 Tennis',
-                    isSelected: activitiesSelected[4],
-                    onTap: (){
-                      setState(() {
-                        if (activitiesSelected[4] == true){
-                          activitiesSelected[4] = false;
-                          //Remove from list
-                          activityBoxes.removeWhere((element) => element.text == '🎾 Tennis');
-                          //Decrease Count
-                          dateIdeasCount--;
-                        } else {
-                          activitiesSelected[4] = true;
-                          activityBoxes.add(
-                              ActivityBox(
-                                text: '🎾 Tennis',
-                                onSubmitted: (String value){
-                                  print('Submitted text: $value');
-                                  activitiesMap['🎾 Tennis'] = value;
-                                  print(activitiesMap);
-                                },
-                                onTap: (){
-                                  setState(() {
-                                    activityBoxes.removeWhere((element) => element.text == '🎾 Tennis');
-                                    activitiesSelected[4] = false;
-                                    dateIdeasCount--;
-                                  });
-                                },
-                              )
-                          );
-                          //Increase Count
-                          dateIdeasCount++;
-                        }
-                      });
-                    },
-                  ),
                 ],
               ),
             ),
@@ -387,11 +244,11 @@ class _ProfileActivitiesState extends State<ProfileActivities> {
 }
 
 class ActivityButton extends StatelessWidget {
-  final bool isSelected;
-  final String text;
-  final Function onTap;
+  final bool? isSelected;
+  final String? text;
+  final VoidCallback? onTap;
 
-  const ActivityButton({Key key, this.text, this.onTap, this.isSelected});
+  const ActivityButton({Key? key, this.text, this.onTap, this.isSelected});
 
   @override
   Widget build(BuildContext context) {
@@ -402,15 +259,15 @@ class ActivityButton extends StatelessWidget {
         child: Container(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(text,
+            child: Text(text!,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: isSelected ? Colors.white : kButtonColor,
+                  color: isSelected == true ? Colors.white : kButtonColor,
                   fontSize: 12.0,
                 )),
           ),
           decoration: BoxDecoration(
-              color: isSelected
+              color: isSelected == true
                   ? kPillButtonSelectedColor
                   : kPillButtonUnselectedColor,
               borderRadius: BorderRadius.circular(5.0)),
@@ -421,13 +278,13 @@ class ActivityButton extends StatelessWidget {
 }
 
 class ActivityBox extends StatelessWidget {
-  final String text;
-  final Function onTap;
-  final TextEditingController controller;
-  final Function onSubmitted;
+  final String? text;
+  final void Function()? onTap;
+  final TextEditingController? controller;
+  final Function(String)?  onSubmitted;
 
 
-  const ActivityBox({Key key, this.text, this.onTap, this.controller, this.onSubmitted});
+  const ActivityBox({Key? key, this.text, this.onTap, this.controller, this.onSubmitted});
 
   @override
   Widget build(BuildContext context) {
@@ -451,7 +308,7 @@ class ActivityBox extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(text,
+                      Text(text!,
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 15.0,

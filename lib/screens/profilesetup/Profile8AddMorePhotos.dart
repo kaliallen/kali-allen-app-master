@@ -11,7 +11,7 @@ import 'package:kaliallendatingapp/screens/profilesetup/Profile10School.dart';
 import 'package:kaliallendatingapp/widgets/StyledButton.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as Im;
@@ -21,9 +21,9 @@ import '../Home.dart';
 
 
 class ProfileAddMorePhotos extends StatefulWidget {
-  final UserData _userData;
+  final UserData? _userData;
 
-  ProfileAddMorePhotos({@required UserData userData})
+  ProfileAddMorePhotos({@required UserData? userData})
       : assert(userData != null),
         _userData = userData;
 
@@ -33,11 +33,11 @@ class ProfileAddMorePhotos extends StatefulWidget {
 
 class _ProfileAddMorePhotosState extends State<ProfileAddMorePhotos> {
   bool isUploading = false;
-  File _image1;
-  File _image2;
-  File _image3;
+  File? _image1;
+  File? _image2;
+  File? _image3;
 
-  int selectedImage;
+  int? selectedImage;
 
   final picker = ImagePicker();
 
@@ -74,7 +74,7 @@ class _ProfileAddMorePhotosState extends State<ProfileAddMorePhotos> {
   Future getImageCamera() async {
     print(selectedImage);
     Navigator.pop(context);
-    var pickedFile = await picker.getImage(
+    var pickedFile = await picker.pickImage(
       source: ImageSource.camera,
       maxHeight: 675,
       maxWidth: 960,
@@ -94,7 +94,7 @@ class _ProfileAddMorePhotosState extends State<ProfileAddMorePhotos> {
   Future getImageGallery() async {
     print(selectedImage);
     Navigator.pop(context);
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     setState(() {
       if (pickedFile != null){
         selectedImage == 1 ? _image1 = File(pickedFile.path)
@@ -117,9 +117,9 @@ class _ProfileAddMorePhotosState extends State<ProfileAddMorePhotos> {
     print('3. image uploaded to storage');
     //6) Add image to UserData
     i == 0 ?
-    widget._userData.picture2 = medialUrl
-    : i == 1 ? widget._userData.picture3 = medialUrl
-    : widget._userData.picture4 = medialUrl;
+    widget._userData!.picture2 = medialUrl
+    : i == 1 ? widget._userData!.picture3 = medialUrl
+    : widget._userData!.picture4 = medialUrl;
     print('4. photo added to userData');
     //7) Set is Uploading back to False
     // setState(() {
@@ -134,8 +134,8 @@ class _ProfileAddMorePhotosState extends State<ProfileAddMorePhotos> {
     final tempDir = await getTemporaryDirectory();
     final path = tempDir.path;
     //Reading the image file and putting it into imageFile variable
-    Im.Image imageFile = Im.decodeImage(image.readAsBytesSync());
-    final compressedImageFile = File('$path/img_$postId$i.jpg')..writeAsBytesSync(Im.encodeJpg(imageFile, quality: 85));
+    Im.Image? imageFile = Im.decodeImage(image.readAsBytesSync());
+    final compressedImageFile = File('$path/img_$postId$i.jpg')..writeAsBytesSync(Im.encodeJpg(imageFile!, quality: 85));
     setState(() {
       i == 0 ? _image1 = compressedImageFile
           : i == 1 ? _image2 = compressedImageFile
@@ -199,7 +199,7 @@ class _ProfileAddMorePhotosState extends State<ProfileAddMorePhotos> {
                             width: MediaQuery.of(context).size.width * .3,
                             child: Image(
                               fit: BoxFit.cover,
-                              image: CachedNetworkImageProvider(widget._userData.picture1),
+                              image: CachedNetworkImageProvider(widget._userData!.picture1!),
                             ),
                           ),
                           GestureDetector(
@@ -216,7 +216,7 @@ class _ProfileAddMorePhotosState extends State<ProfileAddMorePhotos> {
                               child: _image1 == null ? Icon(
                                 Icons.add_a_photo_outlined,
                               ) : Image.file(
-                                  _image1,
+                                  _image1!,
                                   fit: BoxFit.cover,
                               ),
                               decoration: BoxDecoration(
@@ -244,7 +244,7 @@ class _ProfileAddMorePhotosState extends State<ProfileAddMorePhotos> {
                             child: _image2 == null ? Icon(
                               Icons.add_a_photo_outlined,
                             ) : Image.file(
-                              _image2,
+                              _image2!,
                               fit: BoxFit.cover,
                             ),
                             decoration: BoxDecoration(
@@ -267,7 +267,7 @@ class _ProfileAddMorePhotosState extends State<ProfileAddMorePhotos> {
                               child: _image3 == null ? Icon(
                                 Icons.add_a_photo_outlined,
                               ) : Image.file(
-                                _image3,
+                                _image3!,
                                 fit: BoxFit.cover,
                               ),
                               decoration: BoxDecoration(
@@ -295,7 +295,7 @@ class _ProfileAddMorePhotosState extends State<ProfileAddMorePhotos> {
                     final images = [_image1, _image2, _image3];
                     for (int i=0; i< images.length; i++){
                      if (images[i] != null) {
-                       await handleSubmit(images[i], i);
+                       await handleSubmit(images[i]!, i);
                      } else {
                        print('Does image[${i + 1}] does not exist');
                      }

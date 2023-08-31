@@ -20,7 +20,7 @@ const TextStyle tileFont = TextStyle(
 
 class SettingScreen extends StatefulWidget {
   static String id = 'settings_screen';
-  final String currentUserId;
+  final String? currentUserId;
 
   SettingScreen({this.currentUserId});
 
@@ -68,6 +68,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
   Future<void> logOut() async {
     return await FirebaseAuth.instance.signOut();
+
   }
 
   buildProfileHeader() {
@@ -140,7 +141,7 @@ class _SettingScreenState extends State<SettingScreen> {
             ),
           );;
         }
-        UserData userData = UserData.fromDocument(snapshot.data);
+        UserData userData = UserData.fromDocument(snapshot.data as DocumentSnapshot<Object?>);
         return SafeArea(
           child: Center(
             child: Padding(
@@ -163,7 +164,7 @@ class _SettingScreenState extends State<SettingScreen> {
                             radius: 50,
                             backgroundColor: Colors.grey,
                             backgroundImage:
-                                CachedNetworkImageProvider(userData.picture1),
+                                CachedNetworkImageProvider(userData.picture1!),
                           ),
                         ),
                       ),
@@ -338,7 +339,7 @@ loadingView() {
 }
 
 class ListTileIcon extends StatelessWidget {
-  final IconData icon;
+  final IconData? icon;
 
   ListTileIcon({this.icon,});
 

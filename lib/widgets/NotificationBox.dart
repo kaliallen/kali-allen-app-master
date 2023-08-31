@@ -11,25 +11,33 @@ import 'package:uuid/uuid.dart';
 
 import '../screens/Home.dart';
 
-String userId = FirebaseAuth.instance.currentUser.uid;
+String userId = FirebaseAuth.instance.currentUser!.uid;
 
 class NotificationBox extends StatelessWidget {
-  final String notificationId;
-  final bool dateNotification; //might not need
-  final String matchImageUrl;
-  final String senderId; //might not need
-  final String name;
-  final bool poolNotification; //don't need
-  final DateTime time;
-  final String type; //might not need
-  final String message;
-  final String date;
+  final String? notificationId;
+  final bool? dateNotification; //might not need
+  final String? matchImageUrl;
+  final String? senderId; //might not need
+  final String? name;
+  final bool? poolNotification; //don't need
+  final DateTime? time;
+  final String? type; //might not need
+  final String? message;
+
   final userId;
 
+  NotificationBox(
+      {this.userId,
 
-
-  NotificationBox({this.userId, this.date, this.message, this.notificationId, this.dateNotification, this.matchImageUrl, this.senderId, this.name, this.poolNotification, this.time, this.type});
-
+      this.message,
+      this.notificationId,
+      this.dateNotification,
+      this.matchImageUrl,
+      this.senderId,
+      this.name,
+      this.poolNotification,
+      this.time,
+      this.type});
 
   @override
   Widget build(BuildContext context) {
@@ -40,58 +48,68 @@ class NotificationBox extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        leading:  GestureDetector(
-          onTap: (){
+        leading: GestureDetector(
+          onTap: () {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        ProfilePage(profileId: senderId,
-                          viewingAsBrowseMode: false,
+                    builder: (context) => ProfilePage(
+                          profileId: senderId,
+                          viewingAsBrowseMode: true,
                           viewPreferenceInfo: false,
                         )));
           },
           child: CircleAvatar(
             radius: 25,
             backgroundColor: Colors.grey,
-            backgroundImage: CachedNetworkImageProvider(matchImageUrl),
+            backgroundImage: CachedNetworkImageProvider(matchImageUrl!),
           ),
         ),
-        title:  Column(
+        title: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-                        type.contains('looking') ? '$name, one of your matches, is looking for a date Tonight!' : type.contains('match') ? '$name is available $date.' : 'You have a new date with $name on Thursday!',
-                        style: TextStyle(
-                          // fontSize: 10.0,
-                          fontWeight: FontWeight.w500,
-                          color: kDarkest,
-                        )
-                        ),
-            Text(
-                message,
+                type!.contains('looking')
+                    ? '$name is free tonight!'
+                    : type!.contains('match')
+                        ? '$name sent you a message!'
+                        : '$name is going to $message',
                 style: TextStyle(
                   // fontSize: 10.0,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                   color: kDarkest,
-                )
+                )),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5.0),
+              child: Text('"${message!}"',
+                  style: TextStyle(
+                    // fontSize: 10.0,
+                    fontWeight: FontWeight.w400,
+                    color: kDarkest,
+                  )),
             ),
           ],
         ),
-        subtitle: Text(
-                    timeago.format(time),
-                      style: TextStyle(
-                       fontWeight: FontWeight.w100,
-                        color: kDarkest,
-                      )
-                  ),
-        trailing:  Column(
+        subtitle: Text(timeago.format(time!),
+            style: TextStyle(
+              fontWeight: FontWeight.w100,
+              color: kDarkest,
+            )),
+        trailing: Column(
           children: [
             TextButton(
-              child: Text('Start a Chat'),
-              onPressed: () async {
+              child: Text(
+                type!.contains('looking')
+                    ? 'Message'
+                    : type!.contains('match')
+                    ? 'Start a Chat'
+                    : 'View Event',
 
+
+              ),
+              onPressed: () async {
                 var uuid = Uuid();
 
                 // //Create a new match for the SENDER of the notification
@@ -124,12 +142,11 @@ class NotificationBox extends StatelessWidget {
                 //   });
                 // } else {
                 // This is where to create a new match
-                matchesRef
-                    .doc(userId).collection('matches').doc(senderId)
-                    .set({
+                matchesRef.doc(userId).collection('matches').doc(senderId).set({
                   'activeMatch': true,
                   'dateId': 'test',
-                  'lastMessage': 'INSERT NAME has matched with you! Make a lasting impression so you guys can go on the date at INSERT TIME...!',
+                  'lastMessage':
+                      'INSERT NAME has matched with you! Make a lasting impression so you guys can go on the date at INSERT TIME...!',
                   'lastMessageSender': userId,
                   'lastMessageTime': Timestamp.now(),
                   'matchImageUrl': matchImageUrl,
@@ -140,17 +157,12 @@ class NotificationBox extends StatelessWidget {
                 //
                 // }
 
-
                 //TODO: Make a match under the senderId
                 print('senderId: $senderId');
 
-
-
                 //TODO: Once all that is complete, go to the chat screen....?? Somehow?
-
               },
             ),
-
           ],
         ),
 

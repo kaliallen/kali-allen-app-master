@@ -9,10 +9,10 @@ import 'package:kaliallendatingapp/widgets/StyledButton.dart';
 import 'package:page_transition/page_transition.dart';
 
 class ProfileGender extends StatefulWidget {
-  final UserData _userData;
+  final UserData? _userData;
 
 
-  ProfileGender({@required UserData userData})
+  ProfileGender({@required UserData? userData})
       : assert(userData !=null),
         _userData = userData;
 
@@ -21,7 +21,7 @@ class ProfileGender extends StatefulWidget {
 }
 
 class _ProfileGenderState extends State<ProfileGender> {
-  String selectedGender;
+  String? selectedGender;
   double width = 90.0;
   double height = 20.0;
   List<String> genderSelection = ['Female','Male','Bigender','Androgyne','Androgynous'];
@@ -89,7 +89,7 @@ class _ProfileGenderState extends State<ProfileGender> {
                             setState(() {
                               isGenderSelected = true;
                             });
-                            widget._userData.gender = selectedGender;
+                            widget._userData!.gender = selectedGender;
                             Navigator.push(context, PageTransition(
                                 type: PageTransitionType.rightToLeft,
                                 child: ProfileInterestedIn(
@@ -145,7 +145,7 @@ class _ProfileGenderState extends State<ProfileGender> {
                         color: Colors.grey,
                         onTap: () {
                             if (selectedGender != null) {
-                              widget._userData.gender = selectedGender;
+                              widget._userData!.gender = selectedGender;
                               Navigator.push(context, PageTransition(
                                   type: PageTransitionType.rightToLeft,
                                   child: ProfileInterestedIn(
@@ -180,7 +180,7 @@ class _ProfileGenderState extends State<ProfileGender> {
       selected: selectedGender == gender,
       onSelected: (selected){
         setState(() {
-          selectedGender = selected ? gender : null;
+          selectedGender = (selected ? gender : null)!;
         });
       },
     );

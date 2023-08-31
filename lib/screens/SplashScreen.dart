@@ -1,18 +1,14 @@
-import 'dart:async';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:kaliallendatingapp/constants.dart';
 import 'package:kaliallendatingapp/models/userData.dart';
-import 'package:kaliallendatingapp/models/userRepository.dart';
 import 'package:kaliallendatingapp/screens/Home.dart';
-import 'package:kaliallendatingapp/screens/HomeScreen.dart';
-import 'package:kaliallendatingapp/screens/PhoneSignUp.dart';
 import 'package:kaliallendatingapp/screens/WelcomeScreen.dart';
 import 'package:kaliallendatingapp/screens/profilesetup/Profile1Location.dart';
-import 'package:kaliallendatingapp/screens/profilesetup/ProfileGeoLocator.dart';
-import 'package:provider/provider.dart';
+
+
 
 
 class SplashScreen1 extends StatefulWidget {
@@ -43,7 +39,7 @@ class _SplashScreen1State extends State<SplashScreen1> {
     super.initState();
     FirebaseAuth.instance.authStateChanges().listen((account) {
       print('1. Init State listens for an account...(?)');
-      handleSignInn(account);
+      handleSignInn(account!);
     }, onError: (err){
       print('Error signing in: $err');
     });

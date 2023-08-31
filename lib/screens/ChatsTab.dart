@@ -15,7 +15,7 @@ import 'package:kaliallendatingapp/widgets/StyledButton.dart';
 import 'package:page_transition/page_transition.dart';
 
 class MatchesScreen extends StatefulWidget {
-  final String currentUserId;
+  final String? currentUserId;
 
   MatchesScreen({this.currentUserId});
 
@@ -41,11 +41,16 @@ class _MatchesScreenState extends State<MatchesScreen> {
             children: [
               Container(
                 padding: EdgeInsets.only(left: 25.0, top: 50.0),
-                child: Text('Chats',
-                    style: TextStyle(
-                        fontSize: 26.0,
-                        color: kDarkest,
-                        fontWeight: FontWeight.w500)),
+                child: Row(
+                  children: [
+                    Text('Chats',
+                        style: TextStyle(
+                            fontSize: 26.0,
+                            color: kDarkest,
+                            fontWeight: FontWeight.w500)),
+
+                  ],
+                ),
               ),
 
               DateList(profileId: widget.currentUserId),
@@ -61,7 +66,7 @@ class DateList extends StatelessWidget {
    this.profileId,
   });
 
-  final String profileId;
+  final String? profileId;
 
 
 
@@ -82,7 +87,7 @@ class DateList extends StatelessWidget {
                 backgroundColor: Colors.lightBlue,
               ));
             }
-            final matches = snapshot.data.docs.reversed;
+            final matches = snapshot.data!.docs.reversed;
 
             List<Widget> widgets = [];
 
@@ -100,8 +105,13 @@ class DateList extends StatelessWidget {
               final messageUnread = match['messageUnread'];
               final messagesId = match['messagesId'];
               final dateId = match['dateId'];
+              final availability = match['${match.id}'];
 
-              final chatMatchBox = ActiveMatchChatBox(
+              //Find out if the dateTime is today's date
+              bool available = availability?.toDate().year == DateTime.now().year && availability?.toDate().day == DateTime.now().day;
+
+
+            final chatMatchBox = ActiveMatchChatBox(
                 matchId: matchId,
                 activeMatch: activeMatch,
                 lastMessageSender: lastMessageSender,
@@ -111,6 +121,8 @@ class DateList extends StatelessWidget {
                 messageUnread: messageUnread,
                 messagesId: messagesId,
                 dateId: dateId,
+                availability: availability,
+                available: available,
 
                 lastMessage: lastMessage,
 

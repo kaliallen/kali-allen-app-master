@@ -8,7 +8,7 @@ import 'package:kaliallendatingapp/widgets/progress.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class EditProfile extends StatefulWidget {
-  final String currentUserId;
+  final String? currentUserId;
 
   EditProfile({this.currentUserId});
 
@@ -20,7 +20,7 @@ class EditProfile extends StatefulWidget {
 class _EditProfileState extends State<EditProfile> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool isLoading = false;
-  UserData userData;
+  UserData? userData;
   TextEditingController occupationController = TextEditingController();
   TextEditingController educationController = TextEditingController();
   TextEditingController locationController = TextEditingController();
@@ -37,12 +37,12 @@ class _EditProfileState extends State<EditProfile> {
     //2) Begin by getting doc from uid and saving it into userData
     DocumentSnapshot doc = await usersRef.doc(widget.currentUserId).get();
 UserData userData = UserData.fromDocument(doc);
-occupationController.text = userData.occupation;
+occupationController.text = userData.occupation!;
 print(userData.picture1);
     //3. Change all the controllers to have existing info inputted
-   userData.education != null? educationController.text = userData.education: print('education is null');
+   userData.education != null? educationController.text = userData.education!: print('education is null');
     setState(() {
-      userData.education != null? educationController.text = userData.education: print('education is null');
+      userData.education != null? educationController.text = userData.education!: print('education is null');
       isLoading = false;
     });
   }
@@ -68,7 +68,7 @@ print(userData.picture1);
     );
   }
 
-  Column buildLocationField(){
+  Column? buildLocationField(){
     Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

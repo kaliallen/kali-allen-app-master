@@ -13,15 +13,15 @@ import 'package:page_transition/page_transition.dart';
 final DateTime timestamp = DateTime.now();
 
 class ProfileSchool extends StatelessWidget {
- final UserData _userData;
+ final UserData? _userData;
 
-  ProfileSchool({@required UserData userData})
+  ProfileSchool({@required UserData? userData})
       : assert(userData !=null),
         _userData = userData;
 
   @override
   Widget build(BuildContext context) {
-    String school;
+    String? school;
 
     return Scaffold(
       body: SafeArea(
@@ -71,10 +71,10 @@ class ProfileSchool extends StatelessWidget {
                 color: kButtonColor,
                 onTap: (){
                   if (school != null){
-                    _userData.education = school;
+                    _userData!.education = school;
                   }
                   print(school);
-                  print(_userData.education);
+                  print(_userData!.education);
                   Navigator.push(
                       context,
                       PageTransition(

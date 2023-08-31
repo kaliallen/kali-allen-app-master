@@ -9,7 +9,7 @@ import '../constants.dart';
 import 'Home.dart';
 
 class NotificationScreen extends StatefulWidget {
-  final String currentUserId;
+  final String? currentUserId;
 
   NotificationScreen({this.currentUserId});
 
@@ -28,109 +28,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
             children: [
               Padding(
                 padding: EdgeInsets.only(left: 25.0, top: 50.0),
-                child: Text('Plan 🤝',
+                child: Text('Notifications',
                     style: TextStyle(
                         fontSize: 26.0,
                         color: kDarkest,
                         fontWeight: FontWeight.w500)),
               ),
-              SizedBox(height: 5),
-              Container(
-                padding: const EdgeInsets.all(3.0),
-                margin: const EdgeInsets.all(10.0),
-                decoration: BoxDecoration(
-                  // border: Border.all(color: kPillButtonSelectedColor),
-                  // borderRadius: BorderRadius.circular(5.0),
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 5),
-                      padding: const EdgeInsets.all(2),
-                      width: MediaQuery.of(context).size.width,
-                        child: Text(
-                            'My Availability (From 3/23 - 3/26)',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5.0),
-                        color: kPillButtonSelectedColor,
-                      ),
-                    ),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        CalendarTitle(text: 'Today'),
-                        CalendarTitle(text: 'Thursday'),
-                        CalendarTitle(text: 'Friday'),
-                        CalendarTitle(text: 'Saturday'),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        CalendarSlot(text: '5-7'),
-                        CalendarSlot(text: '5-7'),
-                        CalendarSlot(text: '5-7'),
-                        CalendarSlot(text: '5-7'),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        CalendarSlot(text: '7-9'),
-                        CalendarSlot(text: '7-9'),
-                        CalendarSlot(text: '7-9'),
-                        Expanded(
-                          child: Container(
-                            margin: const EdgeInsets.all(5),
-                            padding: const EdgeInsets.all(3),
-                            child: Column(
-                              children: [
-                                Text(
-                                    'Late',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                    )
-                                ),
-                                Text(
-                                  '7-9',
-                                  textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                    )
-                                ),
-                              ],
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5.0),
-                              color: Colors.green,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                Padding(
-                  padding: const EdgeInsets.only( right: 15),
-                  child: TextButton(
-                    child: Text('Clear All'),
-                    onPressed: (){
-
-                    },
-                  ),
-                )
-              ],),
-
               Column(
                 children: [
                   //TODO: ORGANIZE - Make the steambuilder a seperate class at the bottom
@@ -148,7 +51,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                             ));
                       }
 
-                      final notifications = snapshot.data.docs;
+                      final notifications = snapshot.data!.docs;
 
                       List<Widget> widgets = [];
 
@@ -165,7 +68,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         final time = notification['time'].toDate();
                         final type = notification['type'];
                         final message = notification['message'];
-                        final date = notification['date'];
+
 
 
                         final notificationBox = NotificationBox(
@@ -178,7 +81,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           time: time,
                           type: type,
                           message: message,
-                          date: date,
+
                           userId: widget.currentUserId,
                         );
 
@@ -202,7 +105,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
 }
 
 class CalendarTitle extends StatelessWidget {
-  final String text;
+  final String? text;
 
   CalendarTitle({this.text});
 
@@ -220,7 +123,7 @@ class CalendarTitle extends StatelessWidget {
         child: Column(
           children: [
             Text(
-                text,
+                text!,
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white)
             ),
@@ -232,7 +135,7 @@ class CalendarTitle extends StatelessWidget {
 }
 
 class CalendarSlot extends StatelessWidget {
-  final String text;
+  final String? text;
 
   CalendarSlot({this.text});
 
@@ -252,7 +155,7 @@ class CalendarSlot extends StatelessWidget {
                   ),
               ),
               Text(
-                text,
+                text!,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: kLightDark

@@ -6,10 +6,10 @@ import 'package:kaliallendatingapp/widgets/StyledButton.dart';
 import 'package:page_transition/page_transition.dart';
 
 class ProfileInterestedIn extends StatefulWidget {
-  final UserData _userData;
+  final UserData? _userData;
 
 
-  ProfileInterestedIn({@required UserData userData})
+  ProfileInterestedIn({@required UserData? userData})
       : assert(userData !=null),
         _userData = userData;
 
@@ -18,7 +18,7 @@ class ProfileInterestedIn extends StatefulWidget {
 }
 
 class _ProfileInterestedInState extends State<ProfileInterestedIn> {
-  String selectedInterestedIn;
+  String? selectedInterestedIn;
   double width = 90.0;
   double height = 20.0;
   List<String> genderInterestedInSelection = ['Female','Male','Everyone'];
@@ -78,7 +78,7 @@ class _ProfileInterestedInState extends State<ProfileInterestedIn> {
                             setState(() {
                               isGenderInterestedInSelected = true;
                             });
-                            widget._userData.isInterestedIn = selectedInterestedIn;
+                            widget._userData?.isInterestedIn = selectedInterestedIn;
                             Navigator.push(context, PageTransition(
                                 type: PageTransitionType.rightToLeft,
                                 child: ProfileHeight(
@@ -134,7 +134,7 @@ class _ProfileInterestedInState extends State<ProfileInterestedIn> {
                         color: Colors.grey,
                         onTap: () {
                           if (selectedInterestedIn != null) {
-                            widget._userData.gender = selectedInterestedIn;
+                            widget._userData?.gender = selectedInterestedIn;
                             Navigator.push(context, PageTransition(
                                 type: PageTransitionType.rightToLeft,
                                 child: ProfileInterestedIn(

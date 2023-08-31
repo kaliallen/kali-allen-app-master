@@ -25,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
     pageController = PageController();
   }
 
-  PageController pageController;
+  PageController? pageController;
   int pageIndex = 0;
 
   onPageChanged(int pageIndex){
@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   onTap(int pageIndex){
-    pageController.animateToPage(
+    pageController?.animateToPage(
       pageIndex,
       duration: Duration(milliseconds: 200),
       curve: Curves.easeInOut,
@@ -75,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    pageController.dispose();
+    pageController?.dispose();
     super.dispose();
 
   }

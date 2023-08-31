@@ -11,7 +11,7 @@ import 'package:kaliallendatingapp/screens/profilesetup/Profile9Job.dart';
 import 'package:kaliallendatingapp/widgets/StyledButton.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kaliallendatingapp/widgets/progress.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as Im;
@@ -19,9 +19,9 @@ import 'package:uuid/uuid.dart';
 
 
 class ProfileUploadPhoto extends StatefulWidget {
-  final UserData _userData;
+  final UserData? _userData;
 
-  ProfileUploadPhoto({@required UserData userData})
+  ProfileUploadPhoto({@required UserData? userData})
       : assert(userData !=null),
         _userData = userData;
 
@@ -31,7 +31,7 @@ class ProfileUploadPhoto extends StatefulWidget {
 
 class _ProfileUploadPhotoState extends State<ProfileUploadPhoto> {
   bool isUploading = false;
-  File _image;
+  File? _image;
   final picker = ImagePicker();
   String postId = Uuid().v4();
 
@@ -64,7 +64,7 @@ class _ProfileUploadPhotoState extends State<ProfileUploadPhoto> {
   //2) gets a photo from the camera OR...
   Future getImageCamera() async {
     Navigator.pop(context);
-    var pickedFile = await picker.getImage(
+    var pickedFile = await picker.pickImage(
         source: ImageSource.camera,
       maxHeight: 675,
       maxWidth: 960,
@@ -81,7 +81,7 @@ class _ProfileUploadPhotoState extends State<ProfileUploadPhoto> {
 // OR image gallery
   Future getImageGallery() async {
     Navigator.pop(context);
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     setState(() {
       if (pickedFile != null){
         _image = File(pickedFile.path);
@@ -103,7 +103,7 @@ class _ProfileUploadPhotoState extends State<ProfileUploadPhoto> {
     String medialUrl = await uploadImage(_image);
     print('3. image uploaded to storage');
     //6) Add image to UserData
-    widget._userData.picture1 = medialUrl;
+    widget._userData!.picture1 = medialUrl;
     print('4. photo added to userData');
     //7) Set is Uploading back to False
     setState(() {
@@ -118,8 +118,8 @@ class _ProfileUploadPhotoState extends State<ProfileUploadPhoto> {
     final tempDir = await getTemporaryDirectory();
     final path = tempDir.path;
     //Reading the image file and putting it into imageFile variable
-    Im.Image imageFile = Im.decodeImage(_image.readAsBytesSync());
-    final compressedImageFile = File('$path/img_$postId.jpg')..writeAsBytesSync(Im.encodeJpg(imageFile, quality: 85));
+    Im.Image? imageFile = Im.decodeImage(_image!.readAsBytesSync());
+    final compressedImageFile = File('$path/img_$postId.jpg')..writeAsBytesSync(Im.encodeJpg(imageFile!, quality: 85));
     setState(() {
       _image = compressedImageFile;
     });
@@ -179,7 +179,7 @@ class _ProfileUploadPhotoState extends State<ProfileUploadPhoto> {
                     )
                     : ClipRRect(
                       borderRadius: BorderRadius.circular(10.0),
-                      child: Image.file(_image,
+                      child: Image.file(_image!,
                       fit: BoxFit.cover,
                         ),
                     ),

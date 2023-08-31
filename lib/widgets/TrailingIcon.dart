@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../constants.dart';
 
 class LeadingIcon extends StatelessWidget {
-  IconData icon;
-  Function function;
+  IconData? icon;
+  Function? function;
 
   @override
   Widget build(BuildContext context) {

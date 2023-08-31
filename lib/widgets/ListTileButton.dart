@@ -9,12 +9,12 @@ const TextStyle tileFont = TextStyle(
 
 class ListTileButton extends StatelessWidget {
 
-  final IconData icon;
-  final String text;
-  final Function onTap;
+  final IconData? icon;
+  final String? text;
+  final void Function()? onTap;
 
 
-  const ListTileButton({Key key, this.icon, this.text, this.onTap});
+  const ListTileButton({Key? key, this.icon, this.text, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -27,11 +27,11 @@ class ListTileButton extends StatelessWidget {
           color: kDark,
         ),
       ),
-      title: Text(text,
+      title: Text(text!,
         style: tileFont,
       ),
       trailing: GestureDetector(
-        onTap: onTap,
+        onTap: onTap!,
         child: Container(
           //   margin: EdgeInsets.all(5.0),
             width: 45.0,

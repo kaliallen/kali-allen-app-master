@@ -30,7 +30,7 @@ class _ProfileBirthdayState extends State<ProfileBirthday> {
     return adultDate;
   }
 
-  DateTime _age;
+  DateTime? _age;
   DateTime ofAge = DateTime.now();
 
 
@@ -69,7 +69,7 @@ class _ProfileBirthdayState extends State<ProfileBirthday> {
                     GestureDetector(
                       child: Container(
                         child: Text(
-                          _age == null ? " Year / Month / Day " : '${_age.year} / ${_age.month} / ${_age.day}',
+                          _age == null ? " Year / Month / Day " : '${_age?.year} / ${_age?.month} / ${_age?.day}',
                           style: TextStyle(
                             fontFamily: 'Roboto',
                             fontSize: 20.0,
@@ -107,7 +107,7 @@ class _ProfileBirthdayState extends State<ProfileBirthday> {
                         }
                     ),
                     Text(
-                        _age != null && isAdult(_age) == false ? 'Must be 18 years or older to continue': ' ',
+                        _age != null && isAdult(_age!) == false ? 'Must be 18 years or older to continue': ' ',
                         style: TextStyle(
                           color: Colors.red,
                         )
