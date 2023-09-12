@@ -21,12 +21,11 @@ class ActiveMatchChatBox extends StatelessWidget {
   final bool? messageUnread;
   final String? messagesId;
   final String? dateId;
-  final Timestamp? availability;
   final bool? available;
 
 
 
-  ActiveMatchChatBox({this.available, this.availability, this.dateId, this.matchId, this.activeMatch, this.lastMessage, this.lastMessageSender, this.matchName, this.matchImageUrl, this.messagesId, this.messageUnread, this.lastMessageTime});
+  ActiveMatchChatBox({this.available, this.dateId, this.matchId, this.activeMatch, this.lastMessage, this.lastMessageSender, this.matchName, this.matchImageUrl, this.messagesId, this.messageUnread, this.lastMessageTime});
 
 
   @override

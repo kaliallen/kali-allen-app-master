@@ -12,7 +12,6 @@ class EditProfile extends StatefulWidget {
 
   EditProfile({this.currentUserId});
 
-
   @override
   _EditProfileState createState() => _EditProfileState();
 }
@@ -21,9 +20,12 @@ class _EditProfileState extends State<EditProfile> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool isLoading = false;
   UserData? userData;
+
+  TextEditingController bioController = TextEditingController();
   TextEditingController occupationController = TextEditingController();
   TextEditingController educationController = TextEditingController();
   TextEditingController locationController = TextEditingController();
+
   bool _occupationValid = true;
   bool _educationValid = true;
   bool _bioValid = true;
@@ -36,91 +38,127 @@ class _EditProfileState extends State<EditProfile> {
     print('widget.currentUserId is ${widget.currentUserId}');
     //2) Begin by getting doc from uid and saving it into userData
     DocumentSnapshot doc = await usersRef.doc(widget.currentUserId).get();
-UserData userData = UserData.fromDocument(doc);
-occupationController.text = userData.occupation!;
-print(userData.picture1);
+    userData = UserData.fromDocument(doc);
+
+    userData!.occupation != null
+        ? occupationController.text = userData!.occupation!
+        : occupationController.text = '';
+    userData!.education != null
+        ? educationController.text = userData!.education!
+        : educationController.text = '';
+    userData!.bio != null
+        ? bioController.text = userData!.bio!
+        : bioController.text = '';
+    userData!.location != null
+        ? locationController.text = userData!.location!
+        : locationController.text = '';
     //3. Change all the controllers to have existing info inputted
-   userData.education != null? educationController.text = userData.education!: print('education is null');
+    // userData.education != null? educationController.text = userData.education!: print('education is null');
     setState(() {
-      userData.education != null? educationController.text = userData.education!: print('education is null');
       isLoading = false;
     });
   }
 
-  Column buildOccupationField(){
+  Column buildOccupationField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: EdgeInsets.only(top: 12.0),
-          child: Text('Job',
-          style: TextStyle(color: Colors.grey),
-          ),
-        ),
-        TextField(
-          controller: occupationController,
-          decoration: InputDecoration(
-            hintText: 'Update Job',
-            errorText: _occupationValid ? null : 'Job field empty'
-          )
-        )
-      ],
-    );
-  }
-
-  Column? buildLocationField(){
-    Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.only(top: 12.0),
-          child: Text('Current Location',
-            style: TextStyle(color: Colors.grey),
-          ),
-        ),
-        // TextField(
-        //
-        //   controller: locationController,
-        //   decoration: InputDecoration(
-        //     hintText: 'Update Location',
-        //     errorText: _educationValid ? null : 'Education field empty',
-        //   ),
-        // ),
-      ],
-    );
-  }
-
-  Column buildEducationField(){
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.only(top: 12.0),
-          child: Text('School',
+          child: Text(
+            'Job',
             style: TextStyle(color: Colors.grey),
           ),
         ),
         TextField(
-
-            controller: educationController,
+            controller: occupationController,
             decoration: InputDecoration(
-              hintText: 'Update School',
-              errorText: _educationValid ? null : 'Education field empty',
-            ),
+                hintText: 'Update Job',
+                errorText: _occupationValid ? null : 'Job field empty'))
+      ],
+    );
+  }
+
+  Column buildBioField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(top: 12.0),
+          child: Text(
+            'Bio',
+            style: TextStyle(color: Colors.grey),
+          ),
+        ),
+        TextField(
+            controller: bioController,
+            maxLines: 10,
+            minLines: 4,
+            decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Update Bio',
+                errorText: _occupationValid ? null : 'Bio is empty'),
+         )
+
+      ],
+    );
+  }
+
+
+
+  Column buildLocationField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(top: 12.0),
+          child: Text(
+            'Location',
+            style: TextStyle(color: Colors.grey),
+          ),
+        ),
+        TextField(
+          controller: locationController,
+          decoration: InputDecoration(
+            hintText: 'Update Location',
+            errorText: _educationValid ? null : 'Education field empty',
+          ),
         ),
       ],
     );
   }
 
-  updateProfileData(){
+  Column buildEducationField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(top: 12.0),
+          child: Text(
+            'School',
+            style: TextStyle(color: Colors.grey),
+          ),
+        ),
+        TextField(
+          controller: educationController,
+          decoration: InputDecoration(
+            hintText: 'Update School',
+            errorText: _educationValid ? null : 'Education field empty',
+          ),
+        ),
+      ],
+    );
+  }
+
+  updateProfileData() {
     //4) Validate Text before you are allowed to update them
     setState(() {
-      occupationController.text
-          .trim()
-          .isEmpty ? _occupationValid = false : _occupationValid = true;
-      educationController.text
-          .trim()
-          .isEmpty ? _educationValid = false : _educationValid = true;
+      occupationController.text.trim().isEmpty
+          ? _occupationValid = false
+          : _occupationValid = true;
+      educationController.text.trim().isEmpty
+          ? _educationValid = false
+          : _educationValid = true;
       //bioController.text.trim().length > 100 ? _bioValid = false : _bioValid = true;
 
       if (_occupationValid && _bioValid && _educationValid) {
@@ -129,13 +167,13 @@ print(userData.picture1);
           'education': educationController.text,
         });
         //6)
-       SnackBar snackBar = SnackBar(content: Text('Profile updated!'));
-       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-       // _scaffoldKey.currentState.showSnackBar(snackBar);
-;
-       Future.delayed(Duration(seconds: 1),(){
-         Navigator.pop(context);
-       });
+        SnackBar snackBar = SnackBar(content: Text('Profile updated!'));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        // _scaffoldKey.currentState.showSnackBar(snackBar);
+        ;
+        Future.delayed(Duration(seconds: 1), () {
+          Navigator.pop(context);
+        });
       }
     });
 
@@ -153,84 +191,92 @@ print(userData.picture1);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text(
-          'Edit Profile',
-          style: TextStyle(
-            color: Colors.black,
+        key: _scaffoldKey,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          title: Text(
+            'Edit Profile',
+            style: TextStyle(
+              color: Colors.black,
+            ),
           ),
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.close,
+                color: Colors.black,
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.close,
-            color: Colors.black,),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ],
-      ),
-      body: isLoading ? circularProgress() : ListView(
-        children: [
-          Container(
-            child: Column(
-              children: [
-                Padding(padding: EdgeInsets.only(top: 16, bottom: 8.0),
-                child: CircleAvatar(
-                  radius: 50.0,
-                  backgroundImage: CachedNetworkImageProvider('https://firebasestorage.googleapis.com/v0/b/datingapp-1e76d.appspot.com/o/post_23b52b9c-d315-4f26-a099-4e37ecf25632.jpg?alt=media&token=2f27c093-dc5f-47a6-8973-a4c96bee9543'),
-                )),
-                Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Column(
+        body: isLoading
+            ? circularProgress()
+            : ListView(
+                children: [
+                  Container(
+                      child: Column(
                     children: [
-                      buildEducationField(),
-                      buildOccupationField(),
-                      // buildLocationField(),
+                      Padding(
+                          padding: EdgeInsets.only(top: 16, bottom: 8.0),
+                          child: CircleAvatar(
+                            radius: 50.0,
+                            backgroundImage:
+                                CachedNetworkImageProvider(userData!.picture1!),
+                          )),
+                      Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            buildBioField(),
+                            buildLocationField(),
+                            buildEducationField(),
+                            buildOccupationField(),
+
+                          ],
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: updateProfileData,
+                        child: Text(
+                          'Update Profile',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20.0,
+                          ),
+                        ),
+                      ),
+                      Text(chosen_prompt),
+                      ElevatedButton(
+                        onPressed: toPromptsPage,
+                        child: Text(
+                          'Prompts Page',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20.0,
+                          ),
+                        ),
+                      ),
                     ],
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: updateProfileData,
-                  child: Text('Update Profile',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20.0,
-                  ),),
-                ),
-                Text(chosen_prompt),
-                ElevatedButton(
-                  onPressed: toPromptsPage,
-                  child: Text('Prompts Page',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20.0,
-                    ),),
-                ),
-              ],
-            )
-          )
-        ],
-      )
-    );
+                  ))
+                ],
+              ));
   }
 
   void toPromptsPage() async {
     setState(() async {
       chosen_prompt = await Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  Prompts()));
+          context, MaterialPageRoute(builder: (context) => Prompts()));
     });
     print(chosen_prompt);
   }
 
   @override
   void dispose() {
-  occupationController.dispose();
-  educationController.dispose();
-  locationController.dispose();
+    occupationController.dispose();
+    educationController.dispose();
+    locationController.dispose();
+    bioController.dispose();
     super.dispose();
   }
 }

@@ -1,46 +1,250 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kaliallendatingapp/constants.dart';
+import 'package:kaliallendatingapp/screens/BrowseTab.dart';
 import 'package:kaliallendatingapp/screens/ChatScreen.dart';
 import 'package:kaliallendatingapp/screens/ProfilePage.dart';
+import 'package:kaliallendatingapp/widgets/SquarePhotoImageUrl.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:uuid/uuid.dart';
 
+import '../models/userData.dart';
 import '../screens/Home.dart';
 
 String userId = FirebaseAuth.instance.currentUser!.uid;
 
 class NotificationBox extends StatelessWidget {
   final String? notificationId;
-  final bool? dateNotification; //might not need
   final String? matchImageUrl;
-  final String? senderId; //might not need
+  final String? matchId; //might not need
   final String? name;
-  final bool? poolNotification; //don't need
   final DateTime? time;
   final String? type; //might not need
   final String? message;
-
-  final userId;
+  final String? userId;
 
   NotificationBox(
       {this.userId,
-
       this.message,
       this.notificationId,
-      this.dateNotification,
       this.matchImageUrl,
-      this.senderId,
+      this.matchId,
       this.name,
-      this.poolNotification,
       this.time,
       this.type});
 
   @override
   Widget build(BuildContext context) {
+    // sendChat(){
+    //   var uuid = Uuid();
+    //   // //Create a new match for the SENDER of the notification
+    //   // final doc = await usersRef.doc('sdlfksdjf').get();
+    //   // if (doc.exists) {
+    //   //   doc.reference.update({'firstname': 'Annemarie', 'lastName': 'Allen'});
+    //   // }
+    //   //
+    //   //     matchesRef
+    //   //         .doc(userId).collection('matches').doc(senderId)
+    //   //         .set({
+    //   //       'time': Timestamp.fromDate(DateTime.now()),
+    //   //       'date': date,
+    //   //
+    //   //     });
+    //
+    //   // //TODO: Make a match under the userId
+    //   // print('userId: $userId');
+    //   //
+    //   //   //TODO: Make sure a chat doesn't already exist
+    //   // final doc = await matchesRef.doc(userId).collection('matches').doc(senderId).get();
+    //   // if (doc.exists){
+    //   //   print('The chat already exists!');
+    //   //
+    //   //   //If the chat already exists, update the chat
+    //   //   doc.reference.update({
+    //   //     'activeMatch': true,
+    //   //     'lastMessage':
+    //   //
+    //   //   });
+    //   // } else {
+    //   // This is where to create a new match
+    //   matchesRef.doc(userId).collection('matches').doc(senderId).set({
+    //     'activeMatch': true,
+    //     'dateId': 'test',
+    //     'lastMessage':
+    //     'INSERT NAME has matched with you! Make a lasting impression so you guys can go on the date at INSERT TIME...!',
+    //     'lastMessageSender': userId,
+    //     'lastMessageTime': Timestamp.now(),
+    //     'matchImageUrl': matchImageUrl,
+    //     'matchName': name,
+    //     'messageUnread': false,
+    //     'messagesId': uuid.v4(),
+    //     //TODO: Fix
+    //     'availability': availability
+    //   });
+    //   //
+    //   // }
+    //
+    //   //TODO: Make a match under the senderId
+    //   print('senderId: $senderId');
+    //
+    //   //TODO: Once all that is complete, go to the chat screen....?? Somehow?
+    // }
+
+    sendChat() async {
+      TextEditingController sendMessageController = TextEditingController();
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Match with $name'),
+            content: Column(
+              children: [
+                Text('This is a Flutter popup.'),
+                SquareImageFromUrl(
+                  imageUrl: matchImageUrl!,
+                  size: MediaQuery.of(context).size.height *
+                      0.3, // 75% of screen height
+                ),
+                Text('$message'),
+                TextField(
+                  controller: sendMessageController,
+                  maxLines: 10,
+                  minLines: 4,
+                  decoration: InputDecoration(
+                    hintText: 'Type your message here...',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text('Close'),
+                onPressed: () {
+                  sendMessageController.dispose();
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: Text('Match with $name'),
+                onPressed: () async {
+                  var messageId = Uuid().v4();
+
+                  // //Get matchUser's profile info/make sure the profile exists still
+                  UserData matchUser = UserData();
+                  DocumentSnapshot matchDoc = await usersRef.doc(matchId).get();
+
+                  if (matchDoc.exists) {
+                    matchUser = UserData.fromDocument(matchDoc);
+                    print('Match Users firstname: ${matchUser.firstName}');
+                    print(sendMessageController.text);
+
+                    //Create a new match for user's pool
+                    matchesRef
+                        .doc(userId)
+                        .collection('matches')
+                        .doc(matchId)
+                        .set({
+                          'activeMatch': true,
+                          'dateId': 'test',
+                          'lastMessage': sendMessageController.text.isEmpty
+                              ? 'New Bond :)'
+                              : sendMessageController.text.toString().trim(),
+                          'lastMessageSender': userId,
+                          'lastMessageTime': Timestamp.now(),
+                          'matchImageUrl': matchUser.picture1,
+                          'matchName': matchUser.firstName,
+                          'messageUnread':
+                              sendMessageController.text.isEmpty ? true : false,
+                          'messagesId': messageId,
+                          //TODO: If you have bugs check here lol
+                          'availability': {
+                            matchUser.uid: matchUser.availability?[1]
+                                ? matchUser.availability![0]
+                                : null,
+                            userId: currentUser?.availability?[1]
+                                ? currentUser?.availability![0]
+                                : null,
+                          }
+                        })
+                        .then((value) =>
+                            print('Successfully added match to user\'s pool!'))
+                        .catchError((onError) => print(
+                            'There was an error adding match to user\'s pool: $onError'));
+                  }
+
+                  //Create a new match for other user's pool
+                  matchesRef
+                      .doc(matchId)
+                      .collection('matches')
+                      .doc(userId)
+                      .set({
+                        'activeMatch': true,
+                        'dateId': 'test',
+                        'lastMessage': 'New Match!',
+                        // sendMessageController.text.isEmpty
+                        //     ? message
+                        //     : sendMessageController.text.toString().trim(),
+                        'lastMessageSender': userId,
+                        'lastMessageTime': Timestamp.now(),
+                        'matchImageUrl': matchUser.picture1,
+                        'matchName': matchUser.firstName,
+                        'messageUnread': true,
+                        'messagesId': messageId,
+                        //TODO: If you have bugs check here lol
+                        'availability': {
+                          matchUser.uid: matchUser.availability?[1]
+                              ? matchUser.availability![0]
+                              : null,
+                          userId: currentUser?.availability?[1]
+                              ? currentUser?.availability![0]
+                              : null,
+                        }
+                      })
+                      .then((value) =>
+                          print('Successfully added match to match\'s pool!'))
+                      .catchError((onError) => print(
+                          'There was an error adding match to match\'s pool: $onError'));
+
+                  //Populate chat with first message
+                  messagesRef.doc(messageId).collection('messages').add({
+                    'message': message,
+                    'sender': matchId,
+                    'time': time,
+                  });
+
+                  //Populate chat with responding message
+                  if (sendMessageController.text.isNotEmpty) {
+                    messagesRef.doc(messageId).collection('messages').add({
+                      'message':  sendMessageController.text.toString().trim(),
+                      'sender': userId,
+                      'time': Timestamp.now(),
+                    });
+                  }
+
+                  //Delete this notification
+                  final doc = await notificationsRef.doc(userId).collection('notifications').doc(matchId).get();
+                  if (doc.exists) {
+                    notificationsRef.doc(userId).collection('notifications').doc(matchId).delete();
+                  }
+
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+    ;
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ListTile(
@@ -54,7 +258,8 @@ class NotificationBox extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                     builder: (context) => ProfilePage(
-                          profileId: senderId,
+                      backButtonFunction: (){},
+                          profileId: matchId,
                           viewingAsBrowseMode: true,
                           viewPreferenceInfo: false,
                         )));
@@ -80,7 +285,6 @@ class NotificationBox extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                   color: kDarkest,
                 )),
-
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 5.0),
               child: Text('"${message!}"',
@@ -104,180 +308,14 @@ class NotificationBox extends StatelessWidget {
                 type!.contains('looking')
                     ? 'Message'
                     : type!.contains('match')
-                    ? 'Start a Chat'
-                    : 'View Event',
-
-
+                        ? 'Start a Chat'
+                        : 'View Event',
               ),
-              onPressed: () async {
-                var uuid = Uuid();
-
-                // //Create a new match for the SENDER of the notification
-                // final doc = await usersRef.doc('sdlfksdjf').get();
-                // if (doc.exists) {
-                //   doc.reference.update({'firstname': 'Annemarie', 'lastName': 'Allen'});
-                // }
-                //
-                //     matchesRef
-                //         .doc(userId).collection('matches').doc(senderId)
-                //         .set({
-                //       'time': Timestamp.fromDate(DateTime.now()),
-                //       'date': date,
-                //
-                //     });
-
-                // //TODO: Make a match under the userId
-                // print('userId: $userId');
-                //
-                //   //TODO: Make sure a chat doesn't already exist
-                // final doc = await matchesRef.doc(userId).collection('matches').doc(senderId).get();
-                // if (doc.exists){
-                //   print('The chat already exists!');
-                //
-                //   //If the chat already exists, update the chat
-                //   doc.reference.update({
-                //     'activeMatch': true,
-                //     'lastMessage':
-                //
-                //   });
-                // } else {
-                // This is where to create a new match
-                matchesRef.doc(userId).collection('matches').doc(senderId).set({
-                  'activeMatch': true,
-                  'dateId': 'test',
-                  'lastMessage':
-                      'INSERT NAME has matched with you! Make a lasting impression so you guys can go on the date at INSERT TIME...!',
-                  'lastMessageSender': userId,
-                  'lastMessageTime': Timestamp.now(),
-                  'matchImageUrl': matchImageUrl,
-                  'matchName': name,
-                  'messageUnread': false,
-                  'messagesId': uuid.v4(),
-                });
-                //
-                // }
-
-                //TODO: Make a match under the senderId
-                print('senderId: $senderId');
-
-                //TODO: Once all that is complete, go to the chat screen....?? Somehow?
-              },
+              onPressed: sendChat,
             ),
           ],
         ),
-
-        // Container(
-        //             decoration: BoxDecoration(
-        //                 color: kButtonColor,
-        //                 borderRadius: BorderRadius.circular(5.0)
-        //             ),
-        //             child: Padding(
-        //               padding: const EdgeInsets.all(3.0),
-        //               child: Text(
-        //                   type.contains('looking') ? '   Match   ' : type.contains('match') ? '  Start a chat  ' : '   Send Message   ',
-        //                   style: TextStyle(
-        //                     color: Colors.white,
-        //                     fontSize: 13.0,
-        //                   )
-        //               ),
-        //             ),
-        //           ),
       ),
-
-      // Container(
-      //   width: MediaQuery.of(context).size.width,
-      //     padding: EdgeInsets.all(10.0),
-      //     decoration: BoxDecoration(
-      //       color: kWhiteSquareColor,
-      //       borderRadius: BorderRadius.circular(15.0),
-      //     ),
-      //     child: Row(
-      //       children: [
-      //         Container(
-      //           width: MediaQuery.of(context).size.width * .7,
-      //           child: Row(
-      //             children: [
-      //               //profile avatar
-      //               GestureDetector(
-      //                 onTap: (){
-      //                   Navigator.push(
-      //                       context,
-      //                       MaterialPageRoute(
-      //                           builder: (context) =>
-      //                               ProfilePage(profileId: senderId,
-      //                                 viewingAsBrowseMode: false,
-      //                                 viewPreferenceInfo: false,
-      //                               )));
-      //                 },
-      //                 child: CircleAvatar(
-      //                   radius: 20,
-      //                   backgroundColor: Colors.grey,
-      //                   backgroundImage: CachedNetworkImageProvider(matchImageUrl),
-      //                 ),
-      //               ),
-      //               //text in a wrap container
-      //               Text(
-      //                 type.contains('looking') ? '$name, one of your matches, is looking for a date Tonight!' : type.contains('match') ? '$name is available $date. Message: "$message"' : 'You have a new date with $name on Thursday!',
-      //                 style: TextStyle(
-      //                   fontSize: 10.0,
-      //                   fontWeight: FontWeight.w500,
-      //                   color: kDarkest,
-      //                 )
-      //                 ),
-      //               Text(
-      //                 timeago.format(time),
-      //                   style: TextStyle(
-      //                     fontSize: 10.0,
-      //                    fontWeight: FontWeight.w100,
-      //                     color: kDarkest,
-      //                   )
-      //               ),
-      //             ],
-      //           ),
-      //         ),
-      //         Container(
-      //           //type.contains('looking') ? MediaQuery.of(context).size.width * .35 : MediaQuery.of(context).size.width * .4,
-      //           child: Row(
-      //             mainAxisAlignment: MainAxisAlignment.spaceAround,
-      //             children: [
-      //               type.contains('looking') ? Container(
-      //                 decoration: BoxDecoration(
-      //                     color: kButtonColor,
-      //                     borderRadius: BorderRadius.circular(5.0)
-      //                 ),
-      //                 child: Padding(
-      //                   padding: const EdgeInsets.all(3.0),
-      //                   child: Text(
-      //                       '  View Details  ',
-      //                       style: TextStyle(
-      //                         color: Colors.white,
-      //                         fontSize: 10.0,
-      //                       )
-      //                   ),
-      //                 ),
-      //               ) : SizedBox(),
-      //               Container(
-      //                 decoration: BoxDecoration(
-      //                     color: kButtonColor,
-      //                     borderRadius: BorderRadius.circular(5.0)
-      //                 ),
-      //                 child: Padding(
-      //                   padding: const EdgeInsets.all(3.0),
-      //                   child: Text(
-      //                       type.contains('looking') ? '   Match   ' : type.contains('match') ? '  Start a chat  ' : '   Send Message   ',
-      //                       style: TextStyle(
-      //                         color: Colors.white,
-      //                         fontSize: 10.0,
-      //                       )
-      //                   ),
-      //                 ),
-      //               ),
-      //             ],
-      //           ),
-      //         ),
-      //       ],
-      //     )
-      // ),
     );
   }
 }

@@ -44,6 +44,7 @@ class _SettingScreenState extends State<SettingScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => ProfilePage(
+          backButtonFunction: () {},
           profileId: widget?.currentUserId,
           viewPreferenceInfo: false,
         ),
@@ -51,24 +52,23 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  viewPreferences(){
+  viewPreferences() {
     print('Preferences tapped');
   }
 
-  viewInviteFriends(){
+  viewInviteFriends() {
     print('Invite friends tapped');
   }
 
-  viewReportAnIssue(){
+  viewReportAnIssue() {
     print('Report an issue tapped');
     print(widget.currentUserId);
-    Navigator.push(context, MaterialPageRoute(builder: (context) => SubmitFeedback()));
-
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => SubmitFeedback()));
   }
 
   Future<void> logOut() async {
     return await FirebaseAuth.instance.signOut();
-
   }
 
   buildProfileHeader() {
@@ -76,7 +76,7 @@ class _SettingScreenState extends State<SettingScreen> {
       future: usersRef.doc(widget.currentUserId).get(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return  SafeArea(
+          return SafeArea(
             child: Center(
               child: Padding(
                 padding: EdgeInsets.all(50.0),
@@ -101,7 +101,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           left: 50,
                           bottom: 5,
                           child: RawMaterialButton(
-                            onPressed: (){
+                            onPressed: () {
                               print('Nothing happens');
                             },
                             elevation: 2.0,
@@ -139,9 +139,10 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
               ),
             ),
-          );;
+          );
         }
-        UserData userData = UserData.fromDocument(snapshot.data as DocumentSnapshot<Object?>);
+        UserData userData =
+            UserData.fromDocument(snapshot.data as DocumentSnapshot<Object?>);
         return SafeArea(
           child: Center(
             child: Padding(
@@ -150,15 +151,27 @@ class _SettingScreenState extends State<SettingScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Stack(
-                     alignment: AlignmentDirectional.center,
+                    alignment: AlignmentDirectional.center,
                     children: [
                       Container(
-                       // color: Colors.red,
+                        // color: Colors.red,
                         height: 135,
                         width: 135,
                       ),
                       GestureDetector(
-                        onTap:  (){Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(profileId: widget.currentUserId, viewingAsBrowseMode: false, viewPreferenceInfo: false,)));},
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ProfilePage(
+                                        profileId: widget.currentUserId,
+                                        viewingAsBrowseMode: false,
+                                        viewPreferenceInfo: false,
+                                        backButtonFunction: () {
+                                          Navigator.pop(context);
+                                        },
+                                      )));
+                        },
                         child: Container(
                           child: CircleAvatar(
                             radius: 50,
@@ -172,25 +185,29 @@ class _SettingScreenState extends State<SettingScreen> {
                         left: 50,
                         bottom: 5,
                         child: RawMaterialButton(
-                          onPressed: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfile(currentUserId: widget.currentUserId)));
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => EditProfile(
+                                        currentUserId: widget.currentUserId)));
                           },
                           elevation: 2.0,
-                            fillColor: kScaffoldBackgroundColor,
-                            child: Icon(
-                              Icons.create_rounded,
-                              color: kLightDark,
-                              size: 25.0,
-                            ),
+                          fillColor: kScaffoldBackgroundColor,
+                          child: Icon(
+                            Icons.create_rounded,
+                            color: kLightDark,
+                            size: 25.0,
+                          ),
                           padding: EdgeInsets.all(5.0),
-                            shape: CircleBorder(),
+                          shape: CircleBorder(),
                         ),
                       )
                     ],
                   ),
                   SizedBox(height: 15.0),
                   Text(
-                     '${userData.firstName} ${userData.lastName}',
+                    '${userData.firstName} ${userData.lastName}',
                     style: TextStyle(
                       fontSize: 20.0,
                       fontWeight: FontWeight.w600,
@@ -246,9 +263,13 @@ class _SettingScreenState extends State<SettingScreen> {
       child: GestureDetector(
         onTap: logOut,
         child: ListTile(
-          leading: ListTileIcon(icon: Icons.exit_to_app,),
-          title: Text('Log Out',
-          style: tileFont,),
+          leading: ListTileIcon(
+            icon: Icons.exit_to_app,
+          ),
+          title: Text(
+            'Log Out',
+            style: tileFont,
+          ),
         ),
       ),
     );
@@ -268,7 +289,6 @@ class _SettingScreenState extends State<SettingScreen> {
           ],
         ));
   }
-
 }
 
 loadingView() {
@@ -297,8 +317,8 @@ loadingView() {
                   left: 50,
                   bottom: 5,
                   child: RawMaterialButton(
-                    onPressed: (){
-                     print('Nothing happens');
+                    onPressed: () {
+                      print('Nothing happens');
                     },
                     elevation: 2.0,
                     fillColor: kScaffoldBackgroundColor,
@@ -341,7 +361,9 @@ loadingView() {
 class ListTileIcon extends StatelessWidget {
   final IconData? icon;
 
-  ListTileIcon({this.icon,});
+  ListTileIcon({
+    this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -355,4 +377,3 @@ class ListTileIcon extends StatelessWidget {
     );
   }
 }
-

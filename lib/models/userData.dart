@@ -7,7 +7,7 @@ class UserData {
   String? firstName;
   String? lastName;
   Timestamp? birthDate;
-  Timestamp? availability;
+  List? availability;
   String? gender;
   String? isInterestedIn;
   String? height;

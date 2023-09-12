@@ -41,7 +41,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     stream: notificationsRef
                         .doc(widget.currentUserId)
                     //TODO: Add Order By
-                        .collection('notifications')
+                        .collection('notifications').orderBy('time', descending: true)
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) {
@@ -60,24 +60,21 @@ class _NotificationScreenState extends State<NotificationScreen> {
                             'this is the loop triggered for notfication id ${notification.id}');
 
                         final userId = notification.id;
-                        final dateNotification = notification['dateNotification'];
                         final matchImageUrl = notification['matchImageUrl'];
                         final senderId = notification['senderId'];
                         final name = notification['name'];
-                        final poolNotification = notification['poolNotification'];
                         final time = notification['time'].toDate();
                         final type = notification['type'];
                         final message = notification['message'];
 
 
 
+
                         final notificationBox = NotificationBox(
                           notificationId: userId,
-                          dateNotification: dateNotification,
                           matchImageUrl: matchImageUrl,
-                          senderId: senderId,
+                          matchId: senderId,
                           name: name,
-                          poolNotification: poolNotification,
                           time: time,
                           type: type,
                           message: message,

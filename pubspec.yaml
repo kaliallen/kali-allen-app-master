@@ -48,7 +48,6 @@ dependencies:
   cached_network_image: ^3.0.0
   timeago: ^3.1.0
   intl: ^0.18.0
-  draggable_bottom_sheet: ^1.0.2
   sliding_up_panel: ^2.0.0+1
   location: ^5.0.3
   google_maps_flutter: ^2.1.1

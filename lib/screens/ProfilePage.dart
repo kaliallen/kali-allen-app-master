@@ -13,11 +13,13 @@ class ProfilePage extends StatefulWidget {
   final String? profileId;
   final bool? viewPreferenceInfo;
   final bool? viewingAsBrowseMode;
+  final Function()? backButtonFunction;
 
   ProfilePage(
       {this.profileId,
       this.viewPreferenceInfo,
       this.viewingAsBrowseMode,
+        required this.backButtonFunction,
       });
 
   @override
@@ -160,8 +162,31 @@ class _ProfilePageState extends State<ProfilePage> {
 
           UserData profileUserData = UserData.fromDocument(snapshot.data);
 
-          //Find out if the dateTime is today's date
-          bool available = profileUserData.availability?.toDate().year == DateTime.now().year && profileUserData.availability?.toDate().day == DateTime.now().day;
+          // //Find out if the dateTime is today's date
+          bool dateIsToday = profileUserData.availability?[0].toDate().year == DateTime.now().year && profileUserData.availability?[0].toDate().day == DateTime.now().day;
+          print('Date is today? $dateIsToday');
+
+
+          //
+          //     //They answered yes or no
+          //     bool answered = currentUser?.availability?[1] != null;
+          //     print('answered');
+          //     print(answered);
+          //
+          //     //If the date is todays date and the bool is not null, dateExists is true
+          //     if (dateIsToday && answered){
+          //       print('yo');
+          //       setState(() {
+          //         dateExists = true;
+          //       });
+          //     } else {
+          //       print('dateExits = $dateExists');
+          //       setState(() {
+          //         dateExists = false;
+          //       });
+          //
+          //     }
+
 
           return
               //Top Picture & Text
@@ -214,9 +239,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               icon: Icon(Icons.arrow_back_ios_sharp),
                               color: Colors.white,
                               iconSize: 25.0,
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
+                              onPressed: widget.backButtonFunction,
                             ),
                           ),
 
@@ -260,7 +283,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                               //TODO: Decide if this goes here. Should there be compatible "interests" here? Lots of questions...
                                               children: [
 
-                                                available == true ? Pill(
+                                                dateIsToday == true ? Pill(
                                                   text: 'Anyone want to go to a meditation happy hour? 🧘🏻‍',
                                                   color: Colors.green
                                                       .withOpacity(.1),
@@ -285,7 +308,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                 ),
                                 SizedBox(width: 10),
-                                available == true ? Pill(
+                                dateIsToday == true && profileUserData.availability?[1] == true ? Pill(
                                   text: 'Free Tonight',
                                   color: Colors.green
                                       .withOpacity(.95),
@@ -327,22 +350,22 @@ class _ProfilePageState extends State<ProfilePage> {
                   : SizedBox(height: 0),
 
               //Photo 2 Box
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: 20.0,
-                  right: 20.0,
-                  left: 20.0,
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0),
-                  child: Image(
-                    width: MediaQuery.of(context).size.width,
-                    height: 300.0,
-                    fit: BoxFit.cover,
-                    image: CachedNetworkImageProvider(profileUserData.picture1!),
-                  ),
-                ),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.only(
+              //     top: 20.0,
+              //     right: 20.0,
+              //     left: 20.0,
+              //   ),
+              //   child: ClipRRect(
+              //     borderRadius: BorderRadius.circular(10.0),
+              //     child: Image(
+              //       width: MediaQuery.of(context).size.width,
+              //       height: 300.0,
+              //       fit: BoxFit.cover,
+              //       image: CachedNetworkImageProvider(profileUserData.picture1!),
+              //     ),
+              //   ),
+              // ),
 
               //Info Square Box
               Padding(
@@ -436,22 +459,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
 
-// Photo 2 Box
-              Padding(
-                padding: const EdgeInsets.only(
-                  right: 20.0,
-                  left: 20.0,
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0),
-                  child: Image(
-                    width: MediaQuery.of(context).size.width,
-                    height: 300.0,
-                    fit: BoxFit.cover,
-                    image: CachedNetworkImageProvider(profileUserData.picture1!),
-                  ),
-                ),
-              ),
 
 
 
@@ -463,6 +470,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10.0),
                   ),
+
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 25),
                     child: Column(

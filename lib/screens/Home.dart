@@ -108,6 +108,12 @@ class _HomeState extends State<Home> {
 
     //If a user is logged in, send User to handleSignIn
     FirebaseAuth.instance.authStateChanges().listen((account){
+     if (account == null){
+       print('account is null');
+       setState(() {
+         isAuth = false;
+       });
+     }
       handleSignIn(account!);
     }, onError: (err){
       print('Error signing in: $err');
@@ -177,7 +183,7 @@ class _HomeState extends State<Home> {
       body: PageView(
         children: <Widget>[
           BrowseScreen(
-            currentuid: currentUser?.uid,
+            currentUserUid: currentUser?.uid,
           ),
           NotificationScreen(
             currentUserId: currentUser?.uid,
