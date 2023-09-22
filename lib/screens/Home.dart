@@ -201,36 +201,47 @@ class _HomeState extends State<Home> {
       ),
       bottomNavigationBar:
           // BottomNavigationBar(
-      CupertinoTabBar(
-        currentIndex: pageIndex,
-        onTap: onTap,
-        activeColor: kButtonColor,
-        iconSize: 25.0,
-        backgroundColor: Color(0xffffffff),
-        items: [
-          BottomNavigationBarItem(
-              label: 'Find',
-              icon: Icon(Icons.bolt,
-                color: pageIndex == 0 ? kButtonColor : Color(0xff9D9EA4),
-              )),
-          BottomNavigationBarItem(
-            label: 'Notifications',
-            icon: Icon(Icons.notifications,
-            color: pageIndex == 1 ? kButtonColor : Color(0xff9D9EA4),
-          )),
-          BottomNavigationBarItem(
-              label: 'My Pool',
-              //TODO: Find a better icon and also make it so notifications are shown here
-              icon: Icon(Icons.groups,
-                color: pageIndex == 2 ? kButtonColor : Color(0xff9D9EA4),
-              )),
-          BottomNavigationBarItem(
-            label: 'My Profile',
-            icon: Icon(Icons.account_circle_outlined,
-              color: pageIndex == 3 ? kButtonColor : Color(0xff9D9EA4),
+      Container(
+        height: 110.0,
+        child: CupertinoTabBar(
+          currentIndex: pageIndex,
+          onTap: onTap,
+          activeColor: kNavActiveFontColor,
+          inactiveColor: kNavFontColor,
+          iconSize: 25.0,
+          backgroundColor: kNavBarColor,
+          items: [
+            BottomNavigationBarItem(
+                label: 'Find',
+                icon: Icon(Icons.bolt,
+                size: 40,
+                //  Color(0xfff3c969),//Color(0xffd4fcc3),//Color(0xffff5b2),//Color(0xffEDFF86),//Color(0xff362C28),
+
+                  color: pageIndex == 0 ? kIconActiveColor : kIconColor,
+                )),
+            BottomNavigationBarItem(
+              label: 'Notifications',
+              icon: Icon(Icons.notifications,
+              size: 40,
+              color: pageIndex == 1 ?  kIconActiveColor : kIconColor,
+            )),
+            BottomNavigationBarItem(
+                label: 'My Pool',
+                //TODO: Find a better icon and also make it so notifications are shown here
+                icon: Icon(Icons.groups,
+                  size: 40,
+                  color: pageIndex == 2 ?  kIconActiveColor : kIconColor ,
+                )),
+            BottomNavigationBarItem(
+
+              label: 'My Profile',
+              icon: Icon(Icons.account_circle_outlined,
+                size: 40,
+                color: pageIndex == 3 ?  kIconActiveColor : kIconColor,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:kaliallendatingapp/constants.dart';
 import 'package:kaliallendatingapp/models/userData.dart';
 import 'package:kaliallendatingapp/widgets/MatchChatBox.dart';
+import 'package:kaliallendatingapp/widgets/Pill.dart';
 import 'package:kaliallendatingapp/widgets/progress.dart';
 import 'package:uuid/uuid.dart';
 import 'Home.dart';
@@ -369,7 +370,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
               //Info Square Box
               Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: const EdgeInsets.only(top: 20, left: 20, right: 20.0),
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -387,15 +388,15 @@ class _ProfilePageState extends State<ProfilePage> {
                               'She/Her' //profileUserData.occupation,
                             //${profileUserData.gender}
                           ),
-                          IconCard(
-                              icon: Icons.emoji_people,
-                              text:
-                              'Straight' //profileUserData.occupation,
-                            //${profileUserData.gender}
-                          ),
+                          // IconCard(
+                          //     icon: Icons.emoji_people,
+                          //     text:
+                          //     'Straight' //profileUserData.occupation,
+                          //   //${profileUserData.gender}
+                          // ),
                           IconCard(
                             icon: Icons.favorite_border,
-                            text: 'Dating',
+                            text: 'Not Dating', //Dating, Not Dating, In A Relationship
                           ),
                           // IconCard(
                           //   icon: Icons.straighten,
@@ -459,42 +460,102 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
 
-
-
-
-              //Prompt Box
+              //Event Feed
               Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.only(top: 20, left: 20, right: 20.0),
+                child: Text(
+                    //'${profileUserData.firstName}\'s '
+                    'Events:'),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.only(top: 10, left: 20, right: 20.0),
                 child: Container(
                   decoration: BoxDecoration(
+                      // border:  Border.all(
+                      //     color: Colors.green,
+                      //     width: 3.0
+                      // ),
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
+                    borderRadius: BorderRadius.circular(10)
 
+                  ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 25),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        //TODO: Make this row scrollable within the container
-                        Text(
-                          'My favorite things to do in DC are...',
-                          style: kCardTitle,
-                        ),
-                        Center(
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: Text(
-                              'Thai food, going to the park, & going to Flash ;)',
-                              style: kCardAnswer
-                            ),
-                          ),
-                        ),
+                        Text('Sep. 18'),
+                        Text('Yoga in the Park'),
                       ],
                     ),
                   ),
                 ),
               ),
+
+              Padding(
+                padding: const EdgeInsets.only(top: 10, left: 20, right: 20.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                      // border:  Border.all(
+                      //     color: Colors.green,
+                      //     width: 3.0
+                      // ),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10)
+
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Sep. 15'),
+                        Text('Kettama at Culture!!!'),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+
+
+
+              //Prompt Box
+
+              // Padding(
+              //   padding: const EdgeInsets.all(20),
+              //   child: Container(
+              //     decoration: BoxDecoration(
+              //       color: Colors.white,
+              //       borderRadius: BorderRadius.circular(10.0),
+              //     ),
+              //
+              //     child: Padding(
+              //       padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 25),
+              //       child: Column(
+              //         crossAxisAlignment: CrossAxisAlignment.start,
+              //         children: [
+              //           //TODO: Make this row scrollable within the container
+              //           Text(
+              //             'My favorite things to do in DC are...',
+              //             style: kCardTitle,
+              //           ),
+              //           Center(
+              //             child: Padding(
+              //               padding: const EdgeInsets.only(top: 8.0),
+              //               child: Text(
+              //                 'Thai food, going to the park, & going to Flash ;)',
+              //                 style: kCardAnswer
+              //               ),
+              //             ),
+              //           ),
+              //         ],
+              //       ),
+              //     ),
+              //   ),
+              // ),
+
               SizedBox(height: 50),
             ],
           );
@@ -564,31 +625,3 @@ class InfoRow extends StatelessWidget {
   }
 }
 
-class Pill extends StatelessWidget {
-  final String? text;
-  final Color? color;
-
-  const Pill({Key? key, this.text, this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 10, top: 10),
-      child: Container(
-        child: Padding(
-          padding: const EdgeInsets.only(right: 10, left: 10, top: 5.0, bottom: 5.0),
-          child: Text(
-            text!,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 15,
-            ),
-          ),
-        ),
-        decoration: BoxDecoration(
-            color: color, borderRadius: BorderRadius.circular(15.0)),
-      ),
-    );
-  }
-}

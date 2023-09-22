@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kaliallendatingapp/constants.dart';
 import 'package:kaliallendatingapp/models/userData.dart';
 import 'package:kaliallendatingapp/screens/profilesetup/Profile6Height.dart';
+import 'package:kaliallendatingapp/screens/profilesetup/Profile7UploadPhoto.dart';
 import 'package:kaliallendatingapp/widgets/StyledButton.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -81,7 +82,7 @@ class _ProfileInterestedInState extends State<ProfileInterestedIn> {
                             widget._userData?.isInterestedIn = selectedInterestedIn;
                             Navigator.push(context, PageTransition(
                                 type: PageTransitionType.rightToLeft,
-                                child: ProfileHeight(
+                                child: ProfileUploadPhoto(
                                   userData: widget._userData,
                                 )));
                           } else {
@@ -99,58 +100,6 @@ class _ProfileInterestedInState extends State<ProfileInterestedIn> {
         )
     );
 
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'I identify as a $selectedInterestedIn',
-                      style: kHeadingText,
-                    ),
-                    SizedBox(height: 10.0),
-                    Wrap(
-                        spacing: 10.0,
-                        //  runSpacing: 5.0,
-                        children: [
-                          buildChoiceChip('Man'),
-                          buildChoiceChip('Woman'),
-                          buildChoiceChip('Bigender'),
-                          buildChoiceChip('Androgyne'),
-                          buildChoiceChip('Androgynous'),
-                        ]
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    StyledButton(
-                        text: 'Continue',
-                        color: Colors.grey,
-                        onTap: () {
-                          if (selectedInterestedIn != null) {
-                            widget._userData?.gender = selectedInterestedIn;
-                            Navigator.push(context, PageTransition(
-                                type: PageTransitionType.rightToLeft,
-                                child: ProfileInterestedIn(
-                                  userData: widget._userData,
-                                )));
-                          }
-                        }
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   ChoiceChip buildChoiceChip(String gender) {

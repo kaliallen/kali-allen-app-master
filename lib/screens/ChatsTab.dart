@@ -44,19 +44,24 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Chats',
+                    Text('my pool',
                         style: TextStyle(
                             fontSize: 26.0,
                             color: kDarkest,
                             fontWeight: FontWeight.w500)),
-                    IconButton(
-                      icon: Icon(
-                        Icons.add,
-                      ),
-                      onPressed: () { print('poop'); },
+
+                     ToggleButtons(
+                       isSelected: [true, false],
+                       children: [
+                         Icon(
+                            Icons.add,
+                          ),
+                         Icon(Icons.calendar_month)
+                       ],
+                     ),
 
 
-                    )
+
 
                   ],
                 ),

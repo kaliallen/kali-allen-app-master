@@ -47,7 +47,7 @@ class _ProfileSetupState extends State<ProfileSetup> {
                 Navigator.pushNamed(context, Home.id);
 
               }),
-              Text('Where do you live?',
+              Text('Where are you located?',
                   style: TextStyle(
                     // letterSpacing: 2.0,
                     fontSize: 30.0,

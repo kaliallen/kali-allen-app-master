@@ -8,11 +8,14 @@ import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:kaliallendatingapp/constants.dart';
 import 'package:kaliallendatingapp/models/userData.dart';
+import 'package:kaliallendatingapp/screens/EventsPage.dart';
 import 'package:kaliallendatingapp/screens/Home.dart';
 import 'package:kaliallendatingapp/screens/ProfilePage.dart';
 import 'package:kaliallendatingapp/screens/SubmitFeedback.dart';
 import 'package:kaliallendatingapp/widgets/StyledButton.dart';
 import 'package:kaliallendatingapp/widgets/progress.dart';
+
+import '../widgets/Pill.dart';
 
 final backgroundColor = Colors.black;
 
@@ -32,10 +35,9 @@ class BrowseScreen extends StatefulWidget {
 }
 
 class _BrowseScreenState extends State<BrowseScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool availableTonight = false;
 
   //When initState starts, saveUserInfo function is triggered and currentUser is saved here
-
 
   TextEditingController sendMessageController = TextEditingController();
   DateTime now = DateTime.now();
@@ -82,8 +84,16 @@ class _BrowseScreenState extends State<BrowseScreen> {
 
     //Find out if the dateTime is today's date
     bool dateIsToday =
-        currentUser?.availability?[0].toDate().year == DateTime.now().year &&
-            currentUser?.availability?[0].toDate().day == DateTime.now().day;
+        currentUser?.availability?[0]
+            .toDate()
+            .year == DateTime
+            .now()
+            .year &&
+            currentUser?.availability?[0]
+                .toDate()
+                .day == DateTime
+                .now()
+                .day;
     print('Date is today?:');
     print(dateIsToday);
 
@@ -124,150 +134,259 @@ class _BrowseScreenState extends State<BrowseScreen> {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     List<Placemark> placemarks =
-        await placemarkFromCoordinates(position.latitude, position.longitude);
+    await placemarkFromCoordinates(position.latitude, position.longitude);
     Placemark placemark = placemarks[0];
     print(placemark.subAdministrativeArea);
   }
 
   yesPressed() async {
+    setState(() {
+      availableTonight = true;
+    });
+
     //Update Availability in user's profile data
-    usersRef
-        .doc(widget.currentUserUid)
-        .update({
-          'availability': [now, true]
-        })
-        .then((value) => print('Availability Updated'))
-        .catchError((error) => print('Failed to update availability: $error'));
+    // usersRef
+    //     .doc(widget.currentUserUid)
+    //     .update({
+    //   'availability': [now, true]
+    // })
+    //     .then((value) => print('Availability Updated'))
+    //     .catchError((error) => print('Failed to update availability: $error'));
 
     //Update Availability in matches
 
     //Get list of all the uid of your matches
-    List<String> matchesUids = [];
-    QuerySnapshot querySnapshot =
-        await matchesRef.doc(widget.currentUserUid).collection('matches').get();
-    for (var doc in querySnapshot.docs) {
-      matchesUids.add(doc.id);
-    }
-    print(matchesUids);
+    // List<String> matchesUids = [];
+    // QuerySnapshot querySnapshot =
+    // await matchesRef.doc(widget.currentUserUid).collection('matches').get();
+    // for (var doc in querySnapshot.docs) {
+    //   matchesUids.add(doc.id);
+    // }
+    // print(matchesUids);
 
     //For each uid in the list, update the doc
-    for (String name in matchesUids) {
-      try {
-        await matchesRef
-            .doc(name)
-            .collection("matches")
-            .doc(widget.currentUserUid)
-            .update({
-          '$name': now,
-        });
-      } catch (e) {
-        print('Error updating document for user $name: $e');
-      }
-    }
+    // for (String name in matchesUids) {
+    //   try {
+    //     await matchesRef
+    //         .doc(name)
+    //         .collection("matches")
+    //         .doc(widget.currentUserUid)
+    //         .update({
+    //       '$name': now,
+    //     });
+    //   } catch (e) {
+    //     print('Error updating document for user $name: $e');
+    //   }
+    // }
 
-    setState(() {
-      dateExists = true;
-    });
+    // setState(() {
+    //   dateExists = true;
+    // });
   }
 
   noPressed() async {
+
+    setState(() {
+      availableTonight = false;
+    });
+
     //Update Availability in user's profile data
-    usersRef
-        .doc(widget.currentUserUid)
-        .update({
-          'availability': [now, false]
-        })
-        .then((value) => print('Availability Updated'))
-        .catchError((error) => print('Failed to update availability: $error'));
+    // usersRef
+    //     .doc(widget.currentUserUid)
+    //     .update({
+    //   'availability': [now, false]
+    // })
+    //     .then((value) => print('Availability Updated'))
+    //     .catchError((error) => print('Failed to update availability: $error'));
 
     //Update Availability in matches
 
     //Get list of all the uid of your matches
-    List<String> matchesUids = [];
-    QuerySnapshot querySnapshot =
-        await matchesRef.doc(widget.currentUserUid).collection('matches').get();
-    for (var doc in querySnapshot.docs) {
-      matchesUids.add(doc.id);
-    }
-    print(matchesUids);
+    // List<String> matchesUids = [];
+    // QuerySnapshot querySnapshot =
+    // await matchesRef.doc(widget.currentUserUid).collection('matches').get();
+    // for (var doc in querySnapshot.docs) {
+    //   matchesUids.add(doc.id);
+    // }
+    // print(matchesUids);
 
     //For each uid in the list, update the doc
-    for (String name in matchesUids) {
-      try {
-        await matchesRef
-            .doc(name)
-            .collection("matches")
-            .doc(widget.currentUserUid)
-            .update({
-          '$name': null,
-        });
-      } catch (e) {
-        print('Error updating document for user $name: $e');
-      }
-    }
-
-    setState(() {
-      dateExists = true;
-    });
+  //   for (String name in matchesUids) {
+  //     try {
+  //       await matchesRef
+  //           .doc(name)
+  //           .collection("matches")
+  //           .doc(widget.currentUserUid)
+  //           .update({
+  //         '$name': null,
+  //       });
+  //     } catch (e) {
+  //       print('Error updating document for user $name: $e');
+  //     }
+  //   }
+  //
+  //   setState(() {
+  //     dateExists = true;
+  //   });
   }
+
+  goToEventsPage() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => EventsPage()));
+  }
+
+  double deviceHeight(BuildContext context) =>
+      MediaQuery
+          .of(context)
+          .size
+          .height;
+
+  double deviceWidth(BuildContext context) =>
+      MediaQuery
+          .of(context)
+          .size
+          .width;
 
   ///This screen is where users input their availability and interested activities to find a date
   //TODO: There is a wierd alignment issue when Tonight is Unavailable
   buildWelcomePage() {
     return Scaffold(
-      backgroundColor: Colors.white, //kBrowsePageBackgroundColor,
+      backgroundColor: kBrowsePageBackgroundColor,
+      //Color(0xffd4fcc3),//Color(0xfff3c969),//Color(0xffff5b2),//Color(0xffEDFF86),//Color(0xff362C28),
+      //Colors.white, //kBrowsePageBackgroundColor,
       body: SafeArea(
+        //TODO: Make the padding adjust with screen size
         child: Padding(
-          padding: const EdgeInsets.only(bottom: 0, left: 25, right: 25),
+          padding: const EdgeInsets.only(left: 25, right: 25),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(DateFormat('MMMEd').format(now), style: kHeadingText),
-              Text('Welcome back! Are you free tonight?', style: kHeadingText),
-              StyledButton(
-                text: 'Yes',
-                color: kLimeGreen,
-                onTap: yesPressed,
-              ),
-              StyledButton(
-                text: 'No',
-                color: kLimeGreen,
-                onTap: noPressed,
-              ),
-              Center(
-                child: Text('Change your answer at any time.'),
-              ),
-              Row(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Alert your pool you are available tonight'),
-                  TextButton(
-                    onPressed: () {},
-                    child: Text('Yes'),
-                  )
+                  SizedBox(height: MediaQuery
+                      .of(context)
+                      .size
+                      .height * .09),
+                  Text(DateFormat('MMMEd').format(now), style: kDateTextStyle),
+                  SizedBox(height: MediaQuery
+                      .of(context)
+                      .size
+                      .height * .03),
+                  Text('Welcome back! Are you free tonight?',
+                      style: kAreYouFreeText),
+                  SizedBox(height: MediaQuery
+                      .of(context)
+                      .size
+                      .height * .06),
+                  StyledButton(
+                    text: 'Yes',
+                    color: kYesNoButtonColor,
+                    fontColor: kYesNoButtonFontColor,
+                    onTap: yesPressed,
+                  ),
+                  SizedBox(height: MediaQuery
+                      .of(context)
+                      .size
+                      .height * .03),
+                  StyledButton(
+                    text: 'No',
+                    color: kYesNoButtonColor,
+                    fontColor: kYesNoButtonFontColor,
+                    onTap: noPressed,
+                  ),
+                  SizedBox(height: MediaQuery
+                      .of(context)
+                      .size
+                      .height * .05),
+                  // Center(
+                  //   child: Text('Change your answer at any time!'),
+                  // ),
                 ],
               ),
 
-              Text('Add a note:'),
+              //----------------------------- Browse Events Feature-----------------------------------
 
-              TextField(
-                  decoration: InputDecoration(
-                hintText: 'Looking to get happy hour...',
-              )),
-              // StyledButton(
-              //   text: 'Enter',
-              //   color: kButtonColor,
-              //   onTap: sendFindADate,
+              // Center(
+              //   child: Text('OR'),
               // ),
-              StyledButton(
-                text: 'Done',
-                color: kButtonColor,
-                onTap: () {
-                  //Update profile
+              //
+              // StyledButton(
+              //   text: 'Browse Events',
+              //   color: kLimeGreen,
+              //   onTap: goToEventsPage,
+              // ),
 
-                  //Update all my matches to reflect my availability
-                },
-              )
+              //----------------------------- Browse Events Feature-----------------------------------
+
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Wrap(
+                    children: [
+                      availableTonight
+                          ? Pill(text: 'Free Tonight', color: kPillColor)
+                          : SizedBox(),
+                      availableTonight
+                          ? Pill(text: 'Add a memo', color: kPillColor)
+                          : SizedBox()
+                    ],
+                  ),
+                  SizedBox(height: MediaQuery
+                      .of(context)
+                      .size
+                      .height * .03),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Notify your pool',
+                        style: kToggleTextStyle,
+                      ),
+                      Switch(
+                        value: false,
+                        onChanged: (value) {
+                          print(value);
+                        },
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Only pool can see I\'m availabile',
+                        style: kToggleTextStyle,
+                      ),
+                      Switch(
+                        value: false,
+                        onChanged: (value) {
+                          print(value);
+                        },
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: MediaQuery
+                      .of(context)
+                      .size
+                      .height * .03),
+                  StyledButton(
+                    text: 'Done',
+                    color: kDoneButtonColor,
+                    fontColor: kDoneButtonTextColor,
+                    onTap: () {
+                      //Update profile
+
+                      //Update all my matches to reflect my availability
+                    },
+                  ),
+                  SizedBox(height: MediaQuery
+                      .of(context)
+                      .size
+                      .height * .03),
+                ],
+              ),
             ],
           ),
         ),
@@ -305,18 +424,18 @@ class _BrowseScreenState extends State<BrowseScreen> {
   buildMatchesProfiles() {
     return StreamBuilder<QuerySnapshot>(
       stream: usersRef
-          // .where('interestedIn', isEqualTo: currentUser.gender)
-          // .where('gender', isEqualTo: currentUser.isInterestedIn)
-          // .where('uid', isNotEqualTo: currentUser.uid)
-          // .where('availability', arrayContainsAny: userAvailableDates)
-          // .orderBy('time', descending: false)
+      // .where('interestedIn', isEqualTo: currentUser.gender)
+      // .where('gender', isEqualTo: currentUser.isInterestedIn)
+      // .where('uid', isNotEqualTo: currentUser.uid)
+      // .where('availability', arrayContainsAny: userAvailableDates)
+      // .orderBy('time', descending: false)
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Center(
               child: CircularProgressIndicator(
-            backgroundColor: Colors.lightBlue,
-          ));
+                backgroundColor: Colors.lightBlue,
+              ));
         }
 
         final users = snapshot.data!.docs;
@@ -346,7 +465,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
             profileId: user.id,
             viewPreferenceInfo: false,
             viewingAsBrowseMode: true,
-            backButtonFunction: (){
+            backButtonFunction: () {
               setState(() {
                 dateExists = false;
               });
@@ -375,135 +494,137 @@ class _BrowseScreenState extends State<BrowseScreen> {
 
         return profilePagesIndex < profilePages.length
             ? Stack(
-                children: [
-                  profilePages[profilePagesIndex],
-                  Positioned(
-                    bottom: 20,
-                    right: 20,
-                    child: FloatingActionButton(
-                      backgroundColor: kPillButtonUnselectedColor,
-                      onPressed: () {
-                        print('presssed!!');
-                        print('profilePagesIndex = $profilePagesIndex');
-                        print('profilePages.length = ${profilePages.length}');
+          children: [
+            profilePages[profilePagesIndex],
+            Positioned(
+              bottom: 20,
+              right: 20,
+              child: FloatingActionButton(
+                backgroundColor: kPillButtonUnselectedColor,
+                onPressed: () {
+                  print('presssed!!');
+                  print('profilePagesIndex = $profilePagesIndex');
+                  print('profilePages.length = ${profilePages.length}');
 
-                        if (profilePagesIndex < profilePages.length - 1) {
-                          setState(() {
-                            profilePagesIndex++;
-                          });
-                        } else {
-                          setState(() {
-                            profilePagesIndex = 0;
-                          });
-                        }
-                      },
-                      child: Icon(
-                        Icons.arrow_forward_ios_rounded,
-                        color: kPillButtonSelectedColor,
-                        size: 25,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 20,
-                    left: 20,
-                    child: FloatingActionButton(
-                      backgroundColor: kPillButtonUnselectedColor,
-                      //Colors.red,
-                      onPressed: () async {
-                        print('presssed!!');
+                  if (profilePagesIndex < profilePages.length - 1) {
+                    setState(() {
+                      profilePagesIndex++;
+                    });
+                  } else {
+                    setState(() {
+                      profilePagesIndex = 0;
+                    });
+                  }
+                },
+                child: Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: kPillButtonSelectedColor,
+                  size: 25,
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 20,
+              left: 20,
+              child: FloatingActionButton(
+                backgroundColor: kPillButtonUnselectedColor,
+                //Colors.red,
+                onPressed: () async {
+                  print('presssed!!');
 
-                        //Popup
-                        showDialog(
-                            context: context,
-                            builder: (ctx) => AlertDialog(
-                                    title: const Text('Send a message !'),
-                                    content: TextField(
-                                      controller: sendMessageController,
-                                      maxLines: 10,
-                                      minLines: 4,
-                                      decoration: InputDecoration(
-                                        hintText: 'Type your message here...',
-                                        border: OutlineInputBorder(),
-                                      ),
-                                    ),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        child: Text('Back'),
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                      TextButton(
-                                        child: Text('Send'),
-                                        onPressed: () async {
-                                          //Message
-                                          final message =
-                                              sendMessageController.text.trim();
-                                          print(message);
+                  //Popup
+                  showDialog(
+                      context: context,
+                      builder: (ctx) =>
+                          AlertDialog(
+                              title: const Text('Send a message !'),
+                              content: TextField(
+                                controller: sendMessageController,
+                                maxLines: 10,
+                                minLines: 4,
+                                decoration: InputDecoration(
+                                  hintText: 'Type your message here...',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: Text('Back'),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                TextButton(
+                                  child: Text('Send'),
+                                  onPressed: () async {
+                                    //Message
+                                    final message =
+                                    sendMessageController.text.trim();
+                                    print(message);
 
-                                          print(profileIds[profilePagesIndex]);
-                                          print(profileIds[profilePagesIndex]);
-                                          print(currentUser?.picture1);
+                                    print(profileIds[profilePagesIndex]);
+                                    print(profileIds[profilePagesIndex]);
+                                    print(currentUser?.picture1);
 
-                                        //Send Notification to the MATCH user
-                                          await notificationsRef
-                                              .doc(
-                                                  profileIds[profilePagesIndex])
-                                              .collection('notifications').doc(widget.currentUserUid)
-                                              .set({
-                                                'matchImageUrl':
-                                                    currentUser?.picture1,
-                                                'message': message,
-                                                'name': currentUser?.firstName,
-                                                'senderId':
-                                                    widget.currentUserUid,
-                                                'time': now,
-                                                'type': 'match',
-                                              })
-                                              .then((value) =>
-                                                  print('Success!'))
-                                              .catchError((onError) => print(
-                                                  'There was an error sending notification. $onError'));
+                                    //Send Notification to the MATCH user
+                                    await notificationsRef
+                                        .doc(
+                                        profileIds[profilePagesIndex])
+                                        .collection('notifications')
+                                        .doc(widget.currentUserUid)
+                                        .set({
+                                      'matchImageUrl':
+                                      currentUser?.picture1,
+                                      'message': message,
+                                      'name': currentUser?.firstName,
+                                      'senderId':
+                                      widget.currentUserUid,
+                                      'time': now,
+                                      'type': 'match',
+                                    })
+                                        .then(
+                                            (value) => print('Success!'))
+                                        .catchError((onError) =>
+                                        print(
+                                            'There was an error sending notification. $onError'));
 
-                                          //Filter the user out so they dont show up in the find section anymore?
-                                          // Maybe not necessary rn.
+                                    //Filter the user out so they dont show up in the find section anymore?
+                                    // Maybe not necessary rn.
 
-                                          //Go to Next Profile
-                                          if (profilePagesIndex <
-                                              profilePages.length - 1) {
-                                            setState(() {
-                                              profilePagesIndex++;
-                                            });
-                                          } else {
-                                            setState(() {
-                                              profilePagesIndex = 0;
-                                            });
-                                          }
+                                    //Go to Next Profile
+                                    if (profilePagesIndex <
+                                        profilePages.length - 1) {
+                                      setState(() {
+                                        profilePagesIndex++;
+                                      });
+                                    } else {
+                                      setState(() {
+                                        profilePagesIndex = 0;
+                                      });
+                                    }
 
-                                          sendMessageController.clear();
+                                    sendMessageController.clear();
 
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                    ]));
-                      },
-                      child: Icon(
-                        Icons.chat,
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ]));
+                },
+                child: Icon(
+                  Icons.chat,
 
-                        color: kPillButtonSelectedColor,
-                        //Icons.close,
-                        size: 25,
-                      ),
-                    ),
-                  ),
-                ],
-              )
+                  color: kPillButtonSelectedColor,
+                  //Icons.close,
+                  size: 25,
+                ),
+              ),
+            ),
+          ],
+        )
             : buildNoCurrentMatchesWidget();
       },
     );
   }
-
 
   buildSpinnerPage() {
     return Column(
@@ -517,17 +638,21 @@ class _BrowseScreenState extends State<BrowseScreen> {
 
   @override
   Widget build(context) {
+    double paddingValue = MediaQuery
+        .of(context)
+        .size
+        .width * .03;
+
     return dateExists == null
         ? buildSpinnerPage()
         : dateExists == true
-            ? buildMatchesProfiles()
-            : buildWelcomePage();
+        ? buildMatchesProfiles()
+        : buildWelcomePage();
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    sendMessageController.dispose();
   }
 }

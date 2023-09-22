@@ -28,7 +28,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
             children: [
               Padding(
                 padding: EdgeInsets.only(left: 25.0, top: 50.0),
-                child: Text('Notifications',
+                child: Text('notifications',
                     style: TextStyle(
                         fontSize: 26.0,
                         color: kDarkest,

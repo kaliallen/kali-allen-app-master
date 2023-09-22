@@ -9,7 +9,6 @@ import 'package:kaliallendatingapp/widgets/StyledButton.dart';
 import 'package:page_transition/page_transition.dart';
 
 
-//TODO:
 
 class ProfileBirthday extends StatefulWidget {
   final UserData? _userData;
@@ -146,7 +145,6 @@ class _ProfileBirthdayState extends State<ProfileBirthday> {
                           return null;
                         }
                       },
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       keyboardType: TextInputType.number,
                       maxLength: 2,
                       decoration: InputDecoration(
@@ -179,7 +177,6 @@ class _ProfileBirthdayState extends State<ProfileBirthday> {
                           return null;
                         }
                       },
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       keyboardType: TextInputType.number,
                       maxLength: 2,
                       decoration: InputDecoration(
@@ -216,7 +213,6 @@ class _ProfileBirthdayState extends State<ProfileBirthday> {
                         }
                       },
                       keyboardType: TextInputType.number,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       maxLength: 4,
                       decoration: InputDecoration(
                         // border: OutlineInputBorder(
