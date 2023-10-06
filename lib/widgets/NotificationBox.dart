@@ -243,79 +243,81 @@ class NotificationBox extends StatelessWidget {
       );
     }
 
-    ;
 
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ListTile(
-        tileColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        leading: GestureDetector(
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ProfilePage(
-                      backButtonFunction: (){},
-                          profileId: matchId,
-                          viewingAsBrowseMode: true,
-                          viewPreferenceInfo: false,
-                        )));
-          },
-          child: CircleAvatar(
-            radius: 25,
-            backgroundColor: Colors.grey,
-            backgroundImage: CachedNetworkImageProvider(matchImageUrl!),
+
+    return Column(
+      children: [
+        ListTile(
+          tileColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
-        ),
-        title: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-                type!.contains('looking')
-                    ? '$name is free tonight!'
-                    : type!.contains('match')
-                        ? '$name sent you a message!'
-                        : '$name is going to $message',
-                style: TextStyle(
-                  // fontSize: 10.0,
-                  fontWeight: FontWeight.w600,
-                  color: kDarkest,
-                )),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5.0),
-              child: Text('"${message!}"',
+          leading: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ProfilePage(
+                        backButtonFunction: (){},
+                            profileId: matchId,
+                            viewingAsBrowseMode: true,
+                            viewAvailabilityInfo: false,
+                          )));
+            },
+            child: CircleAvatar(
+              radius: 25,
+              backgroundColor: Colors.grey,
+              backgroundImage: CachedNetworkImageProvider(matchImageUrl!),
+            ),
+          ),
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                  type!.contains('looking')
+                      ? '$name is free tonight!'
+                      : type!.contains('match')
+                          ? '$name sent you a message!'
+                          : '$name is going to $message',
                   style: TextStyle(
                     // fontSize: 10.0,
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w600,
                     color: kDarkest,
                   )),
-            ),
-          ],
-        ),
-        subtitle: Text(timeago.format(time!),
-            style: TextStyle(
-              fontWeight: FontWeight.w100,
-              color: kDarkest,
-            )),
-        trailing: Column(
-          children: [
-            TextButton(
-              child: Text(
-                type!.contains('looking')
-                    ? 'Message'
-                    : type!.contains('match')
-                        ? 'Start a Chat'
-                        : 'View Event',
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5.0),
+                child: Text('"${message!}"',
+                    style: TextStyle(
+                      // fontSize: 10.0,
+                      fontWeight: FontWeight.w400,
+                      color: kDarkest,
+                    )),
               ),
-              onPressed: sendChat,
-            ),
-          ],
+            ],
+          ),
+          subtitle: Text(timeago.format(time!),
+              style: TextStyle(
+                fontWeight: FontWeight.w100,
+                color: kDarkest,
+              )),
+          trailing: Column(
+            children: [
+              TextButton(
+                child: Text(
+                  type!.contains('looking')
+                      ? 'Message'
+                      : type!.contains('match')
+                          ? 'Start a Chat'
+                          : 'View Event',
+                ),
+                onPressed: sendChat,
+              ),
+            ],
+          ),
         ),
-      ),
+        SizedBox(height: MediaQuery.of(context).size.height * .01),
+      ],
     );
   }
 }

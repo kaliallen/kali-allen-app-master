@@ -14,7 +14,7 @@ import 'package:kaliallendatingapp/screens/profilesetup/Profile1Location.dart';
 import 'package:kaliallendatingapp/widgets/StyledButton.dart';
 
 import '../constants.dart';
-import 'MatchesTab.dart';
+import 'NotificationsTab.dart';
 
 final datesRef = FirebaseFirestore.instance.collection('dates');
 final activeDatesRef = FirebaseFirestore.instance.collection('activeDates');
@@ -185,7 +185,7 @@ class _HomeState extends State<Home> {
           BrowseScreen(
             currentUserUid: currentUser?.uid,
           ),
-          NotificationScreen(
+          NotificationsTab(
             currentUserId: currentUser?.uid,
           ),
           MatchesScreen(
@@ -202,7 +202,7 @@ class _HomeState extends State<Home> {
       bottomNavigationBar:
           // BottomNavigationBar(
       Container(
-        height: 110.0,
+        height: MediaQuery.of(context).size.height * .12,
         child: CupertinoTabBar(
           currentIndex: pageIndex,
           onTap: onTap,

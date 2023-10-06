@@ -1,11 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:kaliallendatingapp/constants.dart';
 import 'package:kaliallendatingapp/models/userData.dart';
 import 'package:kaliallendatingapp/screens/Home.dart';
 import 'package:kaliallendatingapp/widgets/Prompts.dart';
 import 'package:kaliallendatingapp/widgets/progress.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+
+import '../widgets/PillButton.dart';
+import '../widgets/StyledButton.dart';
 
 class EditProfile extends StatefulWidget {
   final String? currentUserId;
@@ -28,7 +32,7 @@ class _EditProfileState extends State<EditProfile> {
 
   bool _occupationValid = true;
   bool _educationValid = true;
-  bool _bioValid = true;
+  bool _locationValid = true;
   String chosen_prompt = "Chosen Prompt";
 
   getUser() async {
@@ -63,12 +67,9 @@ class _EditProfileState extends State<EditProfile> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: EdgeInsets.only(top: 12.0),
-          child: Text(
-            'Job',
-            style: TextStyle(color: Colors.grey),
-          ),
+        Text(
+          'Job',
+          style: TextStyle(color: Colors.grey),
         ),
         TextField(
             controller: occupationController,
@@ -83,45 +84,36 @@ class _EditProfileState extends State<EditProfile> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: EdgeInsets.only(top: 12.0),
-          child: Text(
-            'Bio',
-            style: TextStyle(color: Colors.grey),
-          ),
+        Text(
+          'Bio',
+          style: TextStyle(color: Colors.grey),
         ),
         TextField(
-            controller: bioController,
-            maxLines: 10,
-            minLines: 4,
-            decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Update Bio',
-                errorText: _occupationValid ? null : 'Bio is empty'),
-         )
-
+          controller: bioController,
+          maxLines: 10,
+          minLines: 4,
+          decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: 'Update Bio',
+              errorText: _occupationValid ? null : 'Bio is empty'),
+        )
       ],
     );
   }
-
-
 
   Column buildLocationField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: EdgeInsets.only(top: 12.0),
-          child: Text(
-            'Location',
-            style: TextStyle(color: Colors.grey),
-          ),
+        Text(
+          'Location',
+          style: TextStyle(color: Colors.grey),
         ),
         TextField(
           controller: locationController,
           decoration: InputDecoration(
             hintText: 'Update Location',
-            errorText: _educationValid ? null : 'Education field empty',
+            errorText: _locationValid ? null : 'Location field empty',
           ),
         ),
       ],
@@ -132,12 +124,9 @@ class _EditProfileState extends State<EditProfile> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: EdgeInsets.only(top: 12.0),
-          child: Text(
-            'School',
-            style: TextStyle(color: Colors.grey),
-          ),
+        Text(
+          'School',
+          style: TextStyle(color: Colors.grey),
         ),
         TextField(
           controller: educationController,
@@ -145,6 +134,62 @@ class _EditProfileState extends State<EditProfile> {
             hintText: 'Update School',
             errorText: _educationValid ? null : 'Education field empty',
           ),
+        ),
+      ],
+    );
+  }
+
+  Column buildDatingField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Relationship Status', style: TextStyle(color: kLightDark)),
+        Wrap(
+          children: [
+            PillButton(
+              isSelected: true,
+              text: 'Dating',
+              onTap: () {},
+            ),
+            PillButton(
+              isSelected: false,
+              text: 'Not Dating',
+              onTap: () {},
+            ),
+            PillButton(
+              isSelected: false,
+              text: 'In a Relationship',
+              onTap: () {},
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Column buildInterestedInField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Interested In', style: TextStyle(color: kLightDark)),
+        Wrap(
+          children: [
+            PillButton(
+              isSelected: true,
+              text: 'Men',
+              onTap: () {},
+            ),
+            PillButton(
+              isSelected: false,
+              text: 'Women',
+              onTap: () {},
+            ),
+            PillButton(
+              isSelected: false,
+              text: 'Both',
+              onTap: () {},
+            ),
+          ],
         ),
       ],
     );
@@ -159,12 +204,16 @@ class _EditProfileState extends State<EditProfile> {
       educationController.text.trim().isEmpty
           ? _educationValid = false
           : _educationValid = true;
-      //bioController.text.trim().length > 100 ? _bioValid = false : _bioValid = true;
+      locationController.text.trim().isEmpty
+          ? _locationValid = false
+          : _locationValid = true;
 
-      if (_occupationValid && _bioValid && _educationValid) {
+      if (_occupationValid && _educationValid) {
         usersRef.doc(widget.currentUserId).update({
-          'occupation': occupationController.text,
-          'education': educationController.text,
+          'occupation': occupationController.text.trim(),
+          'education': educationController.text.trim(),
+          'location' : locationController.text.trim(),
+          'bio': bioController.text.trim(),
         });
         //6)
         SnackBar snackBar = SnackBar(content: Text('Profile updated!'));
@@ -212,54 +261,72 @@ class _EditProfileState extends State<EditProfile> {
         ),
         body: isLoading
             ? circularProgress()
-            : ListView(
-                children: [
-                  Container(
-                      child: Column(
-                    children: [
-                      Padding(
-                          padding: EdgeInsets.only(top: 16, bottom: 8.0),
-                          child: CircleAvatar(
-                            radius: 50.0,
-                            backgroundImage:
-                                CachedNetworkImageProvider(userData!.picture1!),
-                          )),
-                      Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Column(
+            : Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: ListView(
+                  children: [
+                    Column(
+                      children: [
+                        Text(
+                          '${userData?.firstName}',
+                          style: kHeyKaliText,
+                        ),
+                        SizedBox(height: MediaQuery.of(context).size.height * .01),
+                        CircleAvatar(
+                          radius: MediaQuery.of(context).size.width * .4,
+                          backgroundImage:
+                              CachedNetworkImageProvider(userData!.picture1!),
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             buildBioField(),
+                            SizedBox(height: MediaQuery.of(context).size.height * .01),
                             buildLocationField(),
+                            SizedBox(height: MediaQuery.of(context).size.height * .01),
                             buildEducationField(),
+                            SizedBox(height: MediaQuery.of(context).size.height * .01),
                             buildOccupationField(),
-
+                            SizedBox(height: MediaQuery.of(context).size.height * .01),
+                            buildDatingField(),
+                            SizedBox(height: MediaQuery.of(context).size.height * .01),
+                            buildInterestedInField(),
+                            SizedBox(height: MediaQuery.of(context).size.height * .01),
                           ],
                         ),
-                      ),
-                      ElevatedButton(
-                        onPressed: updateProfileData,
-                        child: Text(
-                          'Update Profile',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20.0,
-                          ),
+
+
+                        StyledButton(
+                          text: 'Update profile',
+                          color: kYesNoButtonColor,
+                          onTap: updateProfileData,
                         ),
-                      ),
-                      Text(chosen_prompt),
-                      ElevatedButton(
-                        onPressed: toPromptsPage,
-                        child: Text(
-                          'Prompts Page',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20.0,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ))
-                ],
+
+                        // ElevatedButton(
+                        //   onPressed: updateProfileData,
+                        //   child: Text(
+                        //     'Update Profile',
+                        //     style: TextStyle(
+                        //       color: Colors.white,
+                        //       fontSize: 20.0,
+                        //     ),
+                        //   ),
+                        // ),
+                        // Text(chosen_prompt),
+                        // ElevatedButton(
+                        //   onPressed: toPromptsPage,
+                        //   child: Text(
+                        //     'Prompts Page',
+                        //     style: TextStyle(
+                        //       color: Colors.white,
+                        //       fontSize: 20.0,
+                        //     ),
+                        //   ),
+                        // ),
+                      ],
+                    )
+                  ],
+                ),
               ));
   }
 

@@ -86,10 +86,20 @@ class _ChatScreenState extends State<ChatScreen> {
           },
         ),
         actions: <Widget>[
+          // Text('Hide Availability'),
+          IconButton(
+            icon: Icon(
+              Icons.cloud,
+              color: kDarkish,),
+            //TODO: Implement 3 button functionality
+            onPressed: (){
+
+            },
+          ),
           PopupMenuButton(
             onSelected: (result){
               if (result==2){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfilePage(profileId: widget.matchId, viewingAsBrowseMode: false, viewPreferenceInfo: false, backButtonFunction: (){},)));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfilePage(profileId: widget.matchId, viewingAsBrowseMode: false, viewAvailabilityInfo: false, backButtonFunction: (){},)));
               }
             },
             elevation: 20,
@@ -112,13 +122,7 @@ class _ChatScreenState extends State<ChatScreen> {
               PopupMenuItem(child: Text('Cancel'))
             ],
           ),
-          // IconButton(
-          //     icon: Icon(
-          //         Icons.more_vert,
-          //     color: kDarkish,),
-          //     //TODO: Implement 3 button functionality
-          //     onPressed: viewProfile,
-          // ),
+
         ],
         title: Column(
           children: [

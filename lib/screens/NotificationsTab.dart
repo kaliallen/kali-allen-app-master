@@ -1,42 +1,37 @@
-//THIS PAGE IS ACTIVE IN USE
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:kaliallendatingapp/screens/BrowseTab.dart';
 import 'package:kaliallendatingapp/widgets/NotificationBox.dart';
-
 import '../constants.dart';
 import 'Home.dart';
 
-class NotificationScreen extends StatefulWidget {
+class NotificationsTab extends StatefulWidget {
   final String? currentUserId;
 
-  NotificationScreen({this.currentUserId});
+  NotificationsTab({this.currentUserId});
 
   @override
-  _NotificationScreenState createState() => _NotificationScreenState();
+  _NotificationsTabState createState() => _NotificationsTabState();
 }
 
-class _NotificationScreenState extends State<NotificationScreen> {
+class _NotificationsTabState extends State<NotificationsTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: kScaffoldBackgroundColor,
         body: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(left: 25.0, top: 50.0),
-                child: Text('notifications',
-                    style: TextStyle(
-                        fontSize: 26.0,
-                        color: kDarkest,
-                        fontWeight: FontWeight.w500)),
-              ),
-              Column(
+          child: Center(
+            child: Container(
+             width: MediaQuery.of(context).size.width * .90,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  //TODO: ORGANIZE - Make the steambuilder a seperate class at the bottom
+                  SizedBox(height: MediaQuery.of(context).size.height * .05),
+                  Text('Notifications',
+                      style: TextStyle(
+                          fontSize: 26.0,
+                          color: kDarkest,
+                          fontWeight: FontWeight.w500)),
+                  SizedBox(height: MediaQuery.of(context).size.height * .01),
                   StreamBuilder<QuerySnapshot>(
                     stream: notificationsRef
                         .doc(widget.currentUserId)
@@ -87,15 +82,17 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         widgets.add(notificationBox);
                       }
                       //TODO: Need to figure out how to make this a scrollable listView
-                      return Column(
-                        // children: matchChatBoxes,
-                        children: widgets,
+                      return Expanded(
+                        child: ListView(
+                          // children: matchChatBoxes,
+                          children: widgets,
+                        ),
                       );
                     },
                   ),
                 ],
-              )
-            ],
+              ),
+            ),
           ),
         ));
   }

@@ -46,7 +46,7 @@ class _SettingScreenState extends State<SettingScreen> {
         builder: (context) => ProfilePage(
           backButtonFunction: () {},
           profileId: widget?.currentUserId,
-          viewPreferenceInfo: false,
+          viewAvailabilityInfo: false,
         ),
       ),
     );
@@ -166,7 +166,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                   builder: (context) => ProfilePage(
                                         profileId: widget.currentUserId,
                                         viewingAsBrowseMode: false,
-                                        viewPreferenceInfo: false,
+                                        viewAvailabilityInfo: true,
                                         backButtonFunction: () {
                                           Navigator.pop(context);
                                         },
@@ -237,10 +237,19 @@ class _SettingScreenState extends State<SettingScreen> {
       padding: const EdgeInsets.all(15.0),
       child: Column(
         children: [
+          // ListTileButton(
+          //   icon: Icons.person,
+          //   text: 'View Profile',
+          //   onTap: viewPreferences,
+          // ),
           ListTileButton(
             icon: Icons.settings,
-            text: 'Preferences',
-            onTap: viewPreferences,
+            text: 'Edit Profile',
+            onTap:  (){Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => EditProfile(
+                        currentUserId: widget.currentUserId)));},
           ),
           ListTileButton(
             icon: Icons.groups,

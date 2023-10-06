@@ -12,13 +12,13 @@ import 'Home.dart';
 
 class ProfilePage extends StatefulWidget {
   final String? profileId;
-  final bool? viewPreferenceInfo;
+  final bool? viewAvailabilityInfo;
   final bool? viewingAsBrowseMode;
   final Function()? backButtonFunction;
 
   ProfilePage(
       {this.profileId,
-      this.viewPreferenceInfo,
+      this.viewAvailabilityInfo,
       this.viewingAsBrowseMode,
         required this.backButtonFunction,
       });
@@ -168,6 +168,7 @@ class _ProfilePageState extends State<ProfilePage> {
           print('Date is today? $dateIsToday');
 
 
+
           //
           //     //They answered yes or no
           //     bool answered = currentUser?.availability?[1] != null;
@@ -244,7 +245,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ),
 
-                              widget.viewPreferenceInfo == true ?
+                              widget.viewingAsBrowseMode == false ?
                               SizedBox()
                               : Padding(
                                   padding: const EdgeInsets.only(
@@ -273,25 +274,20 @@ class _ProfilePageState extends State<ProfilePage> {
                           children: [
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: widget.viewPreferenceInfo == true
-                                  ? []
-                                  : [
-
-                                      widget.viewingAsBrowseMode == true
-                                          ?
+                              children: [
                                       Wrap(
                                               //TODO: Fix
                                               //TODO: Decide if this goes here. Should there be compatible "interests" here? Lots of questions...
                                               children: [
 
                                                 dateIsToday == true ? Pill(
-                                                  text: 'Anyone want to go to a meditation happy hour? 🧘🏻‍',
+                                                  text: profileUserData.memo,
                                                   color: Colors.green
                                                       .withOpacity(.1),
                                                 ): SizedBox(),
                                               ],
                                             )
-                                          : SizedBox(),
+
 
                                     ],
                             ),
@@ -412,7 +408,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           IconCard(
                               icon: Icons.location_on_outlined,
                               text:
-                              'Dupont Circle' //profileUserData.occupation,
+                              profileUserData.location, //profileUserData.occupation,
                             //${profileUserData.gender}
                           ),
                           // IconCard(
@@ -461,62 +457,62 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
 
               //Event Feed
-              Padding(
-                padding: const EdgeInsets.only(top: 20, left: 20, right: 20.0),
-                child: Text(
-                    //'${profileUserData.firstName}\'s '
-                    'Events:'),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.only(top: 20, left: 20, right: 20.0),
+              //   child: Text(
+              //       //'${profileUserData.firstName}\'s '
+              //       'Events:'),
+              // ),
 
-              Padding(
-                padding: const EdgeInsets.only(top: 10, left: 20, right: 20.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      // border:  Border.all(
-                      //     color: Colors.green,
-                      //     width: 3.0
-                      // ),
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10)
+              // Padding(
+              //   padding: const EdgeInsets.only(top: 10, left: 20, right: 20.0),
+              //   child: Container(
+              //     decoration: BoxDecoration(
+              //         // border:  Border.all(
+              //         //     color: Colors.green,
+              //         //     width: 3.0
+              //         // ),
+              //       color: Colors.white,
+              //       borderRadius: BorderRadius.circular(10)
+              //
+              //     ),
+              //     child: Padding(
+              //       padding: const EdgeInsets.all(8.0),
+              //       child: Row(
+              //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //         children: [
+              //           Text('Sep. 18'),
+              //           Text('Yoga in the Park'),
+              //         ],
+              //       ),
+              //     ),
+              //   ),
+              // ),
 
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Sep. 18'),
-                        Text('Yoga in the Park'),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-
-              Padding(
-                padding: const EdgeInsets.only(top: 10, left: 20, right: 20.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      // border:  Border.all(
-                      //     color: Colors.green,
-                      //     width: 3.0
-                      // ),
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10)
-
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Sep. 15'),
-                        Text('Kettama at Culture!!!'),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.only(top: 10, left: 20, right: 20.0),
+              //   child: Container(
+              //     decoration: BoxDecoration(
+              //         // border:  Border.all(
+              //         //     color: Colors.green,
+              //         //     width: 3.0
+              //         // ),
+              //         color: Colors.white,
+              //         borderRadius: BorderRadius.circular(10)
+              //
+              //     ),
+              //     child: Padding(
+              //       padding: const EdgeInsets.all(8.0),
+              //       child: Row(
+              //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //         children: [
+              //           Text('Sep. 15'),
+              //           Text('Kettama at Culture!!!'),
+              //         ],
+              //       ),
+              //     ),
+              //   ),
+              // ),
 
 
 

@@ -4,38 +4,57 @@ import 'package:flutter/material.dart';
 
 //Main Screen
 //  Color(0xfff3c969),//Color(0xffd4fcc3),//Color(0xffff5b2),//Color(0xffEDFF86),//Color(0xff362C28),
-const kBrowsePageBackgroundColor = Color(0xffffffff);
+const kBrowsePageBackgroundColor = kScaffoldBackgroundColor;
 var kIconColor = Color(0xff676A6A);
-const kIconActiveColor = Color(0xffEDFF86);
+const kIconActiveColor = Color(0xffF2D2A7);
 var kNavBarColor = Color(0xff1D1F24); //
   //Color(0xffff5b2) Color(0xffEDFF86) Color(0xff362C28)
 var kNavFontColor =  Color(0xff676A6A);
-var kNavActiveFontColor = Color(0xffEDFF86);
+var kNavActiveFontColor = Color(0xffF2D2A7);
 var kDoneButtonColor = Color(0xff1D1F24);
 const kDoneButtonTextColor = Colors.white;
-var kYesNoButtonColor = Color(0xffEDFF86);
-var kYesNoButtonYesColor =Color(0xffEDFF86);
+var kYesNoButtonColor = kDark;
+var kYesNoButtonYesColor =Color(0xffF2D2A7);
 const kYesNoButtonFontColor = Color(0xff1D1F24); //Color(0xffE5B02E);
+var kYesNoButtonBorder = Border.all(
+  color: kLightDark,
+  width: 1.0,
+);
 var kToggleColor = Color(0xff1D1F24);
 var kToggleOnColor = Color(0xff1D1F24);
 var kPillColor = Colors.green;
-const kToggleTextStyle = TextStyle(
-  fontSize: 15.0,
-  fontWeight: FontWeight.w300,
-  color: Color(0xff362C28),
-  fontFamily: 'Roboto',
-);
-const kAreYouFreeText = TextStyle(
-  fontSize: 28.0,
-  fontWeight: FontWeight.w600,
-  color: Color(0xff362C28),
-  fontFamily: 'RobotoLight',
-);
-const kDateTextStyle = TextStyle(
+
+const kDateTextStyle = kToggleTextStyle;
+// TextStyle(
+//   fontSize: 18.0,
+//   fontWeight: FontWeight.w400,
+//   color: kDarkest,
+// );
+
+const kHeyKaliText = TextStyle(
   fontSize: 20.0,
   fontWeight: FontWeight.w500,
-  color: Color(0xffE5B02E),
-  fontFamily: 'RobotoLight',
+  color: kDarkish,
+);
+
+const kAreYouFreeText = TextStyle(
+    fontSize: 26.0,
+    color: kDarkest,
+    fontWeight: FontWeight.w500);
+
+const kEmojiText = TextStyle(
+  fontSize: 20.0,
+  fontWeight: FontWeight.w600,
+  color: Color(0xff1D1F24),
+);
+
+
+const kToggleTextStyle = TextStyle(
+  fontSize: 18.0,
+  fontWeight: FontWeight.w600,
+  color: kDarkish
+  //  fontWeight: FontWeight.w500,
+  //  letterSpacing: .1,
 );
 
 //buildWelcomeScreen
@@ -97,7 +116,10 @@ const kDateTimeIconTextStyle = TextStyle(
 );
 
 //Somitro Colors
-const kScaffoldBackgroundColor = Color(0xffF6F7FB); //;//Color(0xffF6F7FB);
+const kScaffoldBackgroundColor =
+
+Color(0xffF6F7FB);
+//Color(0xffF6F7FB);
 const kWhiteSquareColor = Colors.white;
 
 //Pill Button Colors

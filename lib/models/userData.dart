@@ -8,6 +8,7 @@ class UserData {
   String? lastName;
   Timestamp? birthDate;
   List? availability;
+  String? memo;
   String? gender;
   String? isInterestedIn;
   String? height;
@@ -34,6 +35,7 @@ class UserData {
     this.lastName,
     this.birthDate,
     this.availability,
+    this.memo,
     this.gender,
     this.isInterestedIn,
     this.height,
@@ -62,6 +64,7 @@ class UserData {
       lastName: doc['lastName'],
       birthDate: doc['birthDate'],
       availability: doc['availability'],
+      memo: doc['memo'],
       gender: doc['gender'],
       isInterestedIn: doc['isInterestedIn'],
       height: doc['height'],
@@ -99,6 +102,7 @@ class UserData {
     String? lastName,
     Timestamp? birthDate,
     Timestamp? availability,
+    String? memo,
     String? gender,
     String? isInterestedIn,
     String? height,
@@ -128,6 +132,7 @@ class UserData {
         'lastName': lastName,
         'birthDate': birthDate,
         'availability': availability,
+        'memo': memo,
         'gender': gender,
         'isInterestedIn': isInterestedIn,
         'height': height,

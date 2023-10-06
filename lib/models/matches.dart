@@ -15,7 +15,7 @@ class Matches {
   bool? messageUnread;
   String? messagesId;
   String? dateId;
-  Map? availability;
+  List? availability;
 
   //TODO: All of the parameters are nullable. Some of these parameters such as matchId, matchName, dateId, messagesId should not be nullable.
 

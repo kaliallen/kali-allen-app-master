@@ -21,7 +21,7 @@ class ActiveMatchChatBox extends StatelessWidget {
   final bool? messageUnread;
   final String? messagesId;
   final String? dateId;
-  final bool? available;
+  final List? available;
 
 
 
@@ -30,113 +30,93 @@ class ActiveMatchChatBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-              context,
-              PageTransition(
-                  type: PageTransitionType.rightToLeft,
-                  child: ChatScreen(
-                    activeMatch: activeMatch,
-                    matchId: matchId,
-                    messageId: messagesId.toString(),
-                    matchName:   matchName.toString(),
-                    matchImageUrl: matchImageUrl.toString(),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            PageTransition(
+                type: PageTransitionType.rightToLeft,
+                child: ChatScreen(
+                  activeMatch: activeMatch,
+                  matchId: matchId,
+                  messageId: messagesId.toString(),
+                  matchName:   matchName.toString(),
+                  matchImageUrl: matchImageUrl.toString(),
 
-                  )));
-        },
-        child: Container(
-            width: MediaQuery.of(context).size.width,
-                child: Container(
-                  width: MediaQuery.of(context).size.width * .85,
-                  padding: EdgeInsets.all(10.0),
-                  decoration: BoxDecoration(
-                    color: kWhiteSquareColor,
-                    borderRadius: BorderRadius.circular(15.0),
-                   border:  available == true ? Border.all(
-                      color: Colors.green,
-                     width: 1.0
-                    ) : Border.all(
-                     color: kScaffoldBackgroundColor,
-                   ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Container(
-                      //   child: Row(
-                      //     children: [
-                      //       Padding(
-                      //         padding: const EdgeInsets.all(5.0),
-                      //         child: Icon(
-                      //           Icons.access_time,
-                      //           color: kMatchBoxTimeFont,
-                      //         ),
-                      //       ),
-                      //       Text(
-                      //         'Text here',
-                      //         style: TextStyle(
-                      //           color: kMatchBoxTimeFont,
-                      //           fontWeight: FontWeight.w500,
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
-                      //   decoration: BoxDecoration(
-                      //     color: kMatchBoxTimeFill,
-                      //     borderRadius: BorderRadius.circular(10.0),
-                      //   ),
-                      // ),
+                )));
+      },
+      child: Column(
+        children: [
+          SizedBox(height: MediaQuery.of(context).size.height * .01),
+          Container(
+            padding: EdgeInsets.all(10.0),
+            decoration: BoxDecoration(
+              color: kWhiteSquareColor,
+              borderRadius: BorderRadius.circular(15.0),
 
-                      Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+
+              children: [
+                Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              width: 70.0,
+                              height: 70.0,
+                              decoration: BoxDecoration(
+                                color: kScaffoldBackgroundColor,
+                                image: DecorationImage(
+                                  image: CachedNetworkImageProvider(matchImageUrl!),
+                                  fit: BoxFit.cover,
+                                ),
+                                borderRadius: BorderRadius.all( Radius.circular(50.0)),
+                                border: Border.all(
+                                  color: Colors.green,
+                                  width: 3.0,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 15.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  CircleAvatar(
-                                    radius: 25,
-                                    backgroundColor: Colors.grey,
-                                    backgroundImage: CachedNetworkImageProvider(matchImageUrl!),
+                                  Text(
+                                     matchName!,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        color: kDarkest,
+                                      )
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 15.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                           matchName!,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              color: kDarkest,
-                                            )
-                                        ),
-                                       // activeMatch?
-                                        Text(
-                                            lastMessage!,
-                                            style: TextStyle(
-                                              fontWeight: messageUnread! ? FontWeight.w700 : FontWeight.w300,
-                                            )
-                                        ),
-                                      ],
-                                    ),
+                                 // activeMatch?
+                                  Text(
+                                      lastMessage!,
+                                      style: TextStyle(
+                                        fontWeight: messageUnread! ? FontWeight.w700 : FontWeight.w300,
+                                      )
                                   ),
                                 ],
                               ),
-                              Text(
-                                  "${DateFormat.jm().format(lastMessageTime!)}"
-                              )
-                            ],
-                          )
-                      ),
-                    ],
-                  ),
-                )
+                            ),
+                          ],
+                        ),
+                        Text(
+                            "${DateFormat.jm().format(lastMessageTime!)}"
+                        )
+                      ],
+                    )
+                ),
+              ],
             ),
+          ),
+        ],
       ),
     );
   }
