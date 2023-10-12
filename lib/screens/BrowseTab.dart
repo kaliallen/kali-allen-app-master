@@ -456,7 +456,8 @@ class _BrowseScreenState extends State<BrowseScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Send a notification to my pool',
+                    Text('Send a notification to My Pool',
+                        //'Notify My Bonds',
                         style: kToggleTextStyle),
                     Switch(
                       value: notifyPool,
@@ -513,6 +514,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
   buildMatchesProfiles() {
     return StreamBuilder<QuerySnapshot>(
       stream: usersRef
+      // .where('matches', arrayContains: widget.currentUserUid)
           // .where('interestedIn', isEqualTo: currentUser.gender)
           // .where('gender', isEqualTo: currentUser.isInterestedIn)
           // .where('uid', isNotEqualTo: currentUser.uid)

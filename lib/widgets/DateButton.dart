@@ -7,11 +7,11 @@ class DateButton extends StatelessWidget {
         this.text2,
         this.onTap,
         this.color,
-        this.dateDay,
+
         this.border,
         this.fontColor});
 
-  final DateDay? dateDay;
+
   final String? text;
   final String? text2;
   final VoidCallback? onTap;

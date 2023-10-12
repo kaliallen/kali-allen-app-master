@@ -27,6 +27,7 @@ class NotificationBox extends StatelessWidget {
   final String? type; //might not need
   final String? message;
   final String? userId;
+  final bool? swipedLeft;
 
   NotificationBox(
       {this.userId,
@@ -36,7 +37,8 @@ class NotificationBox extends StatelessWidget {
       this.matchId,
       this.name,
       this.time,
-      this.type});
+      this.type,
+      this.swipedLeft});
 
   @override
   Widget build(BuildContext context) {
@@ -145,6 +147,9 @@ class NotificationBox extends StatelessWidget {
                     print('Match Users firstname: ${matchUser.firstName}');
                     print(sendMessageController.text);
 
+                    print('matchAvailability: ${matchUser.availability}');
+                    print('match Memo: ${matchUser.memo}');
+
                     //Create a new match for user's pool
                     matchesRef
                         .doc(userId)
@@ -160,18 +165,20 @@ class NotificationBox extends StatelessWidget {
                           'lastMessageTime': Timestamp.now(),
                           'matchImageUrl': matchUser.picture1,
                           'matchName': matchUser.firstName,
+                          'memo': matchUser.memo,
                           'messageUnread':
                               sendMessageController.text.isEmpty ? true : false,
                           'messagesId': messageId,
                           //TODO: If you have bugs check here lol
-                          'availability': {
-                            matchUser.uid: matchUser.availability?[1]
-                                ? matchUser.availability![0]
-                                : null,
-                            userId: currentUser?.availability?[1]
-                                ? currentUser?.availability![0]
-                                : null,
-                          }
+                          'availability': [matchUser.availability![0], matchUser.availability![1]]
+                          // {
+                          //   matchUser.uid: matchUser.availability?[1]
+                          //       ? matchUser.availability![0]
+                          //       : null,
+                          //   userId: currentUser?.availability?[1]
+                          //       ? currentUser?.availability![0]
+                          //       : null,
+                          // }
                         })
                         .then((value) =>
                             print('Successfully added match to user\'s pool!'))
@@ -195,17 +202,19 @@ class NotificationBox extends StatelessWidget {
                         'lastMessageTime': Timestamp.now(),
                         'matchImageUrl': matchUser.picture1,
                         'matchName': matchUser.firstName,
+                        'memo': matchUser.memo,
                         'messageUnread': true,
                         'messagesId': messageId,
                         //TODO: If you have bugs check here lol
-                        'availability': {
-                          matchUser.uid: matchUser.availability?[1]
-                              ? matchUser.availability![0]
-                              : null,
-                          userId: currentUser?.availability?[1]
-                              ? currentUser?.availability![0]
-                              : null,
-                        }
+                        'availability': [matchUser.availability![0], matchUser.availability![1]]
+                        // {
+                        //   matchUser.uid: matchUser.availability?[1]
+                        //       ? matchUser.availability![0]
+                        //       : null,
+                        //   userId: currentUser?.availability?[1]
+                        //       ? currentUser?.availability![0]
+                        //       : null,
+                        // }
                       })
                       .then((value) =>
                           print('Successfully added match to match\'s pool!'))
@@ -247,6 +256,13 @@ class NotificationBox extends StatelessWidget {
 
     return Column(
       children: [
+        type!.contains('match') ?
+        SizedBox(height: MediaQuery.of(context).size.height * .02)
+        : SizedBox(),
+        type!.contains('match') ?
+        Text('You\'ve got a bond!') : SizedBox(),
+        type!.contains('match') ?
+        SizedBox(height: MediaQuery.of(context).size.height * .01) : SizedBox(),
         ListTile(
           tileColor: Colors.white,
           shape: RoundedRectangleBorder(
@@ -258,7 +274,9 @@ class NotificationBox extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (context) => ProfilePage(
-                        backButtonFunction: (){},
+                        backButtonFunction: (){
+                          Navigator.pop(context);
+                        },
                             profileId: matchId,
                             viewingAsBrowseMode: true,
                             viewAvailabilityInfo: false,
@@ -270,52 +288,56 @@ class NotificationBox extends StatelessWidget {
               backgroundImage: CachedNetworkImageProvider(matchImageUrl!),
             ),
           ),
-          title: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
+          title: Wrap(
+            // mainAxisAlignment: MainAxisAlignment.start,
+            // crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                  type!.contains('looking')
-                      ? '$name is free tonight!'
-                      : type!.contains('match')
-                          ? '$name sent you a message!'
-                          : '$name is going to $message',
-                  style: TextStyle(
-                    // fontSize: 10.0,
-                    fontWeight: FontWeight.w600,
-                    color: kDarkest,
-                  )),
+
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 5.0),
-                child: Text('"${message!}"',
+                child: Text(
+                    type!.contains('looking')
+                        ? '$name sent: "$message"'
+                        : '$name sent you a message! Start a bond with them to reply.',
                     style: TextStyle(
                       // fontSize: 10.0,
                       fontWeight: FontWeight.w400,
                       color: kDarkest,
                     )),
               ),
-            ],
+    Text(
+        type!.contains('looking')
+            ? ''
+            : type!.contains('match')
+                ? '"$message"'
+                : '$name is going to $message',
+        style: TextStyle(
+          // fontSize: 10.0,
+          fontWeight: FontWeight.w600,
+          color: kDarkest,
+        )),
+             ],
           ),
           subtitle: Text(timeago.format(time!),
               style: TextStyle(
                 fontWeight: FontWeight.w100,
                 color: kDarkest,
               )),
-          trailing: Column(
-            children: [
-              TextButton(
-                child: Text(
-                  type!.contains('looking')
-                      ? 'Message'
-                      : type!.contains('match')
-                          ? 'Start a Chat'
-                          : 'View Event',
-                ),
-                onPressed: sendChat,
-              ),
-            ],
-          ),
+          trailing:
+          TextButton(
+            child: Text(
+              type!.contains('looking')
+                  ? 'Reply'
+                  : type!.contains('match')
+                      ? 'Bond'
+                      : 'View Event',
+            ),
+            onPressed: sendChat,
+          ) ,
         ),
+        type!.contains('match') ?
+        SizedBox(height: MediaQuery.of(context).size.height * .02)
+            : SizedBox(),
         SizedBox(height: MediaQuery.of(context).size.height * .01),
       ],
     );

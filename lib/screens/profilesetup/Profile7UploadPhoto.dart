@@ -69,6 +69,7 @@ class _ProfileUploadPhotoState extends State<ProfileUploadPhoto> {
       maxHeight: 675,
       maxWidth: 960,
     );
+
     setState(() {
       if (pickedFile != null){
         _image = File(pickedFile.path);
@@ -98,7 +99,6 @@ class _ProfileUploadPhotoState extends State<ProfileUploadPhoto> {
     });
     print('1. handle submit triggered');
     await compressImage();
-    await uploadImage(_image);
     print('2. image successfully compressed');
     String medialUrl = await uploadImage(_image);
     print('3. image uploaded to storage');

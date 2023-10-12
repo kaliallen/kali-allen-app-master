@@ -51,7 +51,7 @@ const kEmojiText = TextStyle(
 
 const kToggleTextStyle = TextStyle(
   fontSize: 18.0,
-  fontWeight: FontWeight.w600,
+  fontWeight: FontWeight.w500,
   color: kDarkish
   //  fontWeight: FontWeight.w500,
   //  letterSpacing: .1,
@@ -157,9 +157,7 @@ const kColorizeColors = [
 ];
 
 enum Gender { male, female, androgyne, androgynous, bigender }
-
-enum DateDay { None, Today, Tomorrow, ThirdDay, FourthDay }
-
+enum RelationshipStatus { dating, notDating, inARelationship, other}
 //SplashScreen Colorize Animation TextStyle
 const kColorizeTextStyle = TextStyle(
   fontSize: 50.0,

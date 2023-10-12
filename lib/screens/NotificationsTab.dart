@@ -1,13 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:kaliallendatingapp/models/userData.dart';
+import 'package:kaliallendatingapp/screens/BrowseTab.dart';
 import 'package:kaliallendatingapp/widgets/NotificationBox.dart';
 import '../constants.dart';
 import 'Home.dart';
 
 class NotificationsTab extends StatefulWidget {
   final String? currentUserId;
+  final UserData? currentUser;
 
-  NotificationsTab({this.currentUserId});
+  NotificationsTab({this.currentUserId, this.currentUser});
 
   @override
   _NotificationsTabState createState() => _NotificationsTabState();

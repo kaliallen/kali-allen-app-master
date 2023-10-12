@@ -64,7 +64,7 @@ class _SettingScreenState extends State<SettingScreen> {
     print('Report an issue tapped');
     print(widget.currentUserId);
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => SubmitFeedback()));
+        context, MaterialPageRoute(builder: (context) => SubmitFeedback(uid: widget!.currentUserId!)));
   }
 
   Future<void> logOut() async {

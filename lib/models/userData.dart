@@ -11,6 +11,7 @@ class UserData {
   String? memo;
   String? gender;
   String? isInterestedIn;
+  String? relationshipStatus;
   String? height;
   String? picture1;
   String? picture2;
@@ -27,7 +28,7 @@ class UserData {
   Timestamp? timestamp;
   String? location;
   String? bio;
-  Map? dates;
+  List? matches;
 
   UserData({
     this.uid,
@@ -38,6 +39,7 @@ class UserData {
     this.memo,
     this.gender,
     this.isInterestedIn,
+    this.relationshipStatus,
     this.height,
     this.picture1,
     this.picture2,
@@ -54,7 +56,7 @@ class UserData {
     this.timestamp,
     this.location,
     this.bio,
-    this.dates,
+    this.matches,
   });
 
   factory UserData.fromDocument(DocumentSnapshot doc){
@@ -67,6 +69,7 @@ class UserData {
       memo: doc['memo'],
       gender: doc['gender'],
       isInterestedIn: doc['isInterestedIn'],
+      relationshipStatus: doc['relationshipStatus'],
       height: doc['height'],
       picture1: doc['picture1'],
       picture2: doc['picture2'],
@@ -83,7 +86,7 @@ class UserData {
       timestamp: doc['timestamp'],
       location: doc['location'],
       bio: doc['bio'],
-      dates: doc['dates'],
+      matches: doc['matches'],
     );
   }
 
@@ -105,6 +108,7 @@ class UserData {
     String? memo,
     String? gender,
     String? isInterestedIn,
+    String? relationshipStatus,
     String? height,
     String? picture1,
     String? picture2,
@@ -120,7 +124,7 @@ class UserData {
     String? education,
     String? location,
     String? bio,
-    Map? dates,
+    List? matches,
   }) async {
     User? user = await FirebaseAuth.instance.currentUser;
     String userId;
@@ -135,6 +139,7 @@ class UserData {
         'memo': memo,
         'gender': gender,
         'isInterestedIn': isInterestedIn,
+        'relationshipStatus': relationshipStatus,
         'height': height,
         'picture1': picture1,
         'picture2': picture2,
@@ -151,7 +156,7 @@ class UserData {
         'timestamp': Timestamp.fromDate(DateTime.now()),
         'location': location,
         'bio': bio,
-        'dates': dates,
+        'matches': matches,
       });
     } else {
       print('Error located in userData. The user is null!');

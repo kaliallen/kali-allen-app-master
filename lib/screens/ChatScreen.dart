@@ -99,7 +99,9 @@ class _ChatScreenState extends State<ChatScreen> {
           PopupMenuButton(
             onSelected: (result){
               if (result==2){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfilePage(profileId: widget.matchId, viewingAsBrowseMode: false, viewAvailabilityInfo: false, backButtonFunction: (){},)));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfilePage(profileId: widget.matchId, viewingAsBrowseMode: false, viewAvailabilityInfo: false, backButtonFunction: (){
+                  Navigator.pop(context);
+                },)));
               }
             },
             elevation: 20,

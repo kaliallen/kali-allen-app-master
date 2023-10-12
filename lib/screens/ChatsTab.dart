@@ -33,26 +33,35 @@ class _MatchesScreenState extends State<MatchesScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    padding: EdgeInsets.only(left: 25.0, right: 10.0, top: 50.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('My Pool',
-                            style: TextStyle(
-                                fontSize: 26.0,
-                                color: kDarkest,
-                                fontWeight: FontWeight.w500)),
+                  SizedBox(height: MediaQuery.of(context).size.height * .05),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('My Pool',
+                          style: TextStyle(
+                              fontSize: 26.0,
+                              color: kDarkest,
+                              fontWeight: FontWeight.w500)),
 
-                         Icon(
+                       Container(
+                         padding: EdgeInsets.all(5),
+                         child: Icon(
                             Icons.add,
                           ),
+                         decoration: BoxDecoration(
+                           color: Colors.white,
+                           borderRadius: BorderRadius.all( Radius.circular(10.0)),
+                           // border: Border.all(
+                           //   color: kLightDark,
+                           //   width: 2.0,
+                           // ),
+                         ),
+                       ),
 
 
 
 
-                      ],
-                    ),
+                    ],
                   ),
 
                   DateList(profileId: widget.currentUserId),
@@ -72,13 +81,16 @@ class DateList extends StatelessWidget {
 
   final String? profileId;
 
-  bool isTimestampEqualToCurrentTime(Timestamp inputTimestamp) {
-    // Get the current Timestamp
-    Timestamp currentTimestamp = Timestamp.now();
+  bool isTimestampSameAsCurrentDay(Timestamp timestamp) {
 
-    // Compare the inputTimestamp with the currentTimestamp
-    return inputTimestamp.seconds == currentTimestamp.seconds &&
-        inputTimestamp.nanoseconds == currentTimestamp.nanoseconds;
+    //Get the currentdate and time
+    DateTime currentDate = DateTime.now();
+
+    //Extract the day component from the Timestamp
+    DateTime timestampDate = timestamp.toDate();
+
+    return currentDate.day == timestampDate.day;
+
   }
 
   @override
@@ -114,6 +126,7 @@ class DateList extends StatelessWidget {
           final messagesId = match['messagesId'];
           final dateId = match['dateId'];
           final availability = match['availability'];
+          final memo = match['memo'];
 
           print('yodolay');
           print(availability);
@@ -123,7 +136,8 @@ class DateList extends StatelessWidget {
           print(profileId);
 
           //Find Out if User is Available
-
+          // isTimestampSameAsCurrentDay(availability[0]);
+          print('HELLODIDO ${isTimestampSameAsCurrentDay(availability[0])}');
 
           // Timestamp matchTimestamp = availability[match.id];
           // print(matchTimestamp);
@@ -133,7 +147,7 @@ class DateList extends StatelessWidget {
 
         final chatMatchBox = ActiveMatchChatBox(
             matchId: matchId,
-            activeMatch: activeMatch,
+            activeMatch: isTimestampSameAsCurrentDay(availability[0]),
             lastMessageSender: lastMessageSender,
             lastMessageTime : lastMessageTime,
             matchImageUrl: matchImageUrl,
@@ -143,6 +157,7 @@ class DateList extends StatelessWidget {
             dateId: dateId,
             // available: availability,
             lastMessage: lastMessage,
+          memo: memo,
 
 
           );

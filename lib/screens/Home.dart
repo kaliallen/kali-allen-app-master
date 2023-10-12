@@ -23,6 +23,7 @@ final matchesRef = FirebaseFirestore.instance.collection('matches');
 final messagesRef = FirebaseFirestore.instance.collection('messages');
 final notificationsRef = FirebaseFirestore.instance.collection('notifications');
 final storageRef = FirebaseStorage.instance.ref();
+final reportsRef = FirebaseFirestore.instance.collection('reports');
 
 
 class Home extends StatefulWidget {
@@ -187,6 +188,7 @@ class _HomeState extends State<Home> {
           ),
           NotificationsTab(
             currentUserId: currentUser?.uid,
+            currentUser: currentUserData!,
           ),
           MatchesScreen(
             currentUserId: currentUser?.uid,

@@ -16,12 +16,12 @@ class ProfilePage extends StatefulWidget {
   final bool? viewingAsBrowseMode;
   final Function()? backButtonFunction;
 
-  ProfilePage(
-      {this.profileId,
-      this.viewAvailabilityInfo,
-      this.viewingAsBrowseMode,
-        required this.backButtonFunction,
-      });
+  ProfilePage({
+    this.profileId,
+    this.viewAvailabilityInfo,
+    this.viewingAsBrowseMode,
+    required this.backButtonFunction,
+  });
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -31,6 +31,8 @@ class _ProfilePageState extends State<ProfilePage> {
   bool profileViewing = true;
   TextEditingController matchMessageController = TextEditingController();
   var uuid = Uuid();
+
+  TextEditingController reportController = TextEditingController();
 
   ///When user matches with a profile, a match is created and a notification is created
   startAChat(String date, String name, String imageUrl) {
@@ -137,7 +139,61 @@ class _ProfilePageState extends State<ProfilePage> {
         });
   }
 
+  Future<void> reportPopup(String name, String profileUid) async {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Report $name?'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: [
+                  // Text('Reports are annonymous.'),
+                  TextField(
+                    controller: reportController,
+                    maxLines: 10,
+                    minLines: 4,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: "All reports are anonymous",
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              CupertinoDialogAction(
+                child: Text('Report', style: TextStyle(color: Colors.red)),
+                onPressed: () async {
+                  String? message;
 
+                  await reportsRef.add({
+                    'report': 'profile',
+                    'userid': profileUid,
+                    'message': reportController.text.trim(),
+                    'time': DateTime.now(),
+                  }).then((value) {
+                    message = 'Report Sent!';
+                  }).catchError((error) => message = 'Report could not send: $error');
+
+                  SnackBar snackBar = SnackBar(content: Text(message!));
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+                  Future.delayed(Duration(seconds: 1), () {
+                    Navigator.pop(context);
+                  });
+                },
+              ),
+              CupertinoDialogAction(
+                child: Text('Close'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          );
+        });
+  }
 
   @override
   void initState() {
@@ -152,7 +208,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-
   FutureBuilder buildProfilePage() {
     return FutureBuilder(
         future: usersRef.doc(widget.profileId).get(),
@@ -164,10 +219,11 @@ class _ProfilePageState extends State<ProfilePage> {
           UserData profileUserData = UserData.fromDocument(snapshot.data);
 
           // //Find out if the dateTime is today's date
-          bool dateIsToday = profileUserData.availability?[0].toDate().year == DateTime.now().year && profileUserData.availability?[0].toDate().day == DateTime.now().day;
+          bool dateIsToday = profileUserData.availability?[0].toDate().year ==
+                  DateTime.now().year &&
+              profileUserData.availability?[0].toDate().day ==
+                  DateTime.now().day;
           print('Date is today? $dateIsToday');
-
-
 
           //
           //     //They answered yes or no
@@ -189,14 +245,12 @@ class _ProfilePageState extends State<ProfilePage> {
           //
           //     }
 
-
           return
               //Top Picture & Text
               ListView(
             padding: EdgeInsets.zero,
             children: [
               Stack(children: [
-
                 //Profile Picture image
                 Container(
                   height: MediaQuery.of(context).size.height * .5,
@@ -244,25 +298,40 @@ class _ProfilePageState extends State<ProfilePage> {
                               onPressed: widget.backButtonFunction,
                             ),
                           ),
-
-                              widget.viewingAsBrowseMode == false ?
-                              SizedBox()
+                          widget.viewingAsBrowseMode == false
+                              ? SizedBox()
                               : Padding(
                                   padding: const EdgeInsets.only(
                                       right: 15.0, top: 40),
-                                  child:
-                                  widget.viewingAsBrowseMode == true
-                                      ? IconButton(
+                                  child: widget.viewingAsBrowseMode == true
+                                      ? PopupMenuButton(
                                           icon: Icon(
                                             Icons.more_horiz_sharp,
                                             color: Colors.white,
                                             size: 25.0,
                                           ),
-                                          //TODO: Integrate this everywhere....
-                                          onPressed: (){},
+                                          itemBuilder: (context) =>
+                                              <PopupMenuEntry>[
+                                            PopupMenuItem(
+                                              child: Text(
+                                                'Report User',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    color: Colors.red),
+                                              ),
+                                              onTap: () {
+                                                reportPopup(
+                                                    profileUserData!.firstName!,
+                                                    profileUserData!.uid!);
+                                              },
+                                            ),
+                                            // PopupMenuItem(
+                                            //   child: Text('Cancel'),
+                                            // ),
+                                          ],
                                         )
                                       : SizedBox(),
-                              ),
+                                ),
                         ],
                       ),
                       //Header info
@@ -275,21 +344,19 @@ class _ProfilePageState extends State<ProfilePage> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                      Wrap(
-                                              //TODO: Fix
-                                              //TODO: Decide if this goes here. Should there be compatible "interests" here? Lots of questions...
-                                              children: [
-
-                                                dateIsToday == true ? Pill(
-                                                  text: profileUserData.memo,
-                                                  color: Colors.green
-                                                      .withOpacity(.1),
-                                                ): SizedBox(),
-                                              ],
-                                            )
-
-
-                                    ],
+                                Wrap(
+                                  //TODO: Fix
+                                  //TODO: Decide if this goes here. Should there be compatible "interests" here? Lots of questions...
+                                  children: [
+                                    dateIsToday == true
+                                        ? Pill(
+                                            text: profileUserData.memo,
+                                            color: Colors.green.withOpacity(.1),
+                                          )
+                                        : SizedBox(),
+                                  ],
+                                )
+                              ],
                             ),
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.end,
@@ -305,11 +372,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                 ),
                                 SizedBox(width: 10),
-                                dateIsToday == true && profileUserData.availability?[1] == true ? Pill(
-                                  text: 'Free Tonight',
-                                  color: Colors.green
-                                      .withOpacity(.95),
-                                ) : SizedBox(),
+                                dateIsToday == true &&
+                                        profileUserData.availability?[1] == true
+                                    ? Pill(
+                                        text: 'Free Tonight',
+                                        color: Colors.green.withOpacity(.95),
+                                      )
+                                    : SizedBox(),
                               ],
                             ),
                           ],
@@ -346,24 +415,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     )
                   : SizedBox(height: 0),
 
-              //Photo 2 Box
-              // Padding(
-              //   padding: const EdgeInsets.only(
-              //     top: 20.0,
-              //     right: 20.0,
-              //     left: 20.0,
-              //   ),
-              //   child: ClipRRect(
-              //     borderRadius: BorderRadius.circular(10.0),
-              //     child: Image(
-              //       width: MediaQuery.of(context).size.width,
-              //       height: 300.0,
-              //       fit: BoxFit.cover,
-              //       image: CachedNetworkImageProvider(profileUserData.picture1!),
-              //     ),
-              //   ),
-              // ),
-
               //Info Square Box
               Padding(
                 padding: const EdgeInsets.only(top: 20, left: 20, right: 20.0),
@@ -375,184 +426,76 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Column(
                     children: [
                       //TODO: Make this row scrollable within the container
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconCard(
-                              icon: Icons.mood,
-                              text:
-                              'She/Her' //profileUserData.occupation,
-                            //${profileUserData.gender}
-                          ),
-                          // IconCard(
-                          //     icon: Icons.emoji_people,
-                          //     text:
-                          //     'Straight' //profileUserData.occupation,
-                          //   //${profileUserData.gender}
-                          // ),
-                          IconCard(
-                            icon: Icons.favorite_border,
-                            text: 'Not Dating', //Dating, Not Dating, In A Relationship
-                          ),
-                          // IconCard(
-                          //   icon: Icons.straighten,
-                          //   text: '5\'5',
-                          // ),
-                        ],
+                      Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            IconCard(
+                                icon: Icons.mood,
+                                text: 'She/Her' //profileUserData.occupation,
+                                ),
+                            profileUserData.relationshipStatus != null
+                                ? IconCard(
+                                    icon: Icons.favorite_border,
+                                    text: profileUserData
+                                        .relationshipStatus, //Dating, Not Dating, In A Relationship
+                                  )
+                                : SizedBox(),
+                          ],
+                        ),
                       ),
-                      profileUserData.location != null ?
-                      Divider(): SizedBox(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconCard(
-                              icon: Icons.location_on_outlined,
-                              text:
-                              profileUserData.location, //profileUserData.occupation,
-                            //${profileUserData.gender}
-                          ),
-                          // IconCard(
-                          //   icon: Icons.cake_outlined,
-                          //   text: '26',
-                          // ),
-
-                        ],
-                      ),
+                      profileUserData.location != null ? Divider() : SizedBox(),
+                      profileUserData.location != null
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                IconCard(
+                                  icon: Icons.location_on_outlined,
+                                  text: profileUserData
+                                      .location, //profileUserData.occupation,
+                                ),
+                              ],
+                            )
+                          : SizedBox(),
                       profileUserData.education != null
                           ? Divider()
                           : SizedBox(height: 0),
                       profileUserData.education != null
                           ? Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconCard(
-                            icon: Icons.account_balance_sharp,
-                            text: profileUserData.education,
-                            //${profileUserData.gender}
-                          ),
-                        ],
-                      )
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                IconCard(
+                                  icon: Icons.account_balance_sharp,
+                                  text: profileUserData.education,
+                                  //${profileUserData.gender}
+                                ),
+                              ],
+                            )
                           : SizedBox(height: 0),
                       profileUserData.occupation != null
                           ? Divider()
                           : SizedBox(height: 0),
                       profileUserData.occupation != null
                           ? Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconCard(
-                            icon: Icons.business_center,
-                            text: profileUserData.occupation,
-                          ),
-                          // IconCard(
-                          //   icon: Icons.cake_outlined,
-                          //   text: '26',
-                          // ),
-                        ],
-                      )
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                IconCard(
+                                  icon: Icons.business_center,
+                                  text: profileUserData.occupation,
+                                ),
+                                // IconCard(
+                                //   icon: Icons.cake_outlined,
+                                //   text: '26',
+                                // ),
+                              ],
+                            )
                           : SizedBox(height: 0),
                     ],
                   ),
                 ),
               ),
 
-              //Event Feed
-              // Padding(
-              //   padding: const EdgeInsets.only(top: 20, left: 20, right: 20.0),
-              //   child: Text(
-              //       //'${profileUserData.firstName}\'s '
-              //       'Events:'),
-              // ),
-
-              // Padding(
-              //   padding: const EdgeInsets.only(top: 10, left: 20, right: 20.0),
-              //   child: Container(
-              //     decoration: BoxDecoration(
-              //         // border:  Border.all(
-              //         //     color: Colors.green,
-              //         //     width: 3.0
-              //         // ),
-              //       color: Colors.white,
-              //       borderRadius: BorderRadius.circular(10)
-              //
-              //     ),
-              //     child: Padding(
-              //       padding: const EdgeInsets.all(8.0),
-              //       child: Row(
-              //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //         children: [
-              //           Text('Sep. 18'),
-              //           Text('Yoga in the Park'),
-              //         ],
-              //       ),
-              //     ),
-              //   ),
-              // ),
-
-              // Padding(
-              //   padding: const EdgeInsets.only(top: 10, left: 20, right: 20.0),
-              //   child: Container(
-              //     decoration: BoxDecoration(
-              //         // border:  Border.all(
-              //         //     color: Colors.green,
-              //         //     width: 3.0
-              //         // ),
-              //         color: Colors.white,
-              //         borderRadius: BorderRadius.circular(10)
-              //
-              //     ),
-              //     child: Padding(
-              //       padding: const EdgeInsets.all(8.0),
-              //       child: Row(
-              //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //         children: [
-              //           Text('Sep. 15'),
-              //           Text('Kettama at Culture!!!'),
-              //         ],
-              //       ),
-              //     ),
-              //   ),
-              // ),
-
-
-
-
-              //Prompt Box
-
-              // Padding(
-              //   padding: const EdgeInsets.all(20),
-              //   child: Container(
-              //     decoration: BoxDecoration(
-              //       color: Colors.white,
-              //       borderRadius: BorderRadius.circular(10.0),
-              //     ),
-              //
-              //     child: Padding(
-              //       padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 25),
-              //       child: Column(
-              //         crossAxisAlignment: CrossAxisAlignment.start,
-              //         children: [
-              //           //TODO: Make this row scrollable within the container
-              //           Text(
-              //             'My favorite things to do in DC are...',
-              //             style: kCardTitle,
-              //           ),
-              //           Center(
-              //             child: Padding(
-              //               padding: const EdgeInsets.only(top: 8.0),
-              //               child: Text(
-              //                 'Thai food, going to the park, & going to Flash ;)',
-              //                 style: kCardAnswer
-              //               ),
-              //             ),
-              //           ),
-              //         ],
-              //       ),
-              //     ),
-              //   ),
-              // ),
-
-              SizedBox(height: 50),
+              SizedBox(height: 70),
             ],
           );
         });
@@ -620,4 +563,3 @@ class InfoRow extends StatelessWidget {
     );
   }
 }
-
