@@ -28,18 +28,19 @@ class StyledButton extends StatelessWidget {
           .height : width,
       decoration: BoxDecoration(
         border: border == null ? Border.all() : border,
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-              color: Colors.black54,
-              blurRadius: 1,
-              // offset: Offset(3.0, 2.5)
-          )
-        ],
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment(-20.51, 133.59),
-          colors: [color!, color!],
-        ),
+        color: color == null ? Colors.white : color,
+        // boxShadow: <BoxShadow>[
+        //   BoxShadow(
+        //       color: Colors.black54,
+        //       blurRadius: 1,
+        //       // offset: Offset(3.0, 2.5)
+        //   )
+        // ],
+        // gradient: LinearGradient(
+        //   begin: Alignment.topLeft,
+        //   end: Alignment(-20.51, 133.59),
+        //   colors: [color!, color!],
+        // ),
         borderRadius: BorderRadius.circular(20.0),
       ),
       child: Center(

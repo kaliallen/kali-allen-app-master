@@ -128,28 +128,25 @@ class _HomeState extends State<Home> {
         body: SafeArea(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+           crossAxisAlignment: CrossAxisAlignment.center,
             children:
             [
-              Container(
-                padding: EdgeInsets.only(top: 100.0),
-                child:
-                Text('Tonight',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    letterSpacing: -2.0,
-                    fontSize: 61.0,
-                    fontFamily: 'Quicksand',
-                    fontWeight: FontWeight.w700,
-                    foreground: Paint()..shader = LinearGradient(
-                      colors: kAppTitleTextGradient,
-                    ).createShader(Rect.fromLTWH(0.0, 0.0, 200.0, 70.0)),
-                  )
+              SizedBox(),
+              Text('bond',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  letterSpacing: -2.0,
+                  fontSize: 75.0,
+                  fontFamily: 'Quicksand',
+                  fontWeight: FontWeight.w700,
+                  foreground: Paint()..shader = LinearGradient(
+                    colors: kAppTitleTextGradient,
+                  ).createShader(Rect.fromLTWH(0.0, 0.0, 200.0, 70.0)),
+                )
             ),
-              ),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 45.0, vertical: 20.0),
-                child: Text('Date with ~intention~.',
+                child: Text('The Social Meetup App',
                   textAlign: TextAlign.center,
                   style: kSubTextStyle,
                 ),

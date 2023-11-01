@@ -56,7 +56,7 @@ class _SplashScreen1State extends State<SplashScreen1> {
               child: AnimatedTextKit(
                 animatedTexts: [
                   ColorizeAnimatedText(
-                    'Tonight',
+                    'Tonighhhht',
                     textStyle: kColorizeTextStyle,
                     colors: kColorizeColors,
                   ),

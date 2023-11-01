@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:kaliallendatingapp/constants.dart';
 import 'package:kaliallendatingapp/models/userData.dart';
 import 'package:kaliallendatingapp/screens/profilesetup/Profile5InterestedIn.dart';
-import 'package:kaliallendatingapp/screens/profilesetup/Profile6Height.dart';
-import 'package:kaliallendatingapp/screens/profilesetup/Profile7UploadPhoto.dart';
-import 'package:kaliallendatingapp/screens/profilesetup/Profile8AddMorePhotos.dart';
 import 'package:kaliallendatingapp/widgets/StyledButton.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -24,8 +21,7 @@ class _ProfileGenderState extends State<ProfileGender> {
   String? selectedGender;
   double width = 90.0;
   double height = 20.0;
-  List<String> genderSelection = ['Female','Male','Bigender','Androgyne','Androgynous'];
-  bool isGenderSelected = true;
+  bool otherSelected = false;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +43,7 @@ class _ProfileGenderState extends State<ProfileGender> {
               Padding(
                 padding: const EdgeInsets.only(left: 25.0),
                 child: Text(
-                    'I identify as a',
+                    'I am a...',
                     style: TextStyle(
                       // letterSpacing: 2.0,
                       fontSize: 30.0,
@@ -63,19 +59,40 @@ class _ProfileGenderState extends State<ProfileGender> {
                       spacing: 10.0,
                       //  runSpacing: 5.0,
                       children: [
-                        buildChoiceChip('Man'),
-                        buildChoiceChip('Woman'),
-                        buildChoiceChip('Bigender'),
-                        buildChoiceChip('Androgyne'),
-                        buildChoiceChip('Androgynous'),
+                        buildChoiceChip('She/Her'),
+                        buildChoiceChip('He/Him'),
+                        buildChoiceChip('They/Them'),
+                        buildChoiceChip('Ze/Hir'),
+
+                  ChoiceChip(
+                    label: Container(
+                      width: width,
+                      height: height,
+                      child: Center(child: Text( 'Other',
+                        style: TextStyle(
+                          color: otherSelected ? Colors.white : Colors.black,
+                        ),
+                      )),
+                    ),
+                    selectedColor: kNavyBlue,
+                    selected: otherSelected,
+                    onSelected: (selected) {
+                      if (otherSelected == true) {
+                        setState(() {
+                          otherSelected = false;
+                        });
+                      } else {
+                        setState(() {
+                          otherSelected = true;
+                        });
+                      }
+                    },
+                  ),
                       ]
                   ),
               ),
               //TextField/Content
-              isGenderSelected ? Text('') : Center(
-                  child: Text('Select an option to continue.',
-                      style: TextStyle(color: Colors.red))
-              ),
+              otherSelected ? TextField() : SizedBox(),
               //Next Button
               Padding(
                 padding: const EdgeInsets.only(bottom: 30.0, right: 25.0, left: 25.0),
@@ -85,21 +102,12 @@ class _ProfileGenderState extends State<ProfileGender> {
                       text: 'Continue',
                       color: kButtonColor,
                         onTap: () {
-                          if (selectedGender != null) {
-                            setState(() {
-                              isGenderSelected = true;
-                            });
                             widget._userData!.gender = selectedGender;
                             Navigator.push(context, PageTransition(
                                 type: PageTransitionType.rightToLeft,
                                 child: ProfileInterestedIn(
                                   userData: widget._userData,
                                 )));
-                          } else {
-                            setState(() {
-                              isGenderSelected = false;
-                            });
-                          }
                         }
                     ),
                   ],
@@ -182,6 +190,7 @@ class _ProfileGenderState extends State<ProfileGender> {
         setState(() {
           selectedGender = (selected ? gender : null)!;
         });
+        print(gender);
       },
     );
   }
